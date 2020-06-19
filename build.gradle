@@ -1,0 +1,39 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+plugins {
+	id 'jacoco'
+	id "org.sonarqube" version "2.7"
+	id 'maven-publish'
+	id 'java-library'
+}
+
+group 'co.com.bancolombia.commons.secretsmanager'
+version System.getProperty('version')
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile platform('software.amazon.awssdk:bom:2.13.10')
+	compile 'software.amazon.awssdk:secretsmanager'
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.12'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+	testCompile 'org.mockito:mockito-core:2.28.2'
+	testImplementation 'junit:junit:4.12'
+}
+
+
+jar {
+    manifest.attributes provider: 'Ingeniería de Software'
+	archivesBaseName = 'secretsmanager'
+	version = "$version"
+}
