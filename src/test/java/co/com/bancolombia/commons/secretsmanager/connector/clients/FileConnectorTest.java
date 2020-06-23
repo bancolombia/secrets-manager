@@ -20,7 +20,7 @@ public class FileConnectorTest {
   
   @Test
   public void pathExists() throws SecretException {
-    connector = new FileConnector("src/test/java/resources/");
+    connector = new FileConnector("src/test/resources/");
     String secreto = connector.getSecret("Secret.txt");
     assertEquals("secret", secreto);
   }
