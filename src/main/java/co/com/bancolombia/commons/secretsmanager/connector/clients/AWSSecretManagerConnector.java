@@ -4,8 +4,12 @@ import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
 import co.com.bancolombia.commons.secretsmanager.exceptions.SecretException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+
+import java.net.URI;
+import java.util.Optional;
 
 /**
  * Represents an AWS Connector. It lets you to get Secrets of AWS Secrets
@@ -17,9 +21,22 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 public class AWSSecretManagerConnector extends AbstractConnector {
 
 	private Region region;
+	private Optional<URI> endpoint;
 
 	public AWSSecretManagerConnector(String region) {
 		setRegion(region);
+	}
+
+	/**
+	 * This constructor allows make a connection for a local instance of
+	 * AWS Secrets Manager, such as: LocalStack, Docker container, etc.
+	 *
+	 * @param endpoint : String uri connection
+	 * @param region : Dummy region for Amazon SDK Client
+	 */
+	public AWSSecretManagerConnector(String endpoint, String region) {
+		this.endpoint = Optional.of(URI.create(endpoint));
+		this.region = Region.of(region);
 	}
 
 	private void setRegion(String region) {
@@ -28,9 +45,10 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 
 	@Override
 	public String getSecret(String secretName) throws SecretException {
-		SecretsManagerClient client = SecretsManagerClient.builder().region(region).build();
+		SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
+		endpoint.ifPresent(clientBuilder::endpointOverride);
+		SecretsManagerClient client = clientBuilder.build();
 
-		String secret;
 		GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
 		GetSecretValueResponse getSecretValueResult = null;
 
@@ -40,10 +58,10 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 			throw new SecretException("Secret value is null");
 		} else {
 			if (getSecretValueResult.secretString() != null) {
-				secret = getSecretValueResult.secretString();
-				return secret;
+				return getSecretValueResult.secretString();
 			}
 			throw new SecretException("Secret value is not a String");
 		}
 	}
+
 }
