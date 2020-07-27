@@ -43,6 +43,12 @@ try {
 }
 ```
 
+If you need to use a local instance for ```AWSSecretManagerConnector``` like localstack or a docker container, replace before connector instance with a new instance and the local endpoint like:
+
+```
+AbstractConnector connector = new AWSSecretManagerConnector("localhost:4566", REGION_SECRET);
+```
+
 Remind you have to define your model with the fields you will need. Ypu can find a default AWSSecretDBModel model, it includes default fields to connect a RDS database. 
 
 To convert `JSON`  to a `POJO`, it uses `Gson`.  If you need use field with custom names, you have to create your model like:
