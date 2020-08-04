@@ -65,6 +65,24 @@ public class AWSSecretManagerConnectorTest {
         when(builder.build()).thenReturn(client);
 
         String secretValue = secret.getSecret("secretName");
-        assertEquals(secretValue, "SecretValue");
+        assertEquals("SecretValue", secretValue);
+    }
+
+    @Test(expected = SecretException.class)
+    public void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
+        AWSSecretManagerConnector secret = new AWSSecretManagerConnector("us-east-1", "localhost:4566");
+        SecretsManagerClient client = mock(SecretsManagerClient.class);
+
+        GetSecretValueResponse response = GetSecretValueResponse.builder().secretString(null).build();
+
+        when(client.getSecretValue(Mockito.any(GetSecretValueRequest.class))).thenReturn(response);
+
+        PowerMockito.mockStatic(SecretsManagerClient.class);
+        SecretsManagerClientBuilder builder = mock(SecretsManagerClientBuilder.class);
+        when(SecretsManagerClient.builder()).thenReturn(builder);
+        when(builder.region(Mockito.any())).thenReturn(builder);
+        when(builder.build()).thenReturn(client);
+
+        secret.getSecret("secretName");
     }
 }
