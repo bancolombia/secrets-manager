@@ -1,5 +1,9 @@
+![](https://github.com/bancolombia/secrets-manager/workflows/Java%20CI%20with%20Gradle/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bancolombia_secrets-manager&metric=alert_status)](https://sonarcloud.io/dashboard?id=bancolombia_secrets-manager)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=bancolombia_secrets-manager&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=bancolombia_secrets-manager)
+[![codecov](https://codecov.io/gh/bancolombia/secrets-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/bancolombia/secrets-manager)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/bancolombia/secrets-manager/blob/master/LICENSE)
 # SecretsManager - Bancolombia
-
 
 This library will help you to decouple your application of your secrets provider. It supports the following conectors to get secrets:
 
@@ -21,7 +25,7 @@ dependencies {
   }
 ```
 
-Fie: Secrets.java
+File: Secrets.java
 ```java
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
 import co.com.bancolombia.commons.secretsmanager.connector.clients.AWSSecretManagerConnector;
@@ -34,10 +38,7 @@ GenericManager manager = new GenericManager(connector);
 
 try {
 	DefineYourModel obj = manager.getSecretModel(NAME_SECRET, DefineYourModel.class);	     
-	this.URLDB = obj.getHost();
-	this.USERNAMEDB = obj.getUsername();
-	this.PASSWORDDB = obj.getPassword();
-	this.SCHEMADB = obj.getDbname();
+    // Use your model to get Secrets
 } catch(Exception e) {
 	// Catch error...
 }
@@ -49,7 +50,7 @@ If you need to use a local instance for ```AWSSecretManagerConnector``` like loc
 AbstractConnector connector = new AWSSecretManagerConnector("localhost:4566", REGION_SECRET);
 ```
 
-Remind you have to define your model with the fields you will need. Ypu can find a default AWSSecretDBModel model, it includes default fields to connect a RDS database. 
+Remind you have to define your model with the fields you will need. You can find a default AWSSecretDBModel model, it includes default fields to connect a RDS database. 
 
 To convert `JSON`  to a `POJO`, it uses `Gson`.  If you need use field with custom names, you have to create your model like:
 
@@ -60,7 +61,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class DefineYourModel {
 
-	@SerializedName("aes_key") // Esta anotación es la de Gson no se puede usar por ejemplo la de Jackson.
+	@SerializedName("aes_key") 
 	private String aesKey;
 
 	@SerializedName("rsa_key")
@@ -71,9 +72,9 @@ public class DefineYourModel {
 }
 ```
 
-## How I can contribute ?
+## How can I contribute ?
 
-Great !!, Please:
+Great !!:
 
 * Clone this repo
 * Create a new feature branch
@@ -82,11 +83,7 @@ Great !!, Please:
 
 ### To Do
 
-- New conectores for other services.
+- New connectors for other services.
   - Vault
-  - Key Valu Azure
+  - Key Valut Azure
 - Improve our tests
-
-License
-----
-MIT
