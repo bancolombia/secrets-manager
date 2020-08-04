@@ -4,8 +4,7 @@ import co.com.bancolombia.commons.secretsmanager.connector.clients.EnvConnector;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /** Represents an Generic Manager Test. It lets you to test a Generic Manager Object.
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
@@ -29,6 +28,6 @@ public class GenericManagerTest {
     AbstractManager manager = new GenericManager(connector);
     String secret = manager.getSecret("PATH");
     assertNotNull(secret);
-    assertFalse("".equals(secret));
+    assertNotEquals("", secret ) ;
   }
 }
