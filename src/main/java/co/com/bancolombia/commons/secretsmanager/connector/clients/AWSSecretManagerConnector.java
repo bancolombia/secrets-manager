@@ -25,6 +25,7 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 
 	public AWSSecretManagerConnector(String region) {
 		setRegion(region);
+		endpoint = Optional.empty();
 	}
 
 	/**
@@ -34,7 +35,7 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 	 * @param endpoint : String uri connection
 	 * @param region : Dummy region for Amazon SDK Client
 	 */
-	public AWSSecretManagerConnector(String endpoint, String region) {
+	public AWSSecretManagerConnector(String region, String endpoint) {
 		this.endpoint = Optional.of(URI.create(endpoint));
 		this.region = Region.of(region);
 	}
@@ -45,10 +46,11 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 
 	@Override
 	public String getSecret(String secretName) throws SecretException {
-		SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
-		endpoint.ifPresent(clientBuilder::endpointOverride);
-		SecretsManagerClient client = clientBuilder.build();
+		SecretsManagerClient client = buildClient();
+		return getSecret(secretName, client);
+	}
 
+	private String getSecret(String secretName, SecretsManagerClient client) throws SecretException  {
 		GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
 		GetSecretValueResponse getSecretValueResult = null;
 
@@ -62,6 +64,12 @@ public class AWSSecretManagerConnector extends AbstractConnector {
 			}
 			throw new SecretException("Secret value is not a String");
 		}
+	}
+
+	private SecretsManagerClient buildClient() {
+		SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
+		endpoint.ifPresent(clientBuilder::endpointOverride);
+		return clientBuilder.build();
 	}
 
 }
