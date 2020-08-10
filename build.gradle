@@ -1,22 +1,33 @@
 buildscript {
-	repositories {
-		mavenCentral()
-	}
+    repositories {
+	    mavenCentral()
+    }
+    ext {
+        versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.0.1'
+        groupid =  project.hasProperty('groupid') ? project.property('groupid') : 'com.github.bancolombia'
+        artifactid = group =  project.hasProperty('artifactid') ? project.property('artifactid') : 'secrets-manager'
+    }
+
 }
 
 plugins {
 	id 'jacoco'
 	id "org.sonarqube" version "2.8"
-	id 'maven-publish'
-	id 'java-library'
+    id "com.jfrog.bintray" version "1.8.5"
+    id 'java-library'
+    id 'maven'
+    id 'maven-publish'
 }
 
-group 'co.com.bancolombia.commons.secretsmanager'
-version System.getProperty('version')
+test.onlyIf { false }
+
+group = "$groupid"
+version =  "$versionnum"
 
 repositories {
 	mavenCentral()
 }
+
 
 dependencies {
 	compile platform('software.amazon.awssdk:bom:2.13.10')
@@ -36,10 +47,49 @@ dependencies {
 }
 
 
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT License"
+            url "http://www.opensource.org/licenses/mit-license.php"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "alejobtc"
+            name "Alejandro Betancur Barrientos"
+            email "alejobtc@gmail.com"
+        }
+    }
+
+    scm {
+        url "git@github.com:bancolombia/secrets-manager.git"
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+
+
 jar {
     manifest.attributes provider: 'Ingeniería de Software'
-	archivesBaseName = 'secretsmanager'
-	version = "$version"
+	archivesBaseName = "$artifactid"
 }
 
 sonarqube {
@@ -63,4 +113,43 @@ jacocoTestReport {
 	reports {
 		xml.enabled true
 	}
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "com.github.bancolombia"
+            artifactId = "secrets-manager"
+            version = "$versionnum"
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Secrets Manager')
+                root.appendNode('name', 'secrets-manager')
+                root.appendNode('url', 'https://site_for_lib.tld')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenJava']
+    publish = true
+    configurations = ['archives']
+    pkg {
+        repo = 'Maven'
+        name = 'secrets-manager'
+        licenses = ['MIT']
+        vcsUrl = 'git@github.com:bancolombia/secrets-manager.git'
+        version {
+            name = "$versionnum"
+            desc = 'First version'
+            released  = new Date()
+            vcsTag = "$versionnum"
+        }
+    }
 }
