@@ -3,7 +3,7 @@ buildscript {
 	    mavenCentral()
     }
     ext {
-        versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.0.1'
+        versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.0.2'
         groupid =  project.hasProperty('groupid') ? project.property('groupid') : 'com.github.bancolombia'
         artifactid = group =  project.hasProperty('artifactid') ? project.property('artifactid') : 'secrets-manager'
     }
@@ -61,6 +61,11 @@ def pomConfig = {
             id "alejobtc"
             name "Alejandro Betancur Barrientos"
             email "alejobtc@gmail.com"
+        }
+	developer {
+            id "andmagom"
+            name "Andrés Mauricio Gómez P"
+            email "andmagom@outlook.com"
         }
     }
 
