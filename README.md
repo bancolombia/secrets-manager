@@ -21,8 +21,8 @@ Add the following dependency to your build.gradle file.
 File: build.gradle 
 ```java
 dependencies {
-	compile group: 'co.com.bancolombia', name: 'secretsmanager', version: '2.0.3'
-  }
+	implementation 'com.github.bancolombia:secrets-manager:1.0.2'
+}
 ```
 
 File: Secrets.java
