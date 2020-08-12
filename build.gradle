@@ -102,14 +102,13 @@ sonarqube {
 		property "sonar.projectKey", "bancolombia_secrets-manager"
 		property "sonar.organization", "grupo-bancolombia"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.sources", "src/main/java,build.gradle"
+		property "sonar.sources", "src/main/java, build.gradle"
+		property "sonar.test", "src/test/java"
 		property "sonar.java.binaries", "build/classes"
 		property "sonar.junit.reportPaths", "build/test-results/test"
 		property "sonar.java-coveragePlugin", "jacoco"
 		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.test", "src/test/java"
 		property "sonar.exclusions", ".github/**"
-		property "sonar.coverage.exclusions", "src/test/**"
 		property "sonar.sourceEncoding", "UTF-8"
 	}
 }
