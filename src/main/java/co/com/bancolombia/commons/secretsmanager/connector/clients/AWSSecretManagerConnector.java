@@ -16,60 +16,60 @@ import java.util.Optional;
  * Manager Service.
  *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez
- *         P.</a>
+ * P.</a>
  */
 public class AWSSecretManagerConnector extends AbstractConnector {
 
-	private Region region;
-	private Optional<URI> endpoint;
+    private Region region;
+    private Optional<URI> endpoint;
 
-	public AWSSecretManagerConnector(String region) {
-		setRegion(region);
-		endpoint = Optional.empty();
-	}
+    public AWSSecretManagerConnector(String region) {
+        setRegion(region);
+        endpoint = Optional.empty();
+    }
 
-	/**
-	 * This constructor allows make a connection for a local instance of
-	 * AWS Secrets Manager, such as: LocalStack, Docker container, etc.
-	 *
-	 * @param endpoint : String uri connection
-	 * @param region : Dummy region for Amazon SDK Client
-	 */
-	public AWSSecretManagerConnector(String region, String endpoint) {
-		this.endpoint = Optional.of(URI.create(endpoint));
-		this.region = Region.of(region);
-	}
+    /**
+     * This constructor allows make a connection for a local instance of
+     * AWS Secrets Manager, such as: LocalStack, Docker container, etc.
+     *
+     * @param endpoint : String uri connection
+     * @param region   : Dummy region for Amazon SDK Client
+     */
+    public AWSSecretManagerConnector(String region, String endpoint) {
+        this.endpoint = Optional.of(URI.create(endpoint));
+        this.region = Region.of(region);
+    }
 
-	private void setRegion(String region) {
-		this.region = Region.of(region);
-	}
+    private void setRegion(String region) {
+        this.region = Region.of(region);
+    }
 
-	@Override
-	public String getSecret(String secretName) throws SecretException {
-		SecretsManagerClient client = buildClient();
-		return getSecret(secretName, client);
-	}
+    @Override
+    public String getSecret(String secretName) throws SecretException {
+        SecretsManagerClient client = buildClient();
+        return getSecret(secretName, client);
+    }
 
-	private String getSecret(String secretName, SecretsManagerClient client) throws SecretException  {
-		GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
-		GetSecretValueResponse getSecretValueResult = null;
+    private String getSecret(String secretName, SecretsManagerClient client) throws SecretException {
+        GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
+        GetSecretValueResponse getSecretValueResult = null;
 
-		getSecretValueResult = client.getSecretValue(getSecretValueRequest);
+        getSecretValueResult = client.getSecretValue(getSecretValueRequest);
 
-		if (getSecretValueResult == null) {
-			throw new SecretException("Secret value is null");
-		} else {
-			if (getSecretValueResult.secretString() != null) {
-				return getSecretValueResult.secretString();
-			}
-			throw new SecretException("Secret value is not a String");
-		}
-	}
+        if (getSecretValueResult == null) {
+            throw new SecretException("Secret value is null");
+        } else {
+            if (getSecretValueResult.secretString() != null) {
+                return getSecretValueResult.secretString();
+            }
+            throw new SecretException("Secret value is not a String");
+        }
+    }
 
-	private SecretsManagerClient buildClient() {
-		SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
-		endpoint.ifPresent(clientBuilder::endpointOverride);
-		return clientBuilder.build();
-	}
+    private SecretsManagerClient buildClient() {
+        SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
+        endpoint.ifPresent(clientBuilder::endpointOverride);
+        return clientBuilder.build();
+    }
 
 }
