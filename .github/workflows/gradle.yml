@@ -30,8 +30,7 @@ jobs:
         run: bash <(curl -s https://codecov.io/bash)
       - name: Run sonarqube
         # if: github.event.pull_request.head.repo.fork == false
-        run: ./gradlew sonarqube --stacktrace
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube --stacktrace -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
