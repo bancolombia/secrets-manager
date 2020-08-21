@@ -5,11 +5,7 @@ name: Java CI with Gradle
 
 on:
   push:
-<<<<<<< HEAD
     branches: [master, feature/*]
-=======
-    branches: [ master, feature/* ]
->>>>>>> feature/pipeline
   pull_request:
     branches: [master]
   release:
@@ -19,24 +15,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew clean build
-    - name: Execute jacocoTestReport
-      run: ./gradlew test jacocoTestReport
-    - name: Push codeCoverage to Codecov
-      run: bash <(curl -s https://codecov.io/bash)
-    - name: Run sonarqube
-      # if: github.event.pull_request.head.repo.fork == false
-      run: ./gradlew sonarqube --stacktrace
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      env:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean build
+      - name: Execute jacocoTestReport
+        run: ./gradlew test jacocoTestReport
+      - name: Push codeCoverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
+      - name: Run sonarqube
+        # if: github.event.pull_request.head.repo.fork == false
+        run: ./gradlew sonarqube --stacktrace
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
     if: github.event_name == 'release'
