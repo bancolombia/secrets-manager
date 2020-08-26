@@ -11,31 +11,29 @@ import com.google.gson.GsonBuilder;
  * @since JDK 1.8
  */
 public class GsonUtils {
-	
-	private final Gson gson;
-	
-	private GsonUtils() {
-		gson = new GsonBuilder()
-				.create();
-	}
-    
+
+    private final Gson gson;
+
+    private GsonUtils() {
+        gson = new GsonBuilder()
+                .create();
+    }
+
     public static GsonUtils getInstance() {
         return GsonUtilsHolder.INSTANCE;
     }
-    
+
     private static class GsonUtilsHolder {
         private static final GsonUtils INSTANCE = new GsonUtils();
     }
-    
+
     /**
-     * JSON String to Model or Entity
-     * 
-     * @param data JSON string
+     * @param data  JSON string
      * @param model Entity to convert
+     * @param <T>   object
      * @return T object
      */
     public <T> T stringToModel(String data, Class<T> model) {
-    	return gson.fromJson(data, model);
+        return gson.fromJson(data, model);
     }
-
 }

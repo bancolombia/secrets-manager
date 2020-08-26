@@ -1,18 +1,17 @@
 buildscript {
     repositories {
-	    mavenCentral()
+        mavenCentral()
     }
     ext {
         versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.0.2'
-        groupid =  project.hasProperty('groupid') ? project.property('groupid') : 'com.github.bancolombia'
-        artifactid = group =  project.hasProperty('artifactid') ? project.property('artifactid') : 'secrets-manager'
+        groupid = project.hasProperty('groupid') ? project.property('groupid') : 'com.github.bancolombia'
+        artifactid = group = project.hasProperty('artifactid') ? project.property('artifactid') : 'secrets-manager'
     }
-
 }
 
 plugins {
-	id 'jacoco'
-	id "org.sonarqube" version "2.8"
+    id 'jacoco'
+    id "org.sonarqube" version "3.0"
     id "com.jfrog.bintray" version "1.8.5"
     id 'java-library'
     id 'maven'
@@ -22,31 +21,27 @@ plugins {
 test.onlyIf { false }
 
 group = "$groupid"
-version =  "$versionnum"
+version = "$versionnum"
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
-
 
 dependencies {
-	compile platform('software.amazon.awssdk:bom:2.13.10')
-	compile 'software.amazon.awssdk:secretsmanager'
-	compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-	compileOnly 'org.projectlombok:lombok:1.18.12'
-	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compile platform('software.amazon.awssdk:bom:2.13.10')
+    compile 'software.amazon.awssdk:secretsmanager'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-	testCompileOnly 'org.projectlombok:lombok:1.18.12'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
-	testCompile group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
+    testCompileOnly 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
 
-	testImplementation 'junit:junit:4.12'
-	testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.7'
-	testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
-
+    testImplementation 'junit:junit:4.12'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.7'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
 }
-
-
 
 def pomConfig = {
     licenses {
@@ -62,7 +57,7 @@ def pomConfig = {
             name "Alejandro Betancur Barrientos"
             email "alejobtc@gmail.com"
         }
-	developer {
+        developer {
             id "andmagom"
             name "Andrés Mauricio Gómez P"
             email "andmagom@outlook.com"
@@ -90,34 +85,40 @@ artifacts {
     archives javadocJar
 }
 
-
-
 jar {
     manifest.attributes provider: 'Ingeniería de Software'
-	archivesBaseName = "$artifactid"
+    archivesBaseName = "$artifactid"
 }
 
 sonarqube {
-	properties {
-		property "sonar.projectKey", "bancolombia_secrets-manager"
-		property "sonar.organization", "grupo-bancolombia"
-		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.sources", "src/main/java,build.gradle"
-		property "sonar.java.binaries", "build/classes"
-		property "sonar.junit.reportPaths", "build/test-results/test"
-		property "sonar.java-coveragePlugin", "jacoco"
-		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.test", "src/test/java"
-		property "sonar.exclusions", ".github/**"
-		property "sonar.coverage.exclusions", "src/test/**"
-		property "sonar.sourceEncoding", "UTF-8"
-	}
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.projectKey", "bancolombia_secrets-manager"
+        property "sonar.organization", "grupo-bancolombia"
+        property "sonar.host.url", "https://sonarcloud.io/"
+        property "sonar.sources", "src/main, build.gradle"
+        property "sonar.test", "src/test"
+        property "sonar.java.binaries", "build/classes"
+        property "sonar.junit.reportPaths", "build/test-results/test"
+        property "sonar.java-coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.exclusions", ".github/**"
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports")
 }
 
 jacocoTestReport {
-	reports {
-		xml.enabled true
-	}
+    dependsOn test
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        html.enabled true
+        csv.enabled false
+    }
 }
 
 publishing {
@@ -138,7 +139,6 @@ publishing {
     }
 }
 
-
 bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
@@ -153,7 +153,7 @@ bintray {
         version {
             name = "$versionnum"
             desc = 'First version'
-            released  = new Date()
+            released = new Date()
             vcsTag = "$versionnum"
         }
     }

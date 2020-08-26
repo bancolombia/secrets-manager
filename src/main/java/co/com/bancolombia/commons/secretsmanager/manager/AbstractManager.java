@@ -5,18 +5,18 @@ import co.com.bancolombia.commons.secretsmanager.exceptions.SecretException;
 
 /**
  * Represents an abstract class of a Manager.
- * 
+ *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez
- *         P.</a>
+ * P.</a>
  */
 public abstract class AbstractManager {
-	
-	protected AbstractConnector connector;
 
-	public AbstractManager(AbstractConnector connector) {
-		this.connector = connector;
-	}
+    protected AbstractConnector connector;
 
-	public abstract String getSecret(String secretName) throws SecretException;
-	
+    public AbstractManager(AbstractConnector connector) {
+        this.connector = connector;
+    }
+
+    public abstract String getSecret(String secretName) throws SecretException;
+
 }
