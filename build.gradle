@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     ext {
-        versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.0.2'
+        versionnum = project.hasProperty('versionnum') ? project.property('versionnum') : '1.1.0-PREVIEW'
         groupid = project.hasProperty('groupid') ? project.property('groupid') : 'com.github.bancolombia'
         artifactid = group = project.hasProperty('artifactid') ? project.property('artifactid') : 'secrets-manager'
     }
