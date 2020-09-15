@@ -2,6 +2,7 @@ package co.com.bancolombia.commons.secretsmanager.connector.clients;
 
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
 import co.com.bancolombia.commons.secretsmanager.exceptions.SecretException;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
@@ -66,8 +67,28 @@ public class AWSSecretManagerConnector extends AbstractConnector {
         }
     }
 
+    /**
+     * Default provider chain extended with extra CredentialProvider and
+     * specif order defined.
+     *
+     * @see AwsCredentialsProviderChain
+     */
+    private AwsCredentialsProviderChain getProviderChain() {
+        return AwsCredentialsProviderChain.builder()
+                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
+                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
+                .addCredentialsProvider(ProfileCredentialsProvider.create())
+                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
+                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
+                .build();
+    }
+
     private SecretsManagerClient buildClient() {
-        SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder().region(region);
+        SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder()
+                .credentialsProvider(getProviderChain())
+                .region(region);
+
         endpoint.ifPresent(clientBuilder::endpointOverride);
         return clientBuilder.build();
     }
