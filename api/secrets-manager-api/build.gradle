@@ -10,5 +10,6 @@ repositories {
 }
 
 dependencies {
+    compile 'io.projectreactor:reactor-core'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
