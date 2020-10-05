@@ -1,3 +1,5 @@
+package api;
+
 import exceptions.SecretException;
 
 public interface GenericManager {

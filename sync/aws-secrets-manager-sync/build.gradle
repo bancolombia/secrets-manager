@@ -10,5 +10,10 @@ repositories {
 }
 
 dependencies {
+    compile project(":secrets-manager-api")
+    compile platform('software.amazon.awssdk:bom:2.13.10')
+    compile 'software.amazon.awssdk:secretsmanager'
+    compile'com.google.code.gson:gson:2.8.6'
+    implementation 'software.amazon.awssdk:sts'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

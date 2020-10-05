@@ -31,12 +31,12 @@ File: Secrets.java
 ```java
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
 import co.com.bancolombia.commons.secretsmanager.connector.clients.AWSSecretManagerConnector;
-import co.com.bancolombia.commons.secretsmanager.manager.GenericManager;
+import co.com.bancolombia.commons.secretsmanager.manager.api.GenericManager;
 
 String REGION_SECRET = "us-east-1";
 String NAME_SECRET = "secret-db-dev";
 AbstractConnector connector = new AWSSecretManagerConnector(REGION_SECRET);
-GenericManager manager = new GenericManager(connector);
+api.GenericManager manager = new api.GenericManager(connector);
 
 try {
     DefineYourModel obj = manager.getSecretModel(NAME_SECRET, DefineYourModel.class);
