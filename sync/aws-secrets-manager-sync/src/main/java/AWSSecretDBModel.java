@@ -1,14 +1,4 @@
-package co.com.bancolombia.commons.secretsmanager.connector.models;
-
-import co.com.bancolombia.commons.secretsmanager.manager.GsonUtils;
 import lombok.Data;
-
-/**
- * Represents an DB Secret Model. It lets you to convert a DB Secret of AWS
- * Secrets Manager Service to a object.
- * 
- * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
- */
 
 @Data
 public final class AWSSecretDBModel {
