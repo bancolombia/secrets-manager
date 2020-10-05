@@ -1,6 +1,7 @@
 import exceptions.SecretException;
+import reactor.core.publisher.Mono;
 
 public interface GenericManagerAsync {
-    String getSecret(String secretName) throws SecretException;
-    <T> T getSecret(String secretName, Class<T> cls) throws SecretException;
+    Mono<String> getSecret(String secretName) throws SecretException;
+    <T> Mono<T> getSecret(String secretName, Class<T> cls) throws SecretException;
 }
