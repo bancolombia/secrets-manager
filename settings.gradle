@@ -27,4 +27,5 @@ include ':env-secrets-manager'
 project(':secrets-manager-api').projectDir = file('./api/secrets-manager-api')
 project(':aws-secrets-manager-sync').projectDir = file('./sync/aws-secrets-manager-sync')
 project(':env-secrets-manager').projectDir = file('./sync/env-secrets-manager')
+project(':file-secrets-manager').projectDir = file('./sync/file-secrets-manager')
 
