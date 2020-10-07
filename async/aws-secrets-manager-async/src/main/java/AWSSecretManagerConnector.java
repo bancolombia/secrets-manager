@@ -1,72 +1,70 @@
-import api.GenericManager;
 import api.GenericManagerAsync;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import exceptions.SecretException;
+import reactor.cache.CacheMono;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Signal;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class AWSSecretManagerConnector implements GenericManagerAsync {
 
-    private Region region;
-    private Optional<URI> endpoint;
+    private final AWSSecretsManagerConfig config;
+    private SecretsManagerAsyncClient client;
+    private Cache<String,String> cache;
 
-    public AWSSecretManagerConnector(String region) {
-        setRegion(region);
-        endpoint = Optional.empty();
+    public AWSSecretManagerConnector(AWSSecretsManagerConfig config) {
+        this.config = config;
+        this.client = buildClient();
+        this.cache = initCache();
     }
 
-    /**
-     * This constructor allows make a connection for a local instance of
-     * AWS Secrets Manager, such as: LocalStack, Docker container, etc.
-     *
-     * @param endpoint : String uri connection
-     * @param region   : Dummy region for Amazon SDK Client
-     */
-    public AWSSecretManagerConnector(String region, String endpoint) {
-        this.endpoint = Optional.of(URI.create(endpoint));
-        this.region = Region.of(region);
-    }
 
-    private void setRegion(String region) {
-        this.region = Region.of(region);
+
+    @Override
+    public Mono<String> getSecret(String secretName)  {
+        return CacheMono
+                .lookup(secret -> Mono.justOrEmpty(cache.getIfPresent(secret)).map(Signal::next), secretName)
+                .onCacheMissResume(()->this.getSecretValue(secretName).subscribeOn(Schedulers.elastic()))
+                .andWriteWith(
+                        (key, signal) -> Mono.fromRunnable(
+                                () -> Optional.ofNullable(signal.get())
+                                        .ifPresent(value -> cache.put(key, value))));
     }
 
     @Override
-    public Mono<String> getSecret(String secretName) throws SecretException {
-        SecretsManagerAsyncClient client = buildClient();
-        return getSecret(secretName, client);
-    }
-
-    @Override
-    public <T> Mono<T> getSecret(String secretName, Class<T> cls) throws SecretException {
+    public <T> Mono<T> getSecret(String secretName, Class<T> cls) {
         return this.getSecret(secretName)
                 .flatMap((data->Mono.just(GsonUtils.getInstance().stringToModel(data, cls))))
                 .onErrorMap((e)->new SecretException(e.getMessage()));
     }
 
-    private Mono<String> getSecret(String secretName, SecretsManagerAsyncClient client) throws SecretException {
+
+    private Mono<String> getSecretValue(String secretName){
         GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
-        GetSecretValueResponse getSecretValueResult = null;
-
-
         return Mono.fromFuture(client.getSecretValue(getSecretValueRequest))
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new SecretException("Secret value is null"))))
                 .flatMap(secretResult -> {
                     if (secretResult.secretString() != null) {
-                        return Mono.just(secretResult.secretString());
+                        String result = secretResult.secretString();
+                        System.out.println("Sin cache: "+result);
+                        return Mono.just(result);
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
-                }).cache(Duration.ofSeconds(5));
+                })
+                .doOnError((err)->{
+                    //TODO: Add excepetions and log manager
+                });
     }
 
     /**
@@ -89,10 +87,18 @@ public class AWSSecretManagerConnector implements GenericManagerAsync {
     private SecretsManagerAsyncClient buildClient() {
         SecretsManagerAsyncClientBuilder clientBuilder = SecretsManagerAsyncClient.builder()
                 .credentialsProvider(getProviderChain())
-                .region(region);
-
-        endpoint.ifPresent(clientBuilder::endpointOverride);
+                .region(config.getRegion());
+        if (!config.getEndpoint().equals("")) {
+            clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
+        }
         return clientBuilder.build();
+    }
+
+    private Cache<String,String> initCache(){
+       return Caffeine.newBuilder()
+                .maximumSize(config.getCacheSize())
+                .expireAfterWrite(config.getCacheSeconds(), TimeUnit.SECONDS)
+                .build();
     }
 
 }
