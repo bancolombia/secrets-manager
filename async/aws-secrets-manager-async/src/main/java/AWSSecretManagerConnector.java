@@ -16,12 +16,14 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class AWSSecretManagerConnector implements GenericManagerAsync {
 
     private final AWSSecretsManagerConfig config;
     private SecretsManagerAsyncClient client;
     private Cache<String,String> cache;
+    private Logger logger = Logger.getLogger("AWSSecretManagerConnector");
 
     public AWSSecretManagerConnector(AWSSecretsManagerConfig config) {
         this.config = config;
@@ -57,13 +59,12 @@ public class AWSSecretManagerConnector implements GenericManagerAsync {
                 .flatMap(secretResult -> {
                     if (secretResult.secretString() != null) {
                         String result = secretResult.secretString();
-                        System.out.println("Sin cache: "+result);
                         return Mono.just(result);
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
                 .doOnError((err)->{
-                    //TODO: Add excepetions and log manager
+                    logger.warning("Error retrieving the secret: "+err.getMessage());
                 });
     }
 
