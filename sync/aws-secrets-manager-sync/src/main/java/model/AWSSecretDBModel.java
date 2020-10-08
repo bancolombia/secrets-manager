@@ -1,4 +1,7 @@
+package model;
+
 import lombok.Data;
+import utils.GsonUtils;
 
 @Data
 public final class AWSSecretDBModel {

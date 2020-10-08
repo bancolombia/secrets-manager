@@ -30,12 +30,12 @@ File: Secrets.java
 
 ```java
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
-import co.com.bancolombia.commons.secretsmanager.connector.clients.AWSSecretManagerConnector;
+import co.com.bancolombia.commons.secretsmanager.connector.clients.connector.connector.AWSSecretManagerConnector;
 import co.com.bancolombia.commons.secretsmanager.manager.api.GenericManager;
 
 String REGION_SECRET = "us-east-1";
 String NAME_SECRET = "secret-db-dev";
-AbstractConnector connector = new AWSSecretManagerConnector(REGION_SECRET);
+AbstractConnector connector = new connector.connector.AWSSecretManagerConnector(REGION_SECRET);
 api.GenericManager manager = new api.GenericManager(connector);
 
 try {
@@ -46,13 +46,13 @@ try {
 }
 ```
 
-If you need to use a local instance for `AWSSecretManagerConnector` like localstack or a docker container, replace before connector instance with a new instance and the local endpoint like:
+If you need to use a local instance for `connector.connector.AWSSecretManagerConnector` like localstack or a docker container, replace before connector instance with a new instance and the local endpoint like:
 
 ```
-AbstractConnector connector = new AWSSecretManagerConnector("localhost:4566", REGION_SECRET);
+AbstractConnector connector = new connector.connector.AWSSecretManagerConnector("localhost:4566", REGION_SECRET);
 ```
 
-Remind you have to define your model with the fields you will need. You can find a default AWSSecretDBModel model, it includes default fields to connect a RDS database.
+Remind you have to define your model with the fields you will need. You can find a default model.model.AWSSecretDBModel model, it includes default fields to connect a RDS database.
 
 To convert `JSON` to a `POJO`, it uses `Gson`. If you need use field with custom names, you have to create your model like:
 

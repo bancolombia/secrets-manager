@@ -1,7 +1,8 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,java,gradle,intellij+all,visualstudiocode,eclipse
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,java,gradle,intellij+all,visualstudiocode,eclipse
-
+Main.java
+Secret.java
 ### Eclipse ###
 .metadata
 bin/

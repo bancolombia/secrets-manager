@@ -1,3 +1,5 @@
+package connector;
+
 import api.GenericManager;
 import exceptions.SecretException;
 import software.amazon.awssdk.auth.credentials.*;
@@ -6,6 +8,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import utils.GsonUtils;
 
 import java.net.URI;
 import java.util.Optional;
@@ -54,10 +57,7 @@ public class AWSSecretManagerConnector implements GenericManager {
 
     private String getSecret(String secretName, SecretsManagerClient client) throws SecretException {
         GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
-        GetSecretValueResponse getSecretValueResult = null;
-
-        getSecretValueResult = client.getSecretValue(getSecretValueRequest);
-
+        GetSecretValueResponse getSecretValueResult = client.getSecretValue(getSecretValueRequest);
         if (getSecretValueResult == null) {
             throw new SecretException("Secret value is null");
         } else {

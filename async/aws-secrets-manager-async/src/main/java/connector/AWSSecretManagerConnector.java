@@ -1,17 +1,19 @@
+package connector;
+
 import api.GenericManagerAsync;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import config.AWSSecretsManagerConfig;
 import exceptions.SecretException;
 import reactor.cache.CacheMono;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Signal;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.auth.credentials.*;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import utils.GsonUtils;
 
 import java.net.URI;
 import java.util.Optional;
@@ -23,7 +25,7 @@ public class AWSSecretManagerConnector implements GenericManagerAsync {
     private final AWSSecretsManagerConfig config;
     private SecretsManagerAsyncClient client;
     private Cache<String,String> cache;
-    private Logger logger = Logger.getLogger("AWSSecretManagerConnector");
+    private Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
 
     public AWSSecretManagerConnector(AWSSecretsManagerConfig config) {
         this.config = config;
