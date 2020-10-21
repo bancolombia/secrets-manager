@@ -1,10 +1,7 @@
-
-
-
 plugins {
 
     id 'jacoco'
-    id "org.sonarqube" version "3.0"
+    id "org.sonarqube"
     id "com.jfrog.bintray" version "1.8.5"
     id 'java-library'
     id 'maven'
@@ -67,21 +64,12 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allJava
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier "javadoc"
-    from javadoc.destinationDir
-}
-
 artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
 }
 
-jar {
-    manifest.attributes provider: 'Ingeniería de Software'
-    archivesBaseName = "$artifactid"
-}
 
 sonarqube {
     properties {
