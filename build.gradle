@@ -11,7 +11,8 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "2.6"
+    id "org.sonarqube" version "3.0"
+
 }
 
 apply from: './main.gradle'

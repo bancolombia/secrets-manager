@@ -1,9 +1,13 @@
 plugins {
-    id 'java'
+    id 'jacoco'
+    id "org.sonarqube"
+    id "com.jfrog.bintray" version "1.8.5"
+    id 'java-library'
+    id 'maven'
+    id 'maven-publish'
 }
 
 group 'com.github.bancolombia'
-version '1.1.1'
 
 repositories {
     mavenCentral()
@@ -13,3 +17,119 @@ dependencies {
     implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT License"
+            url "http://www.opensource.org/licenses/mit-license.php"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer{
+            id "dericop"
+            name "Daniel Rico Posada"
+            email "danielrico.posada@gmail.com"
+        }
+        developer {
+            id "alejobtc"
+            name "Alejandro Betancur Barrientos"
+            email "alejobtc@gmail.com"
+        }
+        developer {
+            id "andmagom"
+            name "Andrés Mauricio Gómez P"
+            email "andmagom@outlook.com"
+        }
+    }
+
+    scm {
+        url "git@github.com:bancolombia/secrets-manager.git"
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+sonarqube {
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.projectKey", "bancolombia_secrets-manager"
+        property "sonar.organization", "grupo-bancolombia"
+        property "sonar.host.url", "https://sonarcloud.io/"
+        property "sonar.sources", "src/main, build.gradle"
+        property "sonar.test", "src/test"
+        property "sonar.java.binaries", "build/classes"
+        property "sonar.junit.reportPaths", "build/test-results/test"
+        property "sonar.java-coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.exclusions", ".github/**"
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports")
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        html.enabled true
+        csv.enabled false
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "com.github.bancolombia"
+            artifactId = "secrets-manager-api"
+            version = project.property('version')
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Secrets Manager')
+                root.appendNode('name', 'secrets-manager')
+                root.appendNode('url', 'https://site_for_lib.tld')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenJava']
+    publish = true
+    configurations = ['archives']
+    pkg {
+        repo = 'Maven'
+        name = 'secrets-manager'
+        licenses = ['MIT']
+        vcsUrl = 'git@github.com:bancolombia/secrets-manager.git'
+        version {
+            name = project.property('version')
+            desc = 'First version'
+            released = new Date()
+            vcsTag = project.property('version')
+        }
+    }
+}
+
+

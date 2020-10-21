@@ -29,4 +29,3 @@ project(':aws-secrets-manager-sync').projectDir = file('./sync/aws-secrets-manag
 project(':env-secrets-manager').projectDir = file('./sync/env-secrets-manager')
 project(':file-secrets-manager').projectDir = file('./sync/file-secrets-manager')
 project(':aws-secrets-manager-async').projectDir = file('./async/aws-secrets-manager-async')
-
