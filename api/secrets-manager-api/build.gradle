@@ -1,6 +1,4 @@
 plugins {
-    id 'jacoco'
-    id "org.sonarqube"
     id "com.jfrog.bintray" version "1.8.5"
     id 'java-library'
     id 'maven'
@@ -50,61 +48,25 @@ def pomConfig = {
     }
 }
 
-task sourceJar(type: Jar) {
-    classifier "sources"
-    from sourceSets.main.allJava
-}
-
-
-artifacts {
-    archives jar
-    archives sourceJar
-    archives javadocJar
-}
-
-sonarqube {
-    properties {
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.projectKey", "bancolombia_secrets-manager"
-        property "sonar.organization", "grupo-bancolombia"
-        property "sonar.host.url", "https://sonarcloud.io/"
-        property "sonar.sources", "src/main, build.gradle"
-        property "sonar.test", "src/test"
-        property "sonar.java.binaries", "build/classes"
-        property "sonar.junit.reportPaths", "build/test-results/test"
-        property "sonar.java-coveragePlugin", "jacoco"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.exclusions", ".github/**"
-    }
-}
-
-jacoco {
-    toolVersion = "0.8.5"
-    reportsDir = file("$buildDir/reports")
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-        html.enabled true
-        csv.enabled false
-    }
-}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
             groupId = "com.github.bancolombia"
             artifactId = "secrets-manager-api"
             version = project.property('version')
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'Secrets Manager')
-                root.appendNode('name', 'secrets-manager')
-                root.appendNode('url', 'https://site_for_lib.tld')
+                root.appendNode('description', 'Secrets Manager API')
+                root.appendNode('name', 'secrets-manager-api')
+                root.appendNode('url', 'https://github.com/bancolombia/secrets-manager')
                 root.children().last() + pomConfig
             }
         }
