@@ -58,6 +58,7 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+            mavenBom "software.amazon.awssdk:bom:2.13.10"
         }
     }
 }

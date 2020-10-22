@@ -69,12 +69,12 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             groupId = "com.github.bancolombia"
-            artifactId = "secrets-manager-file"
+            artifactId = "file-secrets-manager"
             version = project.property('version')
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Secrets Manager')
-                root.appendNode('name', 'secrets-manager-file')
+                root.appendNode('name', 'file-secrets-manager')
                 root.appendNode('url', 'https://site_for_lib.tld')
                 root.children().last() + pomConfig
             }
