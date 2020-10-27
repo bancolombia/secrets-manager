@@ -17,6 +17,7 @@ subprojects {
     }
 
     artifacts {
+        archives jar
         archives sourcesJar
         archives javadocJar
     }
@@ -44,15 +45,6 @@ subprojects {
     }
 
 
-    configurations.all {
-
-        resolutionStrategy.eachDependency {DependencyResolveDetails details ->
-            if (details.requested.group == 'io.projectreactor.rabbitmq'){
-                details.useVersion("${reactorRabbitVersion}")
-                details.because('Upgrade')
-            }
-        }
-    }
 
 
     dependencyManagement {
