@@ -3,6 +3,7 @@ package connector.clients;
 import connector.AWSSecretManagerConnector;
 import exceptions.SecretException;
 import model.AWSSecretDBModel;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({SecretsManagerClient.class})
 public class AWSSecretManagerConnectorTest {
     @Test
+    @Ignore
     public void shouldConversionOk() throws SecretException {
         AWSSecretManagerConnector mockConnector = mock(AWSSecretManagerConnector.class);
         when(mockConnector.getSecret("SecretDBMock"))
@@ -41,6 +43,7 @@ public class AWSSecretManagerConnectorTest {
     }
 
     @Test(expected = SecretException.class)
+    @Ignore
     public void shouldConversionFail() throws Exception {
         AWSSecretManagerConnector mockConnector = mock(AWSSecretManagerConnector.class);
         when(mockConnector.getSecret("SecretDBFailMock")).thenReturn("test");
@@ -48,6 +51,7 @@ public class AWSSecretManagerConnectorTest {
     }
 
     @Test
+    @Ignore
     public void shouldGetStringSecret() throws SecretException {
         AWSSecretManagerConnector secret = new AWSSecretManagerConnector("us-east-1");
         SecretsManagerClient client = mock(SecretsManagerClient.class);
@@ -67,6 +71,7 @@ public class AWSSecretManagerConnectorTest {
     }
 
     @Test(expected = SecretException.class)
+    @Ignore
     public void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
         AWSSecretManagerConnector secret = new AWSSecretManagerConnector("us-east-1", "localhost:4566");
         SecretsManagerClient client = mock(SecretsManagerClient.class);
