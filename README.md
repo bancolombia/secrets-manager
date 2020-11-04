@@ -8,7 +8,8 @@
 
 This library will help you to decouple your application of your secrets provider. It supports the following conectors to get secrets:
 
-- AWS Secrets Manager
+- AWS Secrets Manager Sync 
+- AWS Secrets Manager Async (Non blocking flows)
 - File Secrets (E.g Kubernetes Secrets )
 - Environment System Secrets (E.g Kubernetes Secrets )
 
@@ -16,17 +17,13 @@ This library will help you to decouple your application of your secrets provider
 
 SecretsManager require [Java] v8+
 
-Add the following dependency to your build.gradle file.
 
-File: build.gradle
-
+## Secrets Manager Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:secrets-manager:1.0.2'
+    implementation 'com.github.bancolombia:aws-secrets-manager-sync:2.0.0'
 }
 ```
-
-File: Secrets.java
 
 ```java
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
@@ -34,25 +31,18 @@ import co.com.bancolombia.commons.secretsmanager.connector.clients.connector.con
 import co.com.bancolombia.commons.secretsmanager.manager.api.GenericManager;
 
 String REGION_SECRET = "us-east-1";
-String NAME_SECRET = "secret-db-dev";
-AbstractConnector connector = new connector.connector.AWSSecretManagerConnector(REGION_SECRET);
-api.GenericManager manager = new api.GenericManager(connector);
+String NAME_SECRET = "secretName";
+GenericManager connector = new AWSSecretManagerConnector(REGION_SECRET);
 
 try {
-    DefineYourModel obj = manager.getSecretModel(NAME_SECRET, DefineYourModel.class);
-    // Use your model to get Secrets
+    DefineYourModel secret = connector.getSecret(NAME_SECRET, DefineYourModel.class);
+    ...
 } catch(Exception e) {
-    // Catch error...
+    ...
 }
 ```
 
-If you need to use a local instance for `connector.connector.AWSSecretManagerConnector` like localstack or a docker container, replace before connector instance with a new instance and the local endpoint like:
-
-```
-AbstractConnector connector = new connector.connector.AWSSecretManagerConnector("localhost:4566", REGION_SECRET);
-```
-
-Remind you have to define your model with the fields you will need. You can find a default model.model.AWSSecretDBModel model, it includes default fields to connect a RDS database.
+Remind you have to define your model with the fields you will need. You can find a default AWSSecretDBModel model, it includes default fields to connect a RDS database.
 
 To convert `JSON` to a `POJO`, it uses `Gson`. If you need use field with custom names, you have to create your model like:
 
@@ -74,8 +64,77 @@ public class DefineYourModel {
 }
 ```
 
-## How can I contribute ?
+## Secrets Manager Async (Compatible with Reactor)
+```java
+dependencies {
+    // Reactor Core is required! 
+    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
+    // secrets-manager-async     
+    implementation 'com.github.bancolombia:aws-secrets-manager-async:2.0.0'
+}
+```
 
+Define your configuration:
+```java
+// Default Config
+AWSSecretsManagerConfig config = AWSSecretsManagerConfig.builder().build();
+
+// Customized config
+AWSSecretsManagerConfig config = AWSSecretsManagerConfig.builder()
+				.region(Region.US_EAST_1) //define your region
+				.cacheSeconds(600)  //define your cache time
+				.cacheSize(300) //define your cache size
+				.endpoint("http://localhost:4566") // Override the enpoint 
+				.build();
+
+```
+
+##### Configurations 
+
+You can pass the following variables to AWSSecretsManagerConfig:
+
+- **region**: AWS Region that you are using, **"us-east-1"** (North virginia) is the default value.
+- **cacheSeconds**: During this time the secret requested to AWS Secrets Manager will be saved in memory. 
+The next requests to the same secret will be resolved from the cache. The default value is 0 (no cache).  
+- **cacheSize**: The maximum amount of secrets you want to save in cache. The default value is 0. 
+- **endpoint**: The AWS endpoint is the default value but you can override it if you want to test locally with localStack
+or others tools. 
+
+Create the connector:
+```java
+AWSSecretManagerConnector connector = new AWSSecretManagerConnector(config);
+```
+
+Get the secret in String:
+```java
+connector.getSecret("secretName")
+    .doOnNext(System.out::println);
+    // ... develop your async flow
+```
+Get the secret deserialized:
+```java
+connector.getSecret("pruebaLibreria", DefineYourModel.class)
+    .doOnNext(secret -> {
+       //... develop your async flow
+    })
+```
+
+## Environment System Secrets
+```java
+dependencies {
+    implementation 'com.github.bancolombia:env-secrets-manager:2.0.0'
+}
+```
+
+## File Secrets
+```java
+dependencies {
+    implementation 'com.github.bancolombia:file-secrets-manager:2.0.0'
+}
+```
+
+## How can I contribute ?
+                                  
 Great !!:
 
 - Clone this repo
