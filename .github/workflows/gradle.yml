@@ -31,6 +31,8 @@ jobs:
         run: ./gradlew clean build
       - name: Execute jacocoTestReport
         run: ./gradlew test generateMergedReport
+      - name: copy the reportTest to codeCoverage
+        run: cp build/reports/jacoco/generateMergedReport/generateMergedReport.xml jacoco.xml || echo "Code coverage failed"
       - name: Push codeCoverage to Codecov
         run: bash <(curl -s https://codecov.io/bash)
       #- name: Run sonarqube
