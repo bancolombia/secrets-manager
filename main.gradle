@@ -1,3 +1,26 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+
+        compileOnly 'org.projectlombok:lombok:1.18.16'
+        annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+        testCompileOnly 'org.projectlombok:lombok:1.18.16'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+        testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
+        testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+        testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    }
+}
+
 subprojects {
     apply plugin: "java"
     apply plugin: "jacoco"
@@ -24,30 +47,24 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/milestone" }
-    }
-
-    dependencies {
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'io.projectreactor:reactor-test'
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        testAnnotationProcessor 'org.projectlombok:lombok'
-        testCompileOnly 'org.projectlombok:lombok'
-    }
-
-
-    jacocoTestReport {
-        reports {
-            xml.enabled true
-        }
     }
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
             mavenBom "software.amazon.awssdk:bom:2.13.10"
         }
+    }
+}
+
+task generateMergedReport(type: JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories.setFrom files(subprojects.sourceSets.main.output)
+    executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
     }
 }

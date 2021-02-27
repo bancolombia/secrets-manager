@@ -5,12 +5,16 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [master]
+    branches:
+    - master
+    - 'features/*'
   pull_request:
     branches:
       - master
   release:
-    types: [published]
+    types:
+    - published
+    - prereleased
 
 jobs:
   build:
@@ -26,7 +30,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
       - name: Execute jacocoTestReport
-        run: ./gradlew test jacocoTestReport
+        run: ./gradlew test generateMergedReport
       - name: Push codeCoverage to Codecov
         run: bash <(curl -s https://codecov.io/bash)
       #- name: Run sonarqube

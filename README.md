@@ -21,13 +21,13 @@ SecretsManager require [Java] v8+
 ## Secrets Manager Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-secrets-manager-sync:2.0.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.0.0'
 }
 ```
 
 ```java
 import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
-import co.com.bancolombia.commons.secretsmanager.connector.clients.connector.connector.AWSSecretManagerConnector;
+import co.com.bancolombia.commons.secretsmanager.connector.AWSSecretManagerConnector;
 import co.com.bancolombia.commons.secretsmanager.manager.api.GenericManager;
 
 String REGION_SECRET = "us-east-1";
@@ -70,7 +70,7 @@ dependencies {
     // Reactor Core is required! 
     implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
     // secrets-manager-async     
-    implementation 'com.github.bancolombia:aws-secrets-manager-async:2.0.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.0.0'
 }
 ```
 
@@ -102,7 +102,7 @@ or others tools.
 
 Create the connector:
 ```java
-AWSSecretManagerConnector connector = new AWSSecretManagerConnector(config);
+AWSSecretManagerConnectorAsync connector = new AWSSecretManagerConnectorAsync(config);
 ```
 
 Get the secret in String:
@@ -122,14 +122,14 @@ connector.getSecret("pruebaLibreria", DefineYourModel.class)
 ## Environment System Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:env-secrets-manager:2.0.0'
+    implementation 'com.github.bancolombia:env-secrets-manager:3.0.0'
 }
 ```
 
 ## File Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:file-secrets-manager:2.0.0'
+    implementation 'com.github.bancolombia:file-secrets-manager:3.0.0'
 }
 ```
 
