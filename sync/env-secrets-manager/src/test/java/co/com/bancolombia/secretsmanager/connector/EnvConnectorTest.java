@@ -29,4 +29,9 @@ public class EnvConnectorTest {
         String secret = connector.getSecret("PATH");
         assertNotNull(secret);
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void getSecretModel() {
+        connector.getSecret("mySecret", Class.class);
+    }
 }

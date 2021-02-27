@@ -7,14 +7,12 @@ on:
   push:
     branches:
     - master
-    - 'features/*'
   pull_request:
     branches:
       - master
   release:
     types:
     - published
-    - prereleased
 
 jobs:
   build:
