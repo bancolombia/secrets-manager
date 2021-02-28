@@ -13,7 +13,7 @@ import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import co.com.bancolombia.secretsmanager.utils.GsonUtils;
+import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 
 import java.net.URI;
 import java.util.Optional;

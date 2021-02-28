@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.utils;
+package co.com.bancolombia.secretsmanager.commons.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

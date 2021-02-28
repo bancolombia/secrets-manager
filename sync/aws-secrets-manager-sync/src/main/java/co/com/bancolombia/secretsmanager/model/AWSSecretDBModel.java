@@ -1,7 +1,7 @@
 package co.com.bancolombia.secretsmanager.model;
 
+import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 import lombok.Data;
-import co.com.bancolombia.secretsmanager.utils.GsonUtils;
 
 @Data
 public final class AWSSecretDBModel {
