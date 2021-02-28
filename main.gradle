@@ -1,6 +1,7 @@
 allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
+    apply plugin: 'org.sonarqube'
 
     repositories {
         mavenCentral()
@@ -19,11 +20,28 @@ allprojects {
         testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
         testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     }
+
+    sonarqube {
+        properties {
+            property "sonar.sourceEncoding", "UTF-8"
+            property "sonar.projectKey", "bancolombia_secrets-manager"
+            property "sonar.organization", "grupo-bancolombia"
+            property "sonar.host.url", "https://sonarcloud.io/"
+            property "sonar.sources", "src/main"
+            property "sonar.test", "src/test"
+            //property "sonar.modules", "api"
+            //property "sonar.sources", "async/aws-secrets-manager-async/src/main"
+            //property "sonar.test", "async/aws-secrets-manager-async/src/test"
+            property "sonar.java.binaries", "${rootDir}/build/classes"
+            property "sonar.junit.reportPaths", "${rootDir}/build/test-results/test"
+            property "sonar.java-coveragePlugin", "jacoco"
+            property "sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/build/reports/jacoco/generateMergedReport/generateMergedReport.xml"
+            property "sonar.exclusions", ".github/**"
+        }
+    }
 }
 
 subprojects {
-    apply plugin: "java"
-    apply plugin: "jacoco"
     apply plugin: 'io.spring.dependency-management'
 
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -66,21 +84,5 @@ task generateMergedReport(type: JacocoReport) {
         xml.enabled true
         csv.enabled false
         html.enabled true
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.projectKey", "bancolombia_secrets-manager"
-        property "sonar.organization", "grupo-bancolombia"
-        property "sonar.host.url", "https://sonarcloud.io/"
-        property "sonar.sources", "async/aws-secrets-manager-async/src/main, sync/aws-secrets-manager-sync/src/main, sync/env-secrets-manager/src/main, sync/file-secrets-manager/src/main, api/secrets-manager-api/src, build.gradle"
-        property "sonar.test", "async/aws-secrets-manager-async/src/test, sync/aws-secrets-manager-sync/src/test, sync/env-secrets-manager/src/test, sync/file-secrets-manager/src/test"
-        property "sonar.java.binaries", "build/classes"
-        property "sonar.junit.reportPaths", "build/test-results/test"
-        property "sonar.java-coveragePlugin", "jacoco"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/generateMergedReport/generateMergedReport.xml"
-        property "sonar.exclusions", ".github/**"
     }
 }
