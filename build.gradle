@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsVersion")
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayVersion}")
     }
 }
 

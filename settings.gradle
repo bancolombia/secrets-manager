@@ -22,7 +22,7 @@ FileTree buildFiles = fileTree(rootDir) {
     include '**/*.gradle', '/*.gradle'
     exclude 'main.gradle', 'build', '**/gradle', '**/settings.gradle', 'buildSrc', '/build.gradle', '.*', 'out'
     exclude '**/grails3'
-    if(excludes) {
+    if (excludes) {
         exclude excludes
     }
 }
@@ -31,7 +31,7 @@ String rootDirPath = rootDir.absolutePath + File.separator
 buildFiles.each { File buildFile ->
 
     boolean isDefaultName = 'build.gradle'.equals(buildFile.name)
-    if(isDefaultName) {
+    if (isDefaultName) {
         String buildFilePath = buildFile.parentFile.absolutePath
         String projectPath = buildFilePath.replace(rootDirPath, '').replace(File.separator, ':')
         include projectPath
