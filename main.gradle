@@ -29,9 +29,6 @@ allprojects {
             property "sonar.host.url", "https://sonarcloud.io/"
             property "sonar.sources", "src/main"
             property "sonar.test", "src/test"
-            //property "sonar.modules", "api"
-            //property "sonar.sources", "async/aws-secrets-manager-async/src/main"
-            //property "sonar.test", "async/aws-secrets-manager-async/src/test"
             property "sonar.java.binaries", "build/classes"
             property "sonar.junit.reportPaths", "build/test-results/test"
             property "sonar.java-coveragePlugin", "jacoco"
@@ -43,6 +40,47 @@ allprojects {
 
 subprojects {
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.jfrog.bintray"
+    apply plugin: 'java-library'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    ext {
+        pomConfig = {
+            licenses {
+                license {
+                    name "MIT License"
+                    url "https://opensource.org/licenses/mit-license.php"
+                    distribution "repo"
+                }
+            }
+            developers {
+                developer {
+                    id "dericop"
+                    name "Daniel Rico Posada"
+                    email "danielrico.posada@gmail.com"
+                }
+                developer {
+                    id "alejobtc"
+                    name "Alejandro Betancur Barrientos"
+                    email "alejobtc@gmail.com"
+                }
+                developer {
+                    id "andmagom"
+                    name "Andres Mauricio Gomez P"
+                    email "andmagom@outlook.com"
+                }
+            }
+
+            scm {
+                url "git@github.com:bancolombia/secrets-manager.git"
+            }
+        }
+        groupId = 'com.github.bancolombia'
+    }
+
+    group groupId
 
     sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -51,7 +89,6 @@ subprojects {
         from sourceSets.main.allSource
     }
 
-    javadoc.failOnError = false
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
@@ -70,6 +107,66 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom "software.amazon.awssdk:bom:2.13.10"
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                artifact sourcesJar
+                artifact javadocJar
+
+                groupId = groupId
+                artifactId = artifactId
+                version = project.property('version')
+
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', artifactDescription)
+                    root.appendNode('name', artifactId)
+                    root.appendNode('url', 'https://github.com/bancolombia/secrets-manager')
+                    root.children().last() + pomConfig
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = 'OSSRH'
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username = System.getenv('MAVEN_USERNAME')
+                    password = System.getenv('MAVEN_PASSWORD')
+                }
+            }
+        }
+    }
+
+    if (project.hasProperty('signing.keyId')) {
+        signing {
+            sign publishing.publications.mavenJava
+        }
+    }
+
+    // this task will be deprecated
+    bintray {
+        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+        publications = ['mavenJava']
+        publish = true
+        configurations = ['archives']
+        pkg {
+            repo = 'Maven'
+            name = 'secrets-manager'
+            licenses = ['MIT']
+            vcsUrl = 'git@github.com:bancolombia/secrets-manager.git'
+            version {
+                name = project.property('version')
+                desc = 'First version'
+                released = new Date()
+                vcsTag = project.property('version')
+            }
         }
     }
 }
