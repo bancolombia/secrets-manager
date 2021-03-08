@@ -26,9 +26,8 @@ dependencies {
 ```
 
 ```java
-import co.com.bancolombia.commons.secretsmanager.connector.AbstractConnector;
-import co.com.bancolombia.commons.secretsmanager.connector.AWSSecretManagerConnector;
-import co.com.bancolombia.commons.secretsmanager.manager.api.GenericManager;
+import co.com.bancolombia.secretsmanager.api.GenericManager;
+import co.com.bancolombia.secretsmanager.connector.AWSSecretManagerConnector;
 
 String REGION_SECRET = "us-east-1";
 String NAME_SECRET = "secretName";

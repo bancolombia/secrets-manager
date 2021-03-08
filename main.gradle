@@ -94,20 +94,8 @@ subprojects {
         from javadoc.destinationDir
     }
 
-    artifacts {
-        archives jar
-        archives sourcesJar
-        archives javadocJar
-    }
-
     repositories {
         mavenCentral()
-    }
-
-    dependencyManagement {
-        imports {
-            mavenBom "software.amazon.awssdk:bom:2.13.10"
-        }
     }
 
     publishing {
@@ -141,6 +129,10 @@ subprojects {
                 }
             }
         }
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
     }
 
     if (project.hasProperty('signing.keyId')) {
