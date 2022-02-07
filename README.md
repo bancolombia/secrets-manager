@@ -3,6 +3,7 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=bancolombia_secrets-manager&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=bancolombia_secrets-manager)
 [![codecov](https://codecov.io/gh/bancolombia/secrets-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/bancolombia/secrets-manager)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/bancolombia/secrets-manager/blob/master/LICENSE)
+[![Scorecards supply-chain security](https://github.com/bancolombia/secrets-manager/actions/workflows/scorecards-analysis.yml/badge.svg)](https://github.com/bancolombia/secrets-manager/actions/workflows/scorecards-analysis.yml)
 
 # SecretsManager - Bancolombia
 
