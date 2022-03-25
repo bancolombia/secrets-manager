@@ -1,8 +1,8 @@
-package co.com.bancolombia.parameterstore.connector;
+package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.commons.utils.AWSUtils;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
@@ -18,13 +18,13 @@ public class AWSParameterStoreConnector implements GenericManager {
     private Optional<URI> endpoint;
 
     public AWSParameterStoreConnector(String region) {
-        AWSUtils.setRegion(region);
+        setRegion(region);
         endpoint = Optional.empty();
     }
 
     /**
      * This constructor allows make a connection for a local instance of
-     * AWS Secrets Manager, such as: LocalStack, Docker container, etc.
+     * AWS Parameter Store, such as: LocalStack, Docker container, etc.
      *
      * @param endpoint : String uri connection
      * @param region   : Dummy region for Amazon SDK Client
@@ -42,7 +42,7 @@ public class AWSParameterStoreConnector implements GenericManager {
     }
 
     @Override
-    public <T> T getSecret(String secretName, Class<T> cls) throws SecretException {
+    public <T> T getSecret(String secretName, Class<T> cls) {
         throw new UnsupportedOperationException("Serialization doesn't apply for parameter store connector");
     }
 
@@ -61,11 +61,32 @@ public class AWSParameterStoreConnector implements GenericManager {
 
     private SsmClient buildClient() {
         SsmClientBuilder clientBuilder = SsmClient.builder()
-                .credentialsProvider(AWSUtils.getProviderChain())
+                .credentialsProvider(getProviderChain())
                 .region(region);
 
         endpoint.ifPresent(clientBuilder::endpointOverride);
         return clientBuilder.build();
+    }
+
+    /**
+     * Default provider chain extended with extra CredentialProvider and
+     * specif order defined.
+     *
+     * @see AwsCredentialsProviderChain
+     */
+    private AwsCredentialsProviderChain getProviderChain() {
+        return AwsCredentialsProviderChain.builder()
+                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
+                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
+                .addCredentialsProvider(ProfileCredentialsProvider.create())
+                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
+                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
+                .build();
+    }
+
+    private  Region setRegion(String region) {
+        return Region.of(region);
     }
 
 }

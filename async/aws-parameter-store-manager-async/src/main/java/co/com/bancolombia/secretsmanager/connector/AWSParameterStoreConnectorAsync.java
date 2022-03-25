@@ -1,0 +1,94 @@
+package co.com.bancolombia.secretsmanager.connector;
+
+import co.com.bancolombia.secretsmanager.api.GenericManagerAsync;
+import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+import co.com.bancolombia.secretsmanager.config.AWSParameterStoreConfig;
+import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import reactor.core.publisher.Mono;
+import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.services.ssm.SsmAsyncClient;
+import software.amazon.awssdk.services.ssm.SsmAsyncClientBuilder;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+
+public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
+
+    private final AWSParameterStoreConfig config;
+    private SsmAsyncClient client;
+    private AsyncCache<String, String> cache;
+    private Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
+
+    public AWSParameterStoreConnectorAsync(AWSParameterStoreConfig config) {
+        this.config = config;
+        this.client = buildClient();
+        this.cache = initCache();
+    }
+
+    @Override
+    public Mono<String> getSecret(String secretName) {
+        return Mono.fromFuture(cache.get(secretName,
+                (s, executor) -> getSecretValue(secretName)
+                        .toFuture().toCompletableFuture()));
+    }
+
+    @Override
+    public <T> Mono<T> getSecret(String secretName, Class<T> cls) {
+        return Mono.error(new UnsupportedOperationException("Serialization doesn't apply for parameter store connector"));
+    }
+
+    private Mono<String> getSecretValue(String secretName) {
+        GetParameterRequest getParameterRequest = GetParameterRequest.builder().name(secretName).build();
+        return Mono.fromFuture(client.getParameter(getParameterRequest))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new SecretException("Secret value is null"))))
+                .flatMap(secretResult -> {
+                    if (secretResult.parameter().value() != null) {
+                        String result = secretResult.parameter().value();
+                        return Mono.just(result);
+                    }
+                    return Mono.error(new SecretException("Secret value is not a String"));
+                })
+                .doOnError((err) -> {
+                    logger.warning("Error retrieving the secret: " + err.getMessage());
+                });
+    }
+
+    private SsmAsyncClient buildClient() {
+        SsmAsyncClientBuilder clientBuilder = SsmAsyncClient.builder()
+                .credentialsProvider(getProviderChain())
+                .region(config.getRegion());
+        if (!config.getEndpoint().equals("")) {
+            clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
+        }
+        return clientBuilder.build();
+    }
+
+    private AsyncCache<String, String> initCache() {
+        return Caffeine.newBuilder()
+                .maximumSize(config.getCacheSize())
+                .expireAfterWrite(config.getCacheSeconds(), TimeUnit.SECONDS)
+                .buildAsync();
+    }
+
+    /**
+     * Default provider chain extended with extra CredentialProvider and
+     * specif order defined.
+     *
+     * @see AwsCredentialsProviderChain
+     */
+    private AwsCredentialsProviderChain getProviderChain() {
+        return AwsCredentialsProviderChain.builder()
+                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
+                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
+                .addCredentialsProvider(ProfileCredentialsProvider.create())
+                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
+                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
+                .build();
+    }
+
+}
