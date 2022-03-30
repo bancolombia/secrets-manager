@@ -72,7 +72,7 @@ dependencies {
     // Reactor Core is required! 
     implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
     // secrets-manager-async     
-    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.0.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.0.1'
 }
 ```
 
@@ -151,7 +151,7 @@ try {
 dependencies {
     // Reactor Core is required! 
     implementation 'io.projectreactor:reactor-core:3.4.16'
-    // secrets-manager-async     
+    // parameter-store-manager-async     
     implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.0.1'
 }
 ```
@@ -197,14 +197,14 @@ connector.getSecret("parameterName")
 ## Environment System Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:env-secrets-manager:3.0.0'
+    implementation 'com.github.bancolombia:env-secrets-manager:3.0.1'
 }
 ```
 
 ## File Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:file-secrets-manager:3.0.0'
+    implementation 'com.github.bancolombia:file-secrets-manager:3.0.1'
 }
 ```
 
