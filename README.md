@@ -11,6 +11,8 @@ This library will help you to decouple your application of your secrets provider
 
 - AWS Secrets Manager Sync 
 - AWS Secrets Manager Async (Non blocking flows)
+- AWS Parameter Store Sync
+- AWS Parameter Store Async (Non blocking flows)
 - File Secrets (E.g Kubernetes Secrets )
 - Environment System Secrets (E.g Kubernetes Secrets )
 
@@ -22,7 +24,7 @@ SecretsManager require [Java] v8+
 ## Secrets Manager Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.0.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.0.1'
 }
 ```
 
@@ -117,6 +119,79 @@ connector.getSecret("pruebaLibreria", DefineYourModel.class)
     .doOnNext(secret -> {
        //... develop your async flow
     })
+```
+
+## Parameter Store Sync
+```java
+dependencies {
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-sync:3.0.1'
+}
+```
+
+```java
+import co.com.bancolombia.secretsmanager.api.GenericManager;
+import co.com.bancolombia.secretsmanager.connector.AWSParameterStoreConnector;
+
+String REGION_PARAMETER = "us-east-1";
+String NAME_PARAMETER = "parameterName";
+GenericManager connector = new AWSParameterStoreConnector(REGION_PARAMETER);
+
+try {
+    String parameter = connector.getSecret(NAME_PARAMETER);
+    ...
+} catch(SecretException e) {
+    ...
+}
+```
+
+```
+
+## Parameter Store Async (Compatible with Reactor)
+```java
+dependencies {
+    // Reactor Core is required! 
+    implementation 'io.projectreactor:reactor-core:3.4.16'
+    // secrets-manager-async     
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.0.1'
+}
+```
+
+Define your configuration:
+```java
+// Default Config
+AWSParameterStoreConfig config = AWSParameterStoreConfig.builder().build();
+
+// Customized config
+AWSParameterStoreConfig config = AWSParameterStoreConfig.builder()
+				.region(Region.US_EAST_1) //define your region
+				.cacheSeconds(600)  //define your cache time
+				.cacheSize(300) //define your cache size
+				.endpoint("http://localhost:4566") // Override the enpoint 
+				.build();
+
+```
+
+##### Configurations
+
+You can pass the following variables to AWSParameterStoreConfig:
+
+- **region**: AWS Region that you are using, **"us-east-1"** (North virginia) is the default value.
+- **cacheSeconds**: During this time the secret requested to AWS Secrets Manager will be saved in memory.
+  The next requests to the same secret will be resolved from the cache. The default value is 0 (no cache).
+- **cacheSize**: The maximum amount of secrets you want to save in cache. The default value is 0.
+- **endpoint**: The AWS endpoint is the default value but you can override it if you want to test locally with localStack
+  or others tools.
+
+Create the connector:
+```java
+AWSParameterStoreConnectorAsync connector = new AWSParameterStoreConnectorAsync(config);
+```
+
+Get the secret in String:
+```java
+connector.getSecret("parameterName")
+    .doOnNext(System.out::println);
+    // ... develop your async flow
 ```
 
 ## Environment System Secrets
