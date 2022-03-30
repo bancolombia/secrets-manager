@@ -144,8 +144,6 @@ try {
 }
 ```
 
-```
-
 ## Parameter Store Async (Compatible with Reactor)
 ```java
 dependencies {
