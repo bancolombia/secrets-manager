@@ -1,7 +1,6 @@
 dependencies {
-    compile project(":secrets-manager-api")
-    compile 'software.amazon.awssdk:secretsmanager'
-    compile 'com.google.code.gson:gson:2.8.6'
+    implementation project(":secrets-manager-api")
+    implementation 'software.amazon.awssdk:ssm'
     implementation 'software.amazon.awssdk:sts'
 }
 
@@ -12,6 +11,6 @@ dependencyManagement {
 }
 
 ext {
-    artifactId = 'aws-secrets-manager-sync'
+    artifactId = 'aws-parameter-store-manager-sync'
     artifactDescription = 'Secrets Manager'
 }

@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
-  #  if: github.event_name == 'release'
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -53,12 +53,6 @@ jobs:
         run: chmod +x gradlew
       - name: Setup Javadoc
         run: ./gradlew install
-      #      - name: Publish Library
-      #        run: ./gradlew bintrayUpload
-      #        env:
-      #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-      #          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
       - name: Prepare gpg key
         run: |
           echo "${{secrets.SIGNING_KEY_FILE}}" | base64 -d > ~/.gradle/secring.gpg
