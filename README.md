@@ -24,7 +24,7 @@ SecretsManager require [Java] v8+
 ## Secrets Manager Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.0.1'
+    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.1.0'
 }
 ```
 
@@ -72,7 +72,7 @@ dependencies {
     // Reactor Core is required! 
     implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
     // secrets-manager-async     
-    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.0.1'
+    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.1.0'
 }
 ```
 
@@ -124,7 +124,7 @@ connector.getSecret("pruebaLibreria", DefineYourModel.class)
 ## Parameter Store Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-parameter-store-manager-sync:3.0.1'
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-sync:3.1.0'
 }
 ```
 
@@ -150,7 +150,7 @@ dependencies {
     // Reactor Core is required! 
     implementation 'io.projectreactor:reactor-core:3.4.16'
     // parameter-store-manager-async     
-    implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.0.1'
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.1.0'
 }
 ```
 
@@ -195,14 +195,14 @@ connector.getSecret("parameterName")
 ## Environment System Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:env-secrets-manager:3.0.1'
+    implementation 'com.github.bancolombia:env-secrets-manager:3.1.0'
 }
 ```
 
 ## File Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:file-secrets-manager:3.0.1'
+    implementation 'com.github.bancolombia:file-secrets-manager:3.1.0'
 }
 ```
 
