@@ -54,6 +54,7 @@ jobs:
         run: chmod +x gradlew
       - name: Prepare gpg key
         run: |
+          mkdir -p ~/.gradle/
           echo "${{secrets.SIGNING_KEY_FILE}}" | base64 -d > ~/.gradle/secring.gpg
       - name: Publish Libraries
         run: ./gradlew publishToSonatype -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }} -Psigning.password=${{ secrets.SIGNING_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
