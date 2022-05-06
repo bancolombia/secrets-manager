@@ -52,10 +52,11 @@ jobs:
           java-version: 1.8
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-#      - name: Setup Javadoc
-#        run: ./gradlew install
+      - name: Prepare gpg key
+        run: |
+          echo "${{secrets.SIGNING_KEY_FILE}}" | base64 -d > ~/.gradle/secring.gpg
       - name: Publish Libraries
-        run: ./gradlew -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }} publishToSonatype
+        run: ./gradlew publishToSonatype -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }} -Psigning.password=${{ secrets.SIGNING_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
         #closeAndReleaseSonatypeStagingRepository --info
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
