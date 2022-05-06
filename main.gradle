@@ -8,17 +8,16 @@ allprojects {
     }
 
     dependencies {
-        testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+        compileOnly 'org.projectlombok:lombok:1.18.22'
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-        compileOnly 'org.projectlombok:lombok:1.18.16'
-        annotationProcessor 'org.projectlombok:lombok:1.18.16'
+        testCompileOnly 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.16'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
-
-        testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
-        testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
-        testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+        testImplementation 'org.mockito:mockito-core:3.12.4'
+        testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+        testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+        testImplementation 'junit:junit:4.13.2'
     }
 
     sonarqube {
@@ -40,9 +39,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: "com.jfrog.bintray"
     apply plugin: 'java-library'
-    apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
@@ -84,15 +81,17 @@ subprojects {
 
     sourceCompatibility = JavaVersion.VERSION_1_8
 
-    task sourcesJar(type: Jar) {
-        classifier "sources"
-        from sourceSets.main.allJava
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
+    javadoc {
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption('html5', true)
+        }
     }
+    javadoc.failOnError = false
 
     repositories {
         mavenCentral()
@@ -102,9 +101,6 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-
-                artifact sourcesJar
-                artifact javadocJar
 
                 groupId = groupId
                 artifactId = artifactId
@@ -140,27 +136,6 @@ subprojects {
             sign publishing.publications.mavenJava
         }
     }
-
-    // this task will be deprecated
-    bintray {
-        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-        publications = ['mavenJava']
-        publish = true
-        configurations = ['archives']
-        pkg {
-            repo = 'Maven'
-            name = 'secrets-manager'
-            licenses = ['MIT']
-            vcsUrl = 'git@github.com:bancolombia/secrets-manager.git'
-            version {
-                name = project.property('version')
-                desc = 'First version'
-                released = new Date()
-                vcsTag = project.property('version')
-            }
-        }
-    }
 }
 
 task generateMergedReport(type: JacocoReport) {
@@ -174,4 +149,8 @@ task generateMergedReport(type: JacocoReport) {
         csv.enabled false
         html.enabled true
     }
+}
+
+tasks.named('wrapper') {
+    gradleVersion = '7.4.2'
 }

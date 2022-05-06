@@ -70,7 +70,7 @@ public class DefineYourModel {
 ```java
 dependencies {
     // Reactor Core is required! 
-    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.3.10.RELEASE'
+    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
     // secrets-manager-async     
     implementation 'com.github.bancolombia:aws-secrets-manager-async:3.1.0'
 }
@@ -148,7 +148,7 @@ try {
 ```java
 dependencies {
     // Reactor Core is required! 
-    implementation 'io.projectreactor:reactor-core:3.4.16'
+    implementation 'io.projectreactor:reactor-core:3.4.17'
     // parameter-store-manager-async     
     implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.1.0'
 }
