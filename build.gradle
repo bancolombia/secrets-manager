@@ -5,7 +5,7 @@ buildscript {
         maven { url "https://repo.spring.io/snapshot" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
         classpath("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsVersion")
         classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayVersion}")
     }
@@ -13,6 +13,7 @@ buildscript {
 
 plugins {
     id "org.sonarqube" version "3.0"
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
 apply from: './main.gradle'
