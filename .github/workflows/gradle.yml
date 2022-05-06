@@ -55,7 +55,7 @@ jobs:
 #      - name: Setup Javadoc
 #        run: ./gradlew install
       - name: Publish Libraries
-        run: ./gradlew publishToSonatype
+        run: ./gradlew -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }} publishToSonatype
         #closeAndReleaseSonatypeStagingRepository --info
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
