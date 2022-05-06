@@ -37,6 +37,12 @@ allprojects {
     }
 }
 
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
 subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java-library'
@@ -112,16 +118,6 @@ subprojects {
                     root.appendNode('name', artifactId)
                     root.appendNode('url', 'https://github.com/bancolombia/secrets-manager')
                     root.children().last() + pomConfig
-                }
-            }
-        }
-        repositories {
-            maven {
-                name = 'OSSRH'
-                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-                credentials {
-                    username = System.getenv('MAVEN_USERNAME')
-                    password = System.getenv('MAVEN_PASSWORD')
                 }
             }
         }
