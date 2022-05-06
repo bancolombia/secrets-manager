@@ -18,6 +18,7 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'any'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -51,8 +52,8 @@ jobs:
           java-version: 1.8
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Setup Javadoc
-        run: ./gradlew install
+#      - name: Setup Javadoc
+#        run: ./gradlew install
       - name: Publish Libraries
         run: ./gradlew publishToSonatype
         #closeAndReleaseSonatypeStagingRepository --info
