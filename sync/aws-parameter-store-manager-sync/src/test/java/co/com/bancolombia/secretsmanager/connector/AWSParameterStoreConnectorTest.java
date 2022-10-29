@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.ssm.SsmClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.Parameter;
+import software.amazon.awssdk.services.ssm.model.ParameterNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.when;
 public class AWSParameterStoreConnectorTest {
 
     private AWSParameterStoreConnector connector;
+    private SsmClient clientMock;
 
     @Test
     public void shouldGetStringSecretWithEndpoint() throws SecretException {
@@ -54,14 +56,24 @@ public class AWSParameterStoreConnectorTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void shouldThrowExceptionWhenNoApplySerialization() throws SecretException {
+    public void shouldThrowExceptionWhenNoApplySerialization() throws UnsupportedOperationException {
         connector = new AWSParameterStoreConnector("us-east-1");
-        connector.getSecret("secretName",Class.class);
+        connector.getSecret("secretName", Class.class);
+    }
+
+    @Test(expected = SecretException.class)
+    public void shouldThrowExceptionWhenParameterNotFound() throws SecretException {
+        prepareClient(null, false);
+        connector = new AWSParameterStoreConnector("us-east-1");
+
+        when(clientMock.getParameter(any(GetParameterRequest.class))).thenThrow(ParameterNotFoundException.class);
+
+        connector.getSecret("secretName");
     }
 
     private void prepareClient(String data,boolean secretValue){
         SsmClientBuilder clientBuilderMock = Mockito.mock(SsmClientBuilder.class);
-        SsmClient clientMock = Mockito.mock(SsmClient.class);
+        clientMock = Mockito.mock(SsmClient.class);
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
