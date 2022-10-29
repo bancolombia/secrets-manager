@@ -8,19 +8,19 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Represents an AWS Connector Test. It lets you to test AWS Secrets Manager Connector Object.
+ * Represents an AWS Connector Test. It lets you test AWS Secrets Manager Connector Object.
  *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
  */
@@ -28,10 +28,13 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({SecretsManagerClient.class})
 public class AWSSecretManagerConnectorTest {
 
+    private SecretsManagerClient clientMock;
+    private GetSecretValueResponse responseMock;
+
     private void prepareClient(String data) {
         SecretsManagerClientBuilder clientBuilderMock = Mockito.mock(SecretsManagerClientBuilder.class);
-        SecretsManagerClient clientMock = Mockito.mock(SecretsManagerClient.class);
-        GetSecretValueResponse responseMock = GetSecretValueResponse.builder()
+        clientMock = Mockito.mock(SecretsManagerClient.class);
+        responseMock = GetSecretValueResponse.builder()
                 .secretString(data)
                 .build();
 
@@ -69,7 +72,7 @@ public class AWSSecretManagerConnectorTest {
     public void shouldConversionFail() throws Exception {
         prepareClient("test");
         AWSSecretManagerConnector connector = new AWSSecretManagerConnector("us-east-1");
-        AWSSecretDBModel model = connector.getSecret("SecretDBFailMock", AWSSecretDBModel.class);
+        connector.getSecret("SecretDBFailMock", AWSSecretDBModel.class);
     }
 
     @Test
@@ -87,4 +90,37 @@ public class AWSSecretManagerConnectorTest {
         AWSSecretManagerConnector connector = new AWSSecretManagerConnector("us-east-1");
         connector.getSecret("secretName");
     }
+
+    @Test(expected = SecretException.class)
+    public void shouldThrowExceptionWhenSecretResultIsNull() throws SecretException {
+        prepareClient(null);
+        AWSSecretManagerConnector connector = new AWSSecretManagerConnector("us-east-1");
+
+        responseMock = null;
+        when(clientMock.getSecretValue(any(GetSecretValueRequest.class))).thenReturn(responseMock);
+
+        connector.getSecret("secretName");
+    }
+
+    @Test(expected = SecretException.class)
+    public void shouldThrowExceptionWhenSecretIsNonExistent() throws SecretException {
+        prepareClient(null);
+        AWSSecretManagerConnector connector = new AWSSecretManagerConnector("us-east-1");
+
+        when(clientMock.getSecretValue(any(GetSecretValueRequest.class))).thenThrow(ResourceNotFoundException.class);
+
+        connector.getSecret("secretName");
+    }
+
+    @Test(expected = SecretException.class)
+    public void shouldThrowExceptionWhenSecretManagerFails() throws SecretException {
+        prepareClient(null);
+        AWSSecretManagerConnector connector = new AWSSecretManagerConnector("us-east-1",
+                "http://localhost:4566");
+
+        when(clientMock.getSecretValue(any(GetSecretValueRequest.class))).thenThrow(SdkClientException.class);
+
+        connector.getSecret("secretName");
+    }
+
 }
