@@ -4,7 +4,6 @@ import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
 import lombok.Data;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -28,22 +27,20 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(SecretsManagerAsyncClient.class)
 public class AWSSecretManagerConnectorAsyncTest {
 
-    private static AWSSecretsManagerConfig config;
     private AWSSecretManagerConnectorAsync connector;
     private SecretsManagerAsyncClient clientMock;
 
-    @BeforeClass
-    public static void init() {
+    private AWSSecretsManagerConfig config;
+
+    @Before
+    public void setUp() {
         config = AWSSecretsManagerConfig.builder()
                 .cacheSeconds(5)
                 .cacheSize(10)
                 .region(Region.US_EAST_1)
                 .endpoint("http://localhost.com")
                 .build();
-    }
 
-    @Before
-    public void setUp() {
         prepareClient();
     }
 
