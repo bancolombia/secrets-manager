@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import software.amazon.awssdk.services.secretsmanager.model.InvalidParameterException;
 import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException;
 
 import java.util.concurrent.CompletableFuture;
@@ -89,17 +90,29 @@ public class AWSSecretManagerConnectorAsyncTest {
 
     @Test
     public void shouldThrowExceptionWhenSecretIsNonExistent() {
-        ResourceNotFoundException a = ResourceNotFoundException.builder()
-                .message("Secrets Manager can't find the specified secret not found.")
-                .build();
-
         when(clientMock.getSecretValue(getSecretValueRequest("secretName")))
-                .thenThrow(a);
+                .thenThrow(ResourceNotFoundException.builder()
+                        .message("Secrets Manager can't find the specified secret not found.")
+                        .build());
 
         StepVerifier.create(connector.getSecret("secretName"))
                 .expectErrorMatches(err ->
                         err instanceof SecretException
                         && err.getMessage().equals("Secrets Manager can't find the specified secret not found."))
+                .verify();
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenRequestIsInvalid() {
+        when(clientMock.getSecretValue(getSecretValueRequest("secretNameF$1l")))
+                .thenThrow(InvalidParameterException.builder()
+                        .message("The parameter name or value is invalid.")
+                        .build());
+
+        StepVerifier.create(connector.getSecret("secretNameF$1l"))
+                .expectErrorMatches(err ->
+                        err instanceof SecretException
+                        && err.getMessage().equals("The parameter name or value is invalid."))
                 .verify();
     }
 
