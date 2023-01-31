@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.api;;
+package co.com.bancolombia.secretsmanager.api;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import reactor.core.publisher.Mono;

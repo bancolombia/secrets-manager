@@ -2,6 +2,7 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManagerAsync;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -9,11 +10,16 @@ import reactor.cache.CacheMono;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Signal;
 import reactor.core.scheduler.Schedulers;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
+import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 
 import java.net.URI;
 import java.util.Optional;
@@ -24,7 +30,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
 
     private final AWSSecretsManagerConfig config;
     private SecretsManagerAsyncClient client;
-    private Cache<String,String> cache;
+    private Cache<String, String> cache;
     private Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
 
     public AWSSecretManagerConnectorAsync(AWSSecretsManagerConfig config) {
@@ -33,29 +39,32 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
         this.cache = initCache();
     }
 
-
-
     @Override
-    public Mono<String> getSecret(String secretName)  {
+    public Mono<String> getSecret(String secretName) {
         return CacheMono
                 .lookup(secret -> Mono.justOrEmpty(cache.getIfPresent(secret)).map(Signal::next), secretName)
-                .onCacheMissResume(()->this.getSecretValue(secretName).subscribeOn(Schedulers.elastic()))
+                .onCacheMissResume(() -> this.getSecretValue(secretName).subscribeOn(Schedulers.elastic()))
                 .andWriteWith(
                         (key, signal) -> Mono.fromRunnable(
                                 () -> Optional.ofNullable(signal.get())
-                                        .ifPresent(value -> cache.put(key, value))));
+                                        .ifPresent(value -> cache.put(key, value))))
+                .onErrorMap((err) -> new SecretException(err.getMessage()))
+                .doOnError((err) -> {
+                    logger.warning("Error retrieving the secret: " + err.getMessage());
+                });
     }
 
     @Override
     public <T> Mono<T> getSecret(String secretName, Class<T> cls) {
         return this.getSecret(secretName)
-                .flatMap((data->Mono.just(GsonUtils.getInstance().stringToModel(data, cls))))
-                .onErrorMap((e)->new SecretException(e.getMessage()));
+                .flatMap((data -> Mono.just(GsonUtils.getInstance().stringToModel(data, cls))))
+                .onErrorMap((e) -> new SecretException(e.getMessage()));
     }
 
 
-    private Mono<String> getSecretValue(String secretName){
+    private Mono<String> getSecretValue(String secretName) {
         GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
+
         return Mono.fromFuture(client.getSecretValue(getSecretValueRequest))
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new SecretException("Secret value is null"))))
                 .flatMap(secretResult -> {
@@ -65,8 +74,8 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
-                .doOnError((err)->{
-                    logger.warning("Error retrieving the secret: "+err.getMessage());
+                .doOnError((err) -> {
+                    logger.warning("Error retrieving the secret: " + err.getMessage());
                 });
     }
 
@@ -97,8 +106,8 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
         return clientBuilder.build();
     }
 
-    private Cache<String,String> initCache(){
-       return Caffeine.newBuilder()
+    private Cache<String, String> initCache() {
+        return Caffeine.newBuilder()
                 .maximumSize(config.getCacheSize())
                 .expireAfterWrite(config.getCacheSeconds(), TimeUnit.SECONDS)
                 .build();

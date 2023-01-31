@@ -2,7 +2,13 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
+import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
@@ -48,7 +54,14 @@ public class AWSParameterStoreConnector implements GenericManager {
 
     private String getSecret(String secretName, SsmClient client) throws SecretException {
         GetParameterRequest getParameterRequest = GetParameterRequest.builder().name(secretName).build();
-        GetParameterResponse getParameterResponse = client.getParameter(getParameterRequest);
+        GetParameterResponse getParameterResponse;
+
+        try {
+            getParameterResponse = client.getParameter(getParameterRequest);
+        } catch (Exception e) {
+            throw new SecretException(e.getMessage());
+        }
+
         if (getParameterResponse == null) {
             throw new SecretException("Secret value is null");
         } else {
