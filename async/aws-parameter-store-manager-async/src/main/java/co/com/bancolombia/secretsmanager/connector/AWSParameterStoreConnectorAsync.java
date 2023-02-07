@@ -6,7 +6,13 @@ import co.com.bancolombia.secretsmanager.config.AWSParameterStoreConfig;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
+import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
 import software.amazon.awssdk.services.ssm.SsmAsyncClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -19,21 +25,26 @@ import java.util.logging.Logger;
 public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
 
     private final AWSParameterStoreConfig config;
-    private SsmAsyncClient client;
-    private AsyncCache<String, String> cache;
-    private Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
+    private final SsmAsyncClient client;
+    private final AsyncCache<String, String> cache;
+    private final Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
 
     public AWSParameterStoreConnectorAsync(AWSParameterStoreConfig config) {
         this.config = config;
-        this.client = buildClient();
+        this.client = buildClient(SsmAsyncClient.builder());
+        this.cache = initCache();
+    }
+
+    public AWSParameterStoreConnectorAsync(AWSParameterStoreConfig config, SsmAsyncClientBuilder builder) {
+        this.config = config;
+        this.client = buildClient(builder);
         this.cache = initCache();
     }
 
     @Override
     public Mono<String> getSecret(String secretName) {
         return Mono.fromFuture(cache.get(secretName,
-                (s, executor) -> getSecretValue(secretName)
-                        .toFuture().toCompletableFuture()));
+                (s, executor) -> getSecretValue(secretName).toFuture().toCompletableFuture()));
     }
 
     @Override
@@ -57,14 +68,13 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                 });
     }
 
-    private SsmAsyncClient buildClient() {
-        SsmAsyncClientBuilder clientBuilder = SsmAsyncClient.builder()
-                .credentialsProvider(getProviderChain())
-                .region(config.getRegion());
-        if (!config.getEndpoint().equals("")) {
-            clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
+    private SsmAsyncClient buildClient(SsmAsyncClientBuilder builder) {
+        builder.credentialsProvider(getProviderChain());
+        builder.region(config.getRegion());
+        if (!"".equals(config.getEndpoint())) {
+            builder.endpointOverride(URI.create(config.getEndpoint()));
         }
-        return clientBuilder.build();
+        return builder.build();
     }
 
     private AsyncCache<String, String> initCache() {

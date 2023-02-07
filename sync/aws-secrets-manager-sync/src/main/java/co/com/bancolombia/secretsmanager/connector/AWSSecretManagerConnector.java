@@ -21,12 +21,10 @@ import java.util.Optional;
 
 public class AWSSecretManagerConnector implements GenericManager {
 
-    private Region region;
-    private Optional<URI> endpoint;
+    private final SecretsManagerClient client;
 
     public AWSSecretManagerConnector(String region) {
-        setRegion(region);
-        endpoint = Optional.empty();
+        this.client = buildClient(SecretsManagerClient.builder(), region, Optional.empty());
     }
 
     /**
@@ -37,18 +35,22 @@ public class AWSSecretManagerConnector implements GenericManager {
      * @param region   : Dummy region for Amazon SDK Client
      */
     public AWSSecretManagerConnector(String region, String endpoint) {
-        this.endpoint = Optional.of(URI.create(endpoint));
-        this.region = Region.of(region);
+        this.client = buildClient(SecretsManagerClient.builder(), region, Optional.of(URI.create(endpoint)));
     }
 
-    private void setRegion(String region) {
-        this.region = Region.of(region);
+    /**
+     * for testing
+     *
+     * @param region
+     * @param builder
+     */
+    public AWSSecretManagerConnector(String region, SecretsManagerClientBuilder builder) {
+        this.client = buildClient(builder, region, Optional.empty());
     }
 
     @Override
     public String getSecret(String secretName) throws SecretException {
-        SecretsManagerClient client = buildClient();
-        return getSecret(secretName, client);
+        return getSecretInternal(secretName);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class AWSSecretManagerConnector implements GenericManager {
         }
     }
 
-    private String getSecret(String secretName, SecretsManagerClient client) throws SecretException {
+    private String getSecretInternal(String secretName) throws SecretException {
         GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder().secretId(secretName).build();
         GetSecretValueResponse getSecretValueResult;
 
@@ -98,13 +100,12 @@ public class AWSSecretManagerConnector implements GenericManager {
                 .build();
     }
 
-    private SecretsManagerClient buildClient() {
-        SecretsManagerClientBuilder clientBuilder = SecretsManagerClient.builder()
+    private SecretsManagerClient buildClient(SecretsManagerClientBuilder builder, String region, Optional<URI> endpoint) {
+        SecretsManagerClient.builder()
                 .credentialsProvider(getProviderChain())
-                .region(region);
-
-        endpoint.ifPresent(clientBuilder::endpointOverride);
-        return clientBuilder.build();
+                .region(Region.of(region));
+        endpoint.ifPresent(builder::endpointOverride);
+        return builder.build();
     }
 
 }
