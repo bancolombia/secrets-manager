@@ -18,13 +18,19 @@ This library will help you to decouple your application of your secrets provider
 
 # How to use
 
-SecretsManager require [Java] v8+
+SecretsManager compatibility
+
+| Version | Spring Boot | AWS Bom  | Java |
+|---------|-------------|----------|------|
+| 4.0.0   | 3.0.2       | 2.19.31  | 11+  |
+| 3.2.0   | 2.7.6       | 2.18.39  | 8+   |
+| 3.1.1   | 2.6.7       | 2.17.184 | 8+   |
 
 
 ## Secrets Manager Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-secrets-manager-sync:3.1.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-sync:<version-here>'
 }
 ```
 
@@ -72,7 +78,7 @@ dependencies {
     // Reactor Core is required! 
     implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
     // secrets-manager-async     
-    implementation 'com.github.bancolombia:aws-secrets-manager-async:3.1.0'
+    implementation 'com.github.bancolombia:aws-secrets-manager-async:<version-here>'
 }
 ```
 
@@ -124,7 +130,7 @@ connector.getSecret("pruebaLibreria", DefineYourModel.class)
 ## Parameter Store Sync
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:aws-parameter-store-manager-sync:3.1.0'
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-sync:<version-here>'
 }
 ```
 
@@ -150,7 +156,7 @@ dependencies {
     // Reactor Core is required! 
     implementation 'io.projectreactor:reactor-core:3.4.17'
     // parameter-store-manager-async     
-    implementation 'com.github.bancolombia:aws-parameter-store-manager-async:3.1.0'
+    implementation 'com.github.bancolombia:aws-parameter-store-manager-async:<version-here>'
 }
 ```
 
@@ -195,14 +201,14 @@ connector.getSecret("parameterName")
 ## Environment System Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:env-secrets-manager:3.1.0'
+    implementation 'com.github.bancolombia:env-secrets-manager:<version-here>'
 }
 ```
 
 ## File Secrets
 ```java
 dependencies {
-    implementation 'com.github.bancolombia:file-secrets-manager:3.1.0'
+    implementation 'com.github.bancolombia:file-secrets-manager:<version-here>'
 }
 ```
 
