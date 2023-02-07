@@ -88,6 +88,7 @@ subprojects {
     group groupId
 
     sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_17
 
     java {
         withJavadocJar()
@@ -150,5 +151,5 @@ task generateMergedReport(type: JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '7.4.2'
+    gradleVersion = '7.6'
 }

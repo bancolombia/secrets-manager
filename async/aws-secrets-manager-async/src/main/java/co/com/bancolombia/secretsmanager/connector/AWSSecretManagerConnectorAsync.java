@@ -43,7 +43,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
     public Mono<String> getSecret(String secretName) {
         return CacheMono
                 .lookup(secret -> Mono.justOrEmpty(cache.getIfPresent(secret)).map(Signal::next), secretName)
-                .onCacheMissResume(() -> this.getSecretValue(secretName).subscribeOn(Schedulers.elastic()))
+                .onCacheMissResume(() -> this.getSecretValue(secretName).subscribeOn(Schedulers.boundedElastic()))
                 .andWriteWith(
                         (key, signal) -> Mono.fromRunnable(
                                 () -> Optional.ofNullable(signal.get())
