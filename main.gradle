@@ -17,8 +17,6 @@ allprojects {
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
         testImplementation 'org.mockito:mockito-core:3.12.4'
-        testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
-        testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
         testImplementation 'junit:junit:4.13.2'
     }
 
@@ -88,6 +86,7 @@ subprojects {
     group groupId
 
     sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_17
 
     java {
         withJavadocJar()
@@ -150,5 +149,5 @@ task generateMergedReport(type: JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '7.4.2'
+    gradleVersion = '7.6'
 }

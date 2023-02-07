@@ -3,10 +3,8 @@ package co.com.bancolombia.secretsmanager.connector;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -18,73 +16,72 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SsmClient.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AWSParameterStoreConnectorTest {
+    @Mock
+    private SsmClient client;
+    @Mock
+    private SsmClientBuilder builder;
 
     private AWSParameterStoreConnector connector;
-    private SsmClient clientMock;
 
     @Test
     public void shouldGetStringSecretWithEndpoint() throws SecretException {
-        connector = new AWSParameterStoreConnector("us-east-1","endpoint");
-        prepareClient("secretValue",true);
+        prepareClient("secretValue", true);
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
         String secretValue = connector.getSecret("secretName");
-        assertEquals(secretValue,"secretValue");
+        assertEquals(secretValue, "secretValue");
     }
 
     @Test
     public void shouldGetStringSecret() throws SecretException {
-        connector = new AWSParameterStoreConnector("us-east-1");
-        prepareClient("secretValue",true);
+        prepareClient("secretValue", true);
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
         String secretValue = connector.getSecret("secretName");
-        assertEquals(secretValue,"secretValue");
+        assertEquals(secretValue, "secretValue");
     }
 
     @Test(expected = SecretException.class)
     public void shouldThrowExceptionWhenSecretValueNull() throws SecretException {
-        prepareClient("secretValue",false);
-        connector = new AWSParameterStoreConnector("us-east-1");
+        prepareClient("secretValue", false);
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
         connector.getSecret("secretName");
     }
 
     @Test(expected = SecretException.class)
     public void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
-        prepareClient(null,true);
-        connector = new AWSParameterStoreConnector("us-east-1");
+        prepareClient(null, true);
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
         connector.getSecret("secretName");
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowExceptionWhenNoApplySerialization() throws UnsupportedOperationException {
-        connector = new AWSParameterStoreConnector("us-east-1");
+        prepareClient("secretValue", true);
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
         connector.getSecret("secretName", Class.class);
     }
 
     @Test(expected = SecretException.class)
     public void shouldThrowExceptionWhenParameterNotFound() throws SecretException {
         prepareClient(null, false);
-        connector = new AWSParameterStoreConnector("us-east-1");
+        connector = new AWSParameterStoreConnector("us-east-1", builder);
 
-        when(clientMock.getParameter(any(GetParameterRequest.class))).thenThrow(ParameterNotFoundException.class);
+        when(client.getParameter(any(GetParameterRequest.class))).thenThrow(ParameterNotFoundException.class);
 
         connector.getSecret("secretName");
     }
 
-    private void prepareClient(String data,boolean secretValue){
-        SsmClientBuilder clientBuilderMock = Mockito.mock(SsmClientBuilder.class);
-        clientMock = Mockito.mock(SsmClient.class);
+    private void prepareClient(String data, boolean secretValue) {
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
 
-        PowerMockito.mockStatic(SsmClient.class);
-        when(SsmClient.builder()).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.credentialsProvider(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.region(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.build()).thenReturn(clientMock);
+        when(builder.credentialsProvider(any())).thenReturn(builder);
+        when(builder.region(any())).thenReturn(builder);
+        when(builder.build()).thenReturn(client);
 
-        when(clientMock.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
+        when(client.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
     }
 
 }

@@ -19,13 +19,10 @@ import java.net.URI;
 import java.util.Optional;
 
 public class AWSParameterStoreConnector implements GenericManager {
-
-    private Region region;
-    private Optional<URI> endpoint;
+    private final SsmClient client;
 
     public AWSParameterStoreConnector(String region) {
-        setRegion(region);
-        endpoint = Optional.empty();
+        this.client = buildClient(SsmClient.builder(), region, Optional.empty());
     }
 
     /**
@@ -36,15 +33,22 @@ public class AWSParameterStoreConnector implements GenericManager {
      * @param region   : Dummy region for Amazon SDK Client
      */
     public AWSParameterStoreConnector(String region, String endpoint) {
-        this.endpoint = Optional.of(URI.create(endpoint));
-        this.region = Region.of(region);
+        this.client = buildClient(SsmClient.builder(), region, Optional.of(URI.create(endpoint)));
+    }
+
+    /**
+     * for testing
+     *
+     * @param region
+     * @param builder
+     */
+    public AWSParameterStoreConnector(String region, SsmClientBuilder builder) {
+        this.client = buildClient(builder, region, Optional.empty());
     }
 
     @Override
     public String getSecret(String secretName) throws SecretException {
-        SsmClient ssmClient = buildClient();
-        return getSecret(secretName, ssmClient);
-
+        return getSecretInternal(secretName);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class AWSParameterStoreConnector implements GenericManager {
         throw new UnsupportedOperationException("Serialization doesn't apply for parameter store connector");
     }
 
-    private String getSecret(String secretName, SsmClient client) throws SecretException {
+    private String getSecretInternal(String secretName) throws SecretException {
         GetParameterRequest getParameterRequest = GetParameterRequest.builder().name(secretName).build();
         GetParameterResponse getParameterResponse;
 
@@ -72,13 +76,11 @@ public class AWSParameterStoreConnector implements GenericManager {
         }
     }
 
-    private SsmClient buildClient() {
-        SsmClientBuilder clientBuilder = SsmClient.builder()
-                .credentialsProvider(getProviderChain())
-                .region(region);
-
-        endpoint.ifPresent(clientBuilder::endpointOverride);
-        return clientBuilder.build();
+    private SsmClient buildClient(SsmClientBuilder builder, String region, Optional<URI> endpoint) {
+        builder.credentialsProvider(getProviderChain());
+        builder.region(Region.of(region));
+        endpoint.ifPresent(builder::endpointOverride);
+        return builder.build();
     }
 
     /**
@@ -96,10 +98,6 @@ public class AWSParameterStoreConnector implements GenericManager {
                 .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
                 .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
                 .build();
-    }
-
-    private  Region setRegion(String region) {
-        return Region.of(region);
     }
 
 }

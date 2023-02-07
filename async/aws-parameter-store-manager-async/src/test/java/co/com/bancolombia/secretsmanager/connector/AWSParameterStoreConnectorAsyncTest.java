@@ -5,10 +5,8 @@ import co.com.bancolombia.secretsmanager.config.AWSParameterStoreConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
@@ -22,10 +20,12 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SsmAsyncClient.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AWSParameterStoreConnectorAsyncTest {
-
+    @Mock
+    private SsmAsyncClient client;
+    @Mock
+    private SsmAsyncClientBuilder builder;
     private AWSParameterStoreConnectorAsync connector;
     private AWSParameterStoreConfig config;
 
@@ -71,22 +71,18 @@ public class AWSParameterStoreConnectorAsyncTest {
     }
 
     private void prepareClient(String data, boolean secretValue) {
-        SsmAsyncClientBuilder clientBuilderMock = Mockito.mock(SsmAsyncClientBuilder.class);
-        SsmAsyncClient clientMock = Mockito.mock(SsmAsyncClient.class);
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
         CompletableFuture<GetParameterResponse> completableFuture = new CompletableFuture<>();
         completableFuture.complete(responseMock);
 
-        PowerMockito.mockStatic(SsmAsyncClient.class);
-        when(SsmAsyncClient.builder()).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.credentialsProvider(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.region(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.build()).thenReturn(clientMock);
+        when(builder.credentialsProvider(any())).thenReturn(builder);
+        when(builder.region(any())).thenReturn(builder);
+        when(builder.build()).thenReturn(client);
 
-        when(clientMock.getParameter(any(GetParameterRequest.class))).thenReturn(completableFuture);
-        connector = new AWSParameterStoreConnectorAsync(config);
+        when(client.getParameter(any(GetParameterRequest.class))).thenReturn(completableFuture);
+        connector = new AWSParameterStoreConnectorAsync(config, builder);
     }
 
 }

@@ -6,10 +6,8 @@ import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
@@ -21,33 +19,33 @@ import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundExce
 
 import java.util.concurrent.CompletableFuture;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SecretsManagerAsyncClient.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AWSSecretManagerConnectorAsyncTest {
-
+    @Mock
+    private SecretsManagerAsyncClient client;
+    @Mock
+    private SecretsManagerAsyncClientBuilder clientBuilder;
     private AWSSecretManagerConnectorAsync connector;
-    private SecretsManagerAsyncClient clientMock;
-
-    private AWSSecretsManagerConfig config;
 
     @Before
     public void setUp() {
-        config = AWSSecretsManagerConfig.builder()
+        AWSSecretsManagerConfig config = AWSSecretsManagerConfig.builder()
                 .cacheSeconds(5)
                 .cacheSize(10)
                 .region(Region.US_EAST_1)
                 .endpoint("http://localhost.com")
                 .build();
 
-        prepareClient();
+        doReturn(client).when(clientBuilder).build();
+        connector = new AWSSecretManagerConnectorAsync(config, clientBuilder);
     }
 
     @Test
     public void shouldReturnSecretModel() {
-        when(clientMock.getSecretValue(getSecretValueRequest("secretModelName")))
+        when(client.getSecretValue(getSecretValueRequest("secretModelName")))
                 .thenReturn(getResponse("{\"username\":\"root\",\"password\":\"123456789\"}", true));
 
         StepVerifier.create(connector.getSecret("secretModelName", SecretModelTest.class))
@@ -59,7 +57,7 @@ public class AWSSecretManagerConnectorAsyncTest {
 
     @Test
     public void shouldReturnStringSecretValue() {
-        when(clientMock.getSecretValue(getSecretValueRequest("stringSecretName")))
+        when(client.getSecretValue(getSecretValueRequest("stringSecretName")))
                 .thenReturn(getResponse("secretValue", true));
 
         StepVerifier.create(connector.getSecret("stringSecretName"))
@@ -70,7 +68,7 @@ public class AWSSecretManagerConnectorAsyncTest {
 
     @Test
     public void shouldThrowExceptionWhenSecretIsNotAString() {
-        when(clientMock.getSecretValue(getSecretValueRequest("secretName")))
+        when(client.getSecretValue(getSecretValueRequest("secretName")))
                 .thenReturn(getResponse(null, true));
 
         StepVerifier.create(connector.getSecret("secretName"))
@@ -80,7 +78,7 @@ public class AWSSecretManagerConnectorAsyncTest {
 
     @Test
     public void shouldThrowExceptionWhenSecretIsNull() {
-        when(clientMock.getSecretValue(getSecretValueRequest("secretName")))
+        when(client.getSecretValue(getSecretValueRequest("secretName")))
                 .thenReturn(getResponse(null, false));
 
         StepVerifier.create(connector.getSecret("secretName"))
@@ -90,43 +88,30 @@ public class AWSSecretManagerConnectorAsyncTest {
 
     @Test
     public void shouldThrowExceptionWhenSecretIsNonExistent() {
-        when(clientMock.getSecretValue(getSecretValueRequest("secretName")))
-                .thenThrow(ResourceNotFoundException.builder()
+        when(client.getSecretValue(getSecretValueRequest("secretName")))
+                .thenReturn(CompletableFuture.failedFuture(ResourceNotFoundException.builder()
                         .message("Secrets Manager can't find the specified secret not found.")
-                        .build());
+                        .build()));
 
         StepVerifier.create(connector.getSecret("secretName"))
                 .expectErrorMatches(err ->
                         err instanceof SecretException
-                        && err.getMessage().equals("Secrets Manager can't find the specified secret not found."))
+                                && err.getMessage().equals("Secrets Manager can't find the specified secret not found."))
                 .verify();
     }
 
     @Test
     public void shouldThrowExceptionWhenRequestIsInvalid() {
-        when(clientMock.getSecretValue(getSecretValueRequest("secretNameF$1l")))
-                .thenThrow(InvalidParameterException.builder()
+        when(client.getSecretValue(getSecretValueRequest("secretNameF$1l")))
+                .thenReturn(CompletableFuture.failedFuture(InvalidParameterException.builder()
                         .message("The parameter name or value is invalid.")
-                        .build());
+                        .build()));
 
         StepVerifier.create(connector.getSecret("secretNameF$1l"))
                 .expectErrorMatches(err ->
                         err instanceof SecretException
-                        && err.getMessage().equals("The parameter name or value is invalid."))
+                                && err.getMessage().equals("The parameter name or value is invalid."))
                 .verify();
-    }
-
-    private void prepareClient() {
-        SecretsManagerAsyncClientBuilder clientBuilderMock = Mockito.mock(SecretsManagerAsyncClientBuilder.class);
-        clientMock = Mockito.mock(SecretsManagerAsyncClient.class);
-
-        PowerMockito.mockStatic(SecretsManagerAsyncClient.class);
-        when(SecretsManagerAsyncClient.builder()).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.credentialsProvider(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.region(any())).thenReturn(clientBuilderMock);
-        when(clientBuilderMock.build()).thenReturn(clientMock);
-
-        connector = new AWSSecretManagerConnectorAsync(config);
     }
 
     private GetSecretValueRequest getSecretValueRequest(String secretName) {

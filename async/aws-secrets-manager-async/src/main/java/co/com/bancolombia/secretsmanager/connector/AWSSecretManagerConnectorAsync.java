@@ -4,12 +4,9 @@ import co.com.bancolombia.secretsmanager.api.GenericManagerAsync;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
-import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import reactor.cache.CacheMono;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Signal;
-import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
 import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
@@ -22,36 +19,37 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientB
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 
 import java.net.URI;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
 
     private final AWSSecretsManagerConfig config;
-    private SecretsManagerAsyncClient client;
-    private Cache<String, String> cache;
-    private Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
+    private final SecretsManagerAsyncClient client;
+    private final AsyncCache<String, String> cache;
+    private final Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
 
     public AWSSecretManagerConnectorAsync(AWSSecretsManagerConfig config) {
         this.config = config;
-        this.client = buildClient();
+        this.client = buildClient(SecretsManagerAsyncClient.builder());
+        this.cache = initCache();
+    }
+
+    /**
+     * For unit tests
+     * @param config
+     * @param builder
+     */
+    public AWSSecretManagerConnectorAsync(AWSSecretsManagerConfig config, SecretsManagerAsyncClientBuilder builder) {
+        this.config = config;
+        this.client = buildClient(builder);
         this.cache = initCache();
     }
 
     @Override
     public Mono<String> getSecret(String secretName) {
-        return CacheMono
-                .lookup(secret -> Mono.justOrEmpty(cache.getIfPresent(secret)).map(Signal::next), secretName)
-                .onCacheMissResume(() -> this.getSecretValue(secretName).subscribeOn(Schedulers.elastic()))
-                .andWriteWith(
-                        (key, signal) -> Mono.fromRunnable(
-                                () -> Optional.ofNullable(signal.get())
-                                        .ifPresent(value -> cache.put(key, value))))
-                .onErrorMap((err) -> new SecretException(err.getMessage()))
-                .doOnError((err) -> {
-                    logger.warning("Error retrieving the secret: " + err.getMessage());
-                });
+        return Mono.fromFuture(cache.get(secretName,
+                (s, ex) -> getSecretValue(secretName).toFuture().toCompletableFuture()));
     }
 
     @Override
@@ -67,6 +65,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
 
         return Mono.fromFuture(client.getSecretValue(getSecretValueRequest))
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new SecretException("Secret value is null"))))
+                .onErrorMap(e -> new SecretException(e.getMessage()))
                 .flatMap(secretResult -> {
                     if (secretResult.secretString() != null) {
                         String result = secretResult.secretString();
@@ -96,21 +95,20 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
                 .build();
     }
 
-    private SecretsManagerAsyncClient buildClient() {
-        SecretsManagerAsyncClientBuilder clientBuilder = SecretsManagerAsyncClient.builder()
-                .credentialsProvider(getProviderChain())
-                .region(config.getRegion());
-        if (!config.getEndpoint().equals("")) {
-            clientBuilder.endpointOverride(URI.create(config.getEndpoint()));
+    private SecretsManagerAsyncClient buildClient(SecretsManagerAsyncClientBuilder builder) {
+        builder.credentialsProvider(getProviderChain());
+        builder.region(config.getRegion());
+        if (!"".equals(config.getEndpoint())) {
+            builder.endpointOverride(URI.create(config.getEndpoint()));
         }
-        return clientBuilder.build();
+        return builder.build();
     }
 
-    private Cache<String, String> initCache() {
+    private AsyncCache<String, String> initCache() {
         return Caffeine.newBuilder()
                 .maximumSize(config.getCacheSize())
                 .expireAfterWrite(config.getCacheSeconds(), TimeUnit.SECONDS)
-                .build();
+                .buildAsync();
     }
 
 }
