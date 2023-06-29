@@ -158,7 +158,7 @@ tasks.register('generateMergedReport', JacocoReport) {
     }
 }
 
-generateMergedReport.dependsOn javadoc
+generateMergedReport.dependsOn subprojects.javadoc
 
 tasks.named('wrapper') {
     gradleVersion = '8.1.1'
