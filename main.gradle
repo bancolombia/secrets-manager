@@ -146,7 +146,7 @@ subprojects {
 }
 
 tasks.register('generateMergedReport', JacocoReport) {
-    dependsOn = subprojects.test
+    dependsOn = [subprojects.test, subprojects.javadoc]
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)
@@ -157,8 +157,6 @@ tasks.register('generateMergedReport', JacocoReport) {
         html.setRequired true
     }
 }
-
-generateMergedReport.dependsOn subprojects.javadoc
 
 tasks.named('wrapper') {
     gradleVersion = '8.1.1'
