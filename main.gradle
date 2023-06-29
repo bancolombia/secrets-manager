@@ -106,10 +106,10 @@ subprojects {
     }
 
     dependencyCheck {
-        format='JSON'
-        formats=['JSON']
-        junitFailOnCVSS=7
-        failBuildOnCVSS=7
+        format = 'JSON'
+        formats = ['JSON']
+        junitFailOnCVSS = 7
+        failBuildOnCVSS = 7
     }
 
     check.dependsOn dependencyCheckAggregate
@@ -146,7 +146,9 @@ subprojects {
 }
 
 tasks.register('generateMergedReport', JacocoReport) {
-    dependsOn = [subprojects.test, subprojects.javadoc]
+    dependsOn test
+    dependsOn subprojects.test
+    dependsOn subprojects.javadoc
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)
