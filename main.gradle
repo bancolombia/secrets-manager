@@ -10,11 +10,11 @@ allprojects {
     group 'com.github.bancolombia'
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.22'
-        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        compileOnly 'org.projectlombok:lombok:1.18.28'
+        annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.22'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testCompileOnly 'org.projectlombok:lombok:1.18.28'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 
         testImplementation 'org.mockito:mockito-core:3.12.4'
         testImplementation 'junit:junit:4.13.2'
@@ -106,10 +106,10 @@ subprojects {
     }
 
     dependencyCheck {
-        format='JSON'
-        formats=['JSON']
-        junitFailOnCVSS=7
-        failBuildOnCVSS=7
+        format = 'JSON'
+        formats = ['JSON']
+        junitFailOnCVSS = 7
+        failBuildOnCVSS = 7
     }
 
     check.dependsOn dependencyCheckAggregate
@@ -134,7 +134,7 @@ subprojects {
         }
     }
 
-    tasks.withType(GenerateModuleMetadata) {
+    tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
     }
 
@@ -145,19 +145,21 @@ subprojects {
     }
 }
 
-task generateMergedReport(type: JacocoReport) {
-    dependsOn = subprojects.test
+tasks.register('generateMergedReport', JacocoReport) {
+    dependsOn test
+    dependsOn subprojects.test
+    dependsOn subprojects.javadoc
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)
     executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
     reports {
-        xml.enabled true
-        csv.enabled false
-        html.enabled true
+        xml.setRequired true
+        csv.setRequired false
+        html.setRequired true
     }
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '7.6'
+    gradleVersion = '8.1.1'
 }
