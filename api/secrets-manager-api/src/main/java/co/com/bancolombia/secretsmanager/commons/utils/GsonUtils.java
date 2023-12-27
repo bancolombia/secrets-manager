@@ -36,4 +36,9 @@ public class GsonUtils {
     public <T> T stringToModel(String data, Class<T> model) {
         return gson.fromJson(data, model);
     }
+
+    public String modelToString(Object model) {
+        return gson.toJson(model);
+    }
+
 }
