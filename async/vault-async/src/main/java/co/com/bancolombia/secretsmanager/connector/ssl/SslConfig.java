@@ -148,12 +148,12 @@ public class SslConfig implements Serializable {
                 KeyFactory var9 = KeyFactory.getInstance("RSA");
                 PrivateKey privateKey = var9.generatePrivate(pkcs8EncodedKeySpec);
                 KeyStore ikeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                String k = Math.random() + "";
-                ikeyStore.load((InputStream)null, k.toCharArray());
+
+                ikeyStore.load((InputStream)null, null);
                 ikeyStore.setCertificateEntry("clientCert", clientCertificate);
-                ikeyStore.setKeyEntry("key", privateKey, k.toCharArray(),
+                ikeyStore.setKeyEntry("key", privateKey, null,
                         new Certificate[]{clientCertificate});
-                keyManagerFactory.init(ikeyStore, k.toCharArray());
+                keyManagerFactory.init(ikeyStore, null);
                 keyManagers = keyManagerFactory.getKeyManagers();
             }
 
