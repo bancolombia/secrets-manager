@@ -80,12 +80,4 @@ public class SslConfigTest {
         Assert.assertThrows(SecretException.class, () -> new SslConfig().clientKeyPemFile(f));
     }
 
-    @SneakyThrows
-    @Test
-    public void testDisabledConfiguration() {
-        SslConfig config = new SslConfig().verify(false).build();
-        assertNotNull(config);
-        assertNotNull(config.getSslContext());
-    }
-
 }

@@ -4,7 +4,6 @@ import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -17,11 +16,9 @@ import java.util.Base64;
 
 public class SslConfig implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
     public static final String TLSV_1_2 = "TLSv1.2";
 
-    private boolean verify;
     private transient SSLContext sslContext;
     private transient KeyStore trustStore;
     private transient KeyStore keyStore;
@@ -29,12 +26,6 @@ public class SslConfig implements Serializable {
     private String pemUTF8;
     private String clientPemUTF8;
     private String clientKeyPemUTF8;
-    private Boolean verifyObject;
-    
-    public SslConfig verify(Boolean verify) {
-        this.verifyObject = verify;
-        return this;
-    }
 
     public SslConfig trustStoreFile(File trustStoreFile) throws SecretException {
         try (InputStream inputStream = new FileInputStream(trustStoreFile)) {
@@ -83,33 +74,18 @@ public class SslConfig implements Serializable {
     }
 
     public SslConfig build() throws SecretException {
-
-        if (this.verifyObject != null) {
-            this.verify = this.verifyObject;
+        if (this.keyStore == null && this.trustStore == null) {
+            if (this.pemUTF8 != null || this.clientPemUTF8 != null || this.clientKeyPemUTF8 != null) {
+                this.sslContext = this.buildSslContextFromPem();
+            }
         } else {
-            this.verify = true;
+            this.sslContext = this.buildSslContextFromJks();
         }
-        this.buildSsl();
         return this;
     }
 
     public SSLContext getSslContext() {
         return this.sslContext;
-    }
-
-    private void buildSsl() throws SecretException {
-        if (Boolean.TRUE.equals(this.verify)) {
-            if (this.keyStore == null && this.trustStore == null) {
-                if (this.pemUTF8 != null || this.clientPemUTF8 != null || this.clientKeyPemUTF8 != null) {
-                    this.sslContext = this.buildSslContextFromPem();
-                }
-            } else {
-                this.sslContext = this.buildSslContextFromJks();
-            }
-        }
-        else {
-            this.sslContext = this.sslDisabled();
-        }
     }
 
     private SSLContext buildSslContextFromJks() throws SecretException {
@@ -172,11 +148,12 @@ public class SslConfig implements Serializable {
                 KeyFactory var9 = KeyFactory.getInstance("RSA");
                 PrivateKey privateKey = var9.generatePrivate(pkcs8EncodedKeySpec);
                 KeyStore ikeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                ikeyStore.load((InputStream)null, "password".toCharArray());
+                String k = Math.random() + "";
+                ikeyStore.load((InputStream)null, k.toCharArray());
                 ikeyStore.setCertificateEntry("clientCert", clientCertificate);
-                ikeyStore.setKeyEntry("key", privateKey, "password".toCharArray(),
+                ikeyStore.setKeyEntry("key", privateKey, k.toCharArray(),
                         new Certificate[]{clientCertificate});
-                keyManagerFactory.init(ikeyStore, "password".toCharArray());
+                keyManagerFactory.init(ikeyStore, k.toCharArray());
                 keyManagers = keyManagerFactory.getKeyManagers();
             }
 
@@ -218,43 +195,5 @@ public class SslConfig implements Serializable {
 
         in.close();
         return utf8.toString();
-    }
-
-    private SSLContext sslDisabled() throws SecretException {
-        try {
-            SSLContext disabledSslContxt = SSLContext.getInstance(TLSV_1_2);
-            disabledSslContxt.init((KeyManager[])null, new TrustManager[]{new X509ExtendedTrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    // leave blank to trust all clients
-                }
-
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-            }}, new SecureRandom());
-            return disabledSslContxt;
-        } catch (KeyManagementException | NoSuchAlgorithmException var1) {
-            throw new SecretException(var1.getMessage());
-        }
     }
 }

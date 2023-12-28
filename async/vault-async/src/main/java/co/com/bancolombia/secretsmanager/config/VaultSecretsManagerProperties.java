@@ -2,15 +2,12 @@ package co.com.bancolombia.secretsmanager.config;
 
 import lombok.*;
 
-import java.io.File;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class VaultSecretsManagerProperties {
-    private String key;
 
     @Builder.Default
     private String host = "localhost";
@@ -22,7 +19,7 @@ public class VaultSecretsManagerProperties {
     private boolean ssl = false;
 
     @Builder.Default
-    private boolean sslVerify = false;
+    private boolean tlsAuth = false;
 
     @Builder.Default
     private String baseApi = "/v1";

@@ -18,11 +18,13 @@ public class VaultSecretManagerConfigurator {
     private final VaultSecretsManagerProperties properties;
 
     public HttpClient getHttpClient() throws SecretException {
-        return HttpClient.newBuilder()
+        HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(properties.getHttpProperties().getConnectionTimeout()))
-                .sslContext(buildSslConfig().getSslContext())
-                .build();
+                .connectTimeout(Duration.ofSeconds(properties.getHttpProperties().getConnectionTimeout()));
+        if (properties.isSsl() || properties.getTrustStoreProperties() != null || properties.getKeyStoreProperties() != null) {
+            clientBuilder = clientBuilder.sslContext(buildSslConfig().getSslContext());
+        }
+        return clientBuilder.build();
     }
 
     public VaultAuthenticator getVaultAuthenticator() throws SecretException {
@@ -38,7 +40,6 @@ public class VaultSecretManagerConfigurator {
 
     private SslConfig buildSslConfig() throws SecretException {
         SslConfig sslConfig = new SslConfig();
-        sslConfig.verify(properties.isSslVerify());
         if (properties.getTrustStoreProperties() != null) {
             setTrustConfiguration(sslConfig, properties.getTrustStoreProperties());
         }

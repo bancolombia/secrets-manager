@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -58,6 +57,48 @@ public class VaultSecretsManagerConnectorAsyncTest {
 
         VaultSecretsManagerConnectorAsync vaultSecretsManagerConnectorAsync =
                 new VaultSecretsManagerConnectorAsync(httpClient, authenticator, properties);
+
+        StepVerifier.create(vaultSecretsManagerConnectorAsync.getSecret("/path1/foo/bar"))
+                .expectSubscription()
+                .expectNextMatches(secret -> secret.contains("password")
+                        && secret.contains("secret")
+                        && secret.contains("port")
+                        && secret.contains("1234")
+                        && secret.contains("host")
+                        && secret.contains("localhost")
+                        && secret.contains("user")
+                        && secret.contains("jhon"))
+                .verifyComplete();
+
+        assertEquals("/v1/kv/data//path1/foo/bar", server.takeRequest().getPath());
+
+        server.shutdown();
+    }
+
+    @SneakyThrows
+    @Test
+    public void testGetSecretContentNoAuthUseTokenProvided() {
+
+        MockWebServer server = new MockWebServer();
+
+        MockResponse response = new MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+                .setBody(secretPayload());
+        server.enqueue(response);
+        server.start();
+
+        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
+                .withProperties(VaultSecretsManagerProperties.builder()
+                        .host("localhost")
+                        .port(server.getPort())
+                        .ssl(false)
+                        .token("shv.xxxxxxxxxx")
+                        .build())
+                .build();
+
+        VaultSecretsManagerConnectorAsync vaultSecretsManagerConnectorAsync =
+                configurator.getVaultClient();
 
         StepVerifier.create(vaultSecretsManagerConnectorAsync.getSecret("/path1/foo/bar"))
                 .expectSubscription()
