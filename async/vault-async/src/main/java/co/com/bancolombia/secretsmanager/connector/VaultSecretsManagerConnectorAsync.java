@@ -5,9 +5,9 @@ import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
 import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
 import co.com.bancolombia.secretsmanager.connector.auth.AuthResponse;
+import co.com.bancolombia.secretsmanager.connector.secret.SecretResponse;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.gson.JsonObject;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -56,12 +56,17 @@ public class VaultSecretsManagerConnectorAsync implements GenericManagerAsync {
                                 .GET()
                                 .build()
                 )
-                .flatMap(request -> Mono.fromFuture(httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())))
-                .map(HttpResponse::body)
-                .map(body -> GsonUtils.getInstance().stringToModel(body, JsonObject.class))
-                .map(map -> map.getAsJsonObject("data"))
-                .map(map -> map.getAsJsonObject("data"))
-                .map(data -> GsonUtils.getInstance().modelToString(data))
+                .flatMap(request -> Mono.fromFuture(httpClient.sendAsync(request,
+                        HttpResponse.BodyHandlers.ofString())))
+                .flatMap(httpResponse -> {
+                    if (httpResponse.statusCode() != 200) {
+                        return Mono.error(() -> new SecretException(httpResponse.body()));
+                    } else {
+                        return Mono.just(GsonUtils.getInstance().stringToModel(httpResponse.body(),
+                                SecretResponse.class));
+                    }
+                })
+                .map(data -> GsonUtils.getInstance().modelToString(data.getData().getData()))
                 .doOnError(err -> logger.severe("Error retrieving secret from vault: " + err.getMessage()));
     }
 

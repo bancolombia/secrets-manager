@@ -54,7 +54,7 @@ public class VaultAuthenticator {
                 )
                 .flatMap(request -> Mono.fromFuture(httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())))
                 .flatMap(response -> response.statusCode() != 200 ?
-                        Mono.error(new SecretException("Error performing authentication with vault: " + response.body())) :
+                        Mono.error(() -> new SecretException("Error performing authentication with vault: " + response.body())) :
                         Mono.just(response))
                 .map(HttpResponse::body)
                 .map(body -> GsonUtils.getInstance().stringToModel(body, JsonObject.class))
