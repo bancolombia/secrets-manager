@@ -13,6 +13,7 @@ This library will help you to decouple your application of your secrets provider
 - AWS Secrets Manager Async (Non blocking flows)
 - AWS Parameter Store Sync
 - AWS Parameter Store Async (Non blocking flows)
+- Vault Async (Non blocking flows)
 - File Secrets (E.g Kubernetes Secrets )
 - Environment System Secrets (E.g Kubernetes Secrets )
 
@@ -127,6 +128,67 @@ connector.getSecret("pruebaLibreria", DefineYourModel.class)
     })
 ```
 
+## Vault Async (Compatible with Reactor)
+
+```java
+dependencies {
+    // Reactor Core is required! 
+    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
+    // vault-async dependency     
+    implementation 'com.github.bancolombia:vault-async:<version-here>'
+}
+```
+
+Define your configuration:
+```java
+// Simplified Config
+VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
+        .withProperties(VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .ssl(false)
+                .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")  // for authentication with vault
+                .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx") // for authentication with vault
+                .build())
+        .build();
+```
+
+
+
+##### Configurations
+
+You can pass the following variables to VaultSecretsManagerProperties:
+
+- **host**: host name or ip address of the vault server. The default value is localhost.
+- **port**: port number of the vault server. The default value is 8200.
+  The next requests to the same secret will be resolved from the cache. The default value is 0 (no cache).
+- **ssl**: Defines if the connection to the vault server is secure or not. The default value is false.
+- **roleId** and **secretId**: credentials for authenticate with vault and obtain a Token.
+- **token**: If you already have a token, you can pass it here. If you pass a token, the roleId and secretId  
+  will be ignored.
+
+For other configurations, you can use the `VaultSecretsManagerProperties` class.
+
+Create the connector:
+```java
+GenericManagerAsync connector = configurator.getVaultClient();
+```
+
+Get the secret in String:
+```java
+connector.getSecret("my/secret/path")
+    .doOnNext(System.out::println);
+    // ... develop your async flow
+```
+Get the secret deserialized:
+```java
+connector.getSecret("my/database/credentials", DBCredentials.class)
+    .doOnNext(secret -> {
+       //... develop your async flow
+    })
+```
+
+
 ## Parameter Store Sync
 ```java
 dependencies {
@@ -224,6 +286,5 @@ Great !!:
 ### To Do
 
 - New connectors for other services.
-  - Vault
   - Key Vault Azure
 - Improve our tests
