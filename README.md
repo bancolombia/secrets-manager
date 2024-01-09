@@ -141,7 +141,7 @@ dependencies {
 
 Define your configuration:
 ```java
-// Simplified Config
+// Example Config
 VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
         .withProperties(VaultSecretsManagerProperties.builder()
                 .host("localhost")
@@ -163,9 +163,16 @@ You can pass the following variables to VaultSecretsManagerProperties:
 - **port**: port number of the vault server. The default value is 8200.
   The next requests to the same secret will be resolved from the cache. The default value is 0 (no cache).
 - **ssl**: Defines if the connection to the vault server is secure or not. The default value is false.
-- **roleId** and **secretId**: credentials for authenticate with vault and obtain a Token.
-- **token**: If you already have a token, you can pass it here. If you pass a token, the roleId and secretId  
-  will be ignored.
+- **token**: If you already have a token to interact with Vault API, you can pass it to the configurator.  
+  No auth is performed.
+
+Authentication with vault can be done in two ways with this library:
+
+- **roleId** and **secretId**: If AppRole auth is enabled, you can pass the roleId and secretId to the configurator. The library will authenticate
+  with vault and obtain a token.
+- **vaultRoleForK8sAuth**: If Kubernetes auth is enabled, you can pass here the vault role for which you would like to 
+  receive a token in the namespace for your app. For more information please refer to 
+  [Kubernetes Auth Method](https://developer.hashicorp.com/vault/docs/auth/kubernetes) documentation. 
 
 For other configurations, you can use the `VaultSecretsManagerProperties` class.
 
