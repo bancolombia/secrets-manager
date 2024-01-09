@@ -33,6 +33,8 @@ public class VaultSecretsManagerProperties {
 
     private String secretId;
 
+    private String vaultRoleForK8sAuth;
+
     @Builder.Default
     private int engineVersion = 2;
 
@@ -49,11 +51,25 @@ public class VaultSecretsManagerProperties {
     @Builder.Default
     private CacheProperties secretsCacheProperties= CacheProperties.builder().expireAfter(600).maxSize(100).build();
 
+    @Builder.Default
+    private String appRoleAuthPath = "/auth/approle/login";
+
+    @Builder.Default
+    private String k8sAuthPath = "/auth/kubernetes/login";
+
     public String buildUrl() {
         return String.format("%s://%s:%d%s", ssl ? "https" : "http", host, port, baseApi);
     }
 
-    public boolean roleCredentialsProvided() {
+    public boolean isRoleCredentialsProvided() {
         return roleId != null && !roleId.isEmpty() && secretId != null && !secretId.isEmpty();
+    }
+
+    public boolean isRoleNameForK8sProvided() {
+        return vaultRoleForK8sAuth != null && !vaultRoleForK8sAuth.isEmpty();
+    }
+
+    public boolean isTokenProvided() {
+        return token != null && !token.isEmpty();
     }
 }

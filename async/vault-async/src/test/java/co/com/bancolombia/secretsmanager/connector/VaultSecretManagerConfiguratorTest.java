@@ -1,5 +1,6 @@
 package co.com.bancolombia.secretsmanager.connector;
 
+import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.config.VaultKeyStoreProperties;
 import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
 import co.com.bancolombia.secretsmanager.config.VaultTrustStoreProperties;
@@ -77,6 +78,26 @@ public class VaultSecretManagerConfiguratorTest {
 
     @SneakyThrows
     @Test
+    public void testClientGenerationWithKeyStoreNoValues() {
+        VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .roleId("x")
+                .secretId("y")
+                .keyStoreProperties(VaultKeyStoreProperties.builder()
+                        .build()
+                )
+                .build();
+
+        Assert.assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
+                .withProperties(properties)
+                .build()
+                .getHttpClient());
+
+    }
+
+    @SneakyThrows
+    @Test
     public void testClientGenerationWithTrustStore() {
         URI storeUri = getClass().getClassLoader().getResource("truststore.jks").toURI();
         File storeFile = new File(storeUri);
@@ -123,6 +144,28 @@ public class VaultSecretManagerConfiguratorTest {
                 .getHttpClient();
 
         Assert.assertNotNull(client);
+    }
+
+    @SneakyThrows
+    @Test
+    public void testClientGenerationWithTrustNoValues() {
+        URI pemUri = getClass().getClassLoader().getResource("certificate.arm").toURI();
+        File pemFile = new File(pemUri);
+
+        VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .roleId("x")
+                .secretId("y")
+                .trustStoreProperties(VaultTrustStoreProperties.builder()
+                        .build()
+                )
+                .build();
+
+        Assert.assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
+                .withProperties(properties)
+                .build()
+                .getHttpClient());
     }
 
 }

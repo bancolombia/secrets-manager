@@ -18,6 +18,9 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * Connector to Vault Secrets Manager for reading secrets asynchronously.
+ */
 public class VaultSecretsManagerConnectorAsync implements GenericManagerAsync {
 
     private static final Logger logger = Logger.getLogger("connector.VaultSecretsManagerConnectorAsync");
@@ -71,14 +74,8 @@ public class VaultSecretsManagerConnectorAsync implements GenericManagerAsync {
     }
 
     private Mono<String> getToken() {
-        return Mono.defer(() -> {
-            if (this.properties.getToken() != null) {
-                return Mono.just(this.properties.getToken());
-            } else {
-                return vaultAuthenticator.loginByAppRole()
-                        .map(AuthResponse::getClientToken);
-            }
-        });
+        return vaultAuthenticator.login()
+                .map(AuthResponse::getClientToken);
     }
 
     @Override

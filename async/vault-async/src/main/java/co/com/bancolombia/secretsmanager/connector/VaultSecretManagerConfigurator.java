@@ -4,6 +4,7 @@ import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.config.VaultKeyStoreProperties;
 import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
 import co.com.bancolombia.secretsmanager.config.VaultTrustStoreProperties;
+import co.com.bancolombia.secretsmanager.connector.auth.K8sTokenReader;
 import co.com.bancolombia.secretsmanager.connector.ssl.SslConfig;
 import lombok.Builder;
 
@@ -11,12 +12,21 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.logging.Logger;
 
+/**
+ * This class is in charge of configuring the VaultSecretsManagerConnector
+ */
 @Builder(setterPrefix = "with", toBuilder = true)
 public class VaultSecretManagerConfigurator {
 
     private static final Logger logger = Logger.getLogger("config.VaultSecretManagerConfigurator");
     private final VaultSecretsManagerProperties properties;
+    private final K8sTokenReader k8sTokenReader;
 
+    /**
+     * This method is in charge of configuring the HttpClient
+     * @return HttpClient configured.
+     * @throws SecretException
+     */
     public HttpClient getHttpClient() throws SecretException {
         HttpClient.Builder clientBuilder = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
@@ -27,14 +37,25 @@ public class VaultSecretManagerConfigurator {
         return clientBuilder.build();
     }
 
+    /**
+     * This method is in charge of configuring the VaultAuthenticator
+     * @return the VaultAuthenticator configured.
+     * @throws SecretException
+     */
     public VaultAuthenticator getVaultAuthenticator() throws SecretException {
-        return new VaultAuthenticator(getHttpClient(), properties);
+        return new VaultAuthenticator(getHttpClient(), properties,
+                k8sTokenReader != null? k8sTokenReader : new K8sTokenReader());
     }
 
+    /**
+     * This method is in charge of configuring the VaultSecretsManagerConnector
+     * @return the VaultSecretsManagerConnector configured.
+     * @throws SecretException
+     */
     public VaultSecretsManagerConnectorAsync getVaultClient() throws SecretException {
         HttpClient httpClient = getHttpClient();
         return new VaultSecretsManagerConnectorAsync(httpClient,
-                new VaultAuthenticator(httpClient, properties),
+                getVaultAuthenticator(),
                 properties);
     }
 
@@ -56,7 +77,7 @@ public class VaultSecretManagerConfigurator {
         }  else if (trustStoreProperties.getPemFile() != null) {
             sslConfig.pemFile(trustStoreProperties.getPemFile());
         } else {
-            logger.warning("No trust store file or pem resource provided");
+            throw new SecretException("VaultTrustStoreProperties was set, but no trust store file or pem resource provided");
         }
         return sslConfig;
     }
@@ -70,7 +91,7 @@ public class VaultSecretManagerConfigurator {
             sslConfig.clientPemFile(keyStoreProperties.getClientPem());
             sslConfig.clientKeyPemFile(keyStoreProperties.getClientKeyPem());
         } else {
-            logger.warning("No key store file or pem resources provided");
+            throw new SecretException("VaultKeyStoreProperties was set, but no key store file or pem resources provided");
         }
         return sslConfig;
     }

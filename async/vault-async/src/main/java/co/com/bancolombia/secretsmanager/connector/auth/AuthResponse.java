@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @NoArgsConstructor
@@ -19,6 +20,7 @@ public class AuthResponse {
     private List<String> policies = new ArrayList<>();
     @Builder.Default
     private List<String> tokenPolicies = new ArrayList<>();
+    private Map<String, String> metadata;
     private long leaseDuration;
     private boolean renewable;
 }

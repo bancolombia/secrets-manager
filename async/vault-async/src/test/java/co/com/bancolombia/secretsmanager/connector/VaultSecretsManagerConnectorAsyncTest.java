@@ -53,7 +53,7 @@ public class VaultSecretsManagerConnectorAsyncTest {
 
         HttpClient httpClient = configurator.getHttpClient();
 
-        when(authenticator.loginByAppRole()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));
+        when(authenticator.login()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));
 
         VaultSecretsManagerConnectorAsync vaultSecretsManagerConnectorAsync =
                 new VaultSecretsManagerConnectorAsync(httpClient, authenticator, properties);
@@ -144,7 +144,7 @@ public class VaultSecretsManagerConnectorAsyncTest {
 
         HttpClient httpClient = configurator.getHttpClient();
 
-        when(authenticator.loginByAppRole()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));
+        when(authenticator.login()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));
 
         VaultSecretsManagerConnectorAsync vaultSecretsManagerConnectorAsync =
                 new VaultSecretsManagerConnectorAsync(httpClient, authenticator, properties);
