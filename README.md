@@ -21,11 +21,14 @@ This library will help you to decouple your application of your secrets provider
 
 SecretsManager compatibility
 
-| Version | Spring Boot | AWS Bom  | Java |
-|---------|-------------|----------|------|
-| 4.0.0   | 3.0.2       | 2.19.31  | 11+  |
-| 3.2.0   | 2.7.6       | 2.18.39  | 8+   |
-| 3.1.1   | 2.6.7       | 2.17.184 | 8+   |
+| Version | Spring Boot | AWS Bom   | Java |
+|---------|-------------|-----------|------|
+| 4.4.0   | 3.2.1       | 2.23.4    | 11+  |
+| 4.2.0   | 3.1.1       | 2.22.5    | 11+  |
+| 4.1.0   | 3.1.1       | 2.20.94   | 11+  |
+| 4.0.0   | 3.0.2       | 2.19.31   | 11+  |
+| 3.2.0   | 2.7.6       | 2.18.39   | 8+   |
+| 3.1.1   | 2.6.7       | 2.17.184  | 8+   |
 
 
 ## Secrets Manager Sync
@@ -195,6 +198,52 @@ connector.getSecret("my/database/credentials", DBCredentials.class)
     })
 ```
 
+
+## Vault Sync
+
+```java
+dependencies {
+    // Reactor Core is required! 
+    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
+    // vault-async dependency     
+    implementation 'com.github.bancolombia:vault-sync:<version-here>'
+}
+```
+
+Define your configuration:
+```java
+// Example Config
+VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
+        .withProperties(VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .ssl(false)
+                .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")  // for authentication with vault
+                .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx") // for authentication with vault
+                .build())
+        .build();
+```
+
+##### Configurations
+
+_Same as defined for Vault Async._
+
+Create the connector:
+```java
+GenericManagerAsync connector = configurator.getVaultClient();
+```
+
+Get the secret in String:
+```java
+String secret = connector.getSecret("my/secret/path");
+// ... continue your sync flow
+```
+Get the secret deserialized:
+```java
+DBCredentials creds = connector.getSecret("my/database/credentials",
+        DBCredentials.class);
+// ... continue your sync flow
+```
 
 ## Parameter Store Sync
 ```java

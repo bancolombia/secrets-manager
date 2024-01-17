@@ -10,12 +10,11 @@ allprojects {
     group 'com.github.bancolombia'
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.28'
-        annotationProcessor 'org.projectlombok:lombok:1.18.28'
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.28'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
-
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testImplementation 'org.mockito:mockito-core:3.12.4'
         testImplementation 'org.mockito:mockito-inline:3.12.4'
         testImplementation 'junit:junit:4.13.2'
@@ -162,5 +161,5 @@ tasks.register('generateMergedReport', JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '8.1.1'
+    gradleVersion = '8.5'
 }
