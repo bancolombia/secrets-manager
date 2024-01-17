@@ -1,0 +1,12 @@
+dependencies {
+    api project(":secrets-manager-api")
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+    implementation "com.github.ben-manes.caffeine:caffeine:${cafeineVersion}"
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
+
+}
+
+ext {
+    artifactId = 'vault-sync'
+    artifactDescription = 'Vault Secrets Manager'
+}
