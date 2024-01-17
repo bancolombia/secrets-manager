@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.connector.secret;
+package co.com.bancolombia.secretsmanager.vaultsync.connector.secret;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

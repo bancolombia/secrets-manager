@@ -1,11 +1,11 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.config.VaultKeyStoreProperties;
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.config.VaultTrustStoreProperties;
-import co.com.bancolombia.secretsmanager.connector.auth.K8sTokenReader;
-import co.com.bancolombia.secretsmanager.connector.ssl.SslConfig;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultKeyStoreProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultSecretsManagerProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultTrustStoreProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.connector.auth.K8sTokenReader;
+import co.com.bancolombia.secretsmanager.vaultsync.connector.ssl.SslConfig;
 import lombok.Builder;
 
 import java.net.http.HttpClient;

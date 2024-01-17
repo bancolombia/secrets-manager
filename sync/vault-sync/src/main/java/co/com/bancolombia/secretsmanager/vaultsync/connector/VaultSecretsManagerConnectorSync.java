@@ -1,10 +1,10 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.connector.secret.SecretResponse;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultSecretsManagerProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.connector.secret.SecretResponse;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 

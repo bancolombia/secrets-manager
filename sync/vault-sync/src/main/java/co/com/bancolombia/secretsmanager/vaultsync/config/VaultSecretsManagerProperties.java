@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.config;
+package co.com.bancolombia.secretsmanager.vaultsync.config;
 
 import lombok.*;
 

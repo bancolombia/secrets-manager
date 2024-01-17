@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.connector.auth;
+package co.com.bancolombia.secretsmanager.vaultsync.connector.auth;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;

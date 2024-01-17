@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.connector.ssl;
+package co.com.bancolombia.secretsmanager.vaultsync.connector.ssl;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 

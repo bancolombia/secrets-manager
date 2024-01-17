@@ -1,9 +1,9 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.config.VaultKeyStoreProperties;
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.config.VaultTrustStoreProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultKeyStoreProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultSecretsManagerProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultTrustStoreProperties;
 import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;

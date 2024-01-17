@@ -1,9 +1,9 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.connector.auth.AuthResponse;
-import co.com.bancolombia.secretsmanager.connector.auth.K8sTokenReader;
+import co.com.bancolombia.secretsmanager.vaultsync.config.VaultSecretsManagerProperties;
+import co.com.bancolombia.secretsmanager.vaultsync.connector.auth.AuthResponse;
+import co.com.bancolombia.secretsmanager.vaultsync.connector.auth.K8sTokenReader;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
