@@ -21,11 +21,14 @@ This library will help you to decouple your application of your secrets provider
 
 SecretsManager compatibility
 
-| Version | Spring Boot | AWS Bom  | Java |
-|---------|-------------|----------|------|
-| 4.0.0   | 3.0.2       | 2.19.31  | 11+  |
-| 3.2.0   | 2.7.6       | 2.18.39  | 8+   |
-| 3.1.1   | 2.6.7       | 2.17.184 | 8+   |
+| Version | Spring Boot | AWS Bom   | Java |
+|---------|-------------|-----------|------|
+| 4.3.1   | 3.2.1       | 2.23.4    | 11+  |
+| 4.2.0   | 3.1.1       | 2.22.5    | 11+  |
+| 4.1.0   | 3.1.1       | 2.20.94   | 11+  |
+| 4.0.0   | 3.0.2       | 2.19.31   | 11+  |
+| 3.2.0   | 2.7.6       | 2.18.39   | 8+   |
+| 3.1.1   | 2.6.7       | 2.17.184  | 8+   |
 
 
 ## Secrets Manager Sync
