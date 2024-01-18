@@ -1,7 +1,7 @@
-package co.com.bancolombia.secretsmanager.vaultsync.connector;
+package co.com.bancolombia.secretsmanager.vault.ssl;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.vaultsync.connector.K8sTokenReader;
+import co.com.bancolombia.secretsmanager.vault.K8sTokenReader;
 import lombok.SneakyThrows;
 import org.junit.Test;
 

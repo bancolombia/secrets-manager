@@ -1,5 +1,6 @@
 package co.com.bancolombia.secretsmanager.connector;
 
+import co.com.bancolombia.secretsmanager.vault.K8sTokenReader;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.Assert.assertEquals;
@@ -75,7 +75,7 @@ public class VaulAuthenticatorTest {
                 .build();
 
         K8sTokenReader k8sTokenReaderMock = Mockito.mock(K8sTokenReader.class);
-        when(k8sTokenReaderMock.getKubernetesServiceAccountToken()).thenReturn(Mono.just("ey..."));
+        when(k8sTokenReaderMock.getKubernetesServiceAccountToken()).thenReturn("ey...");
 
         VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
                 .withProperties(properties)

@@ -2,6 +2,7 @@ package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
+import co.com.bancolombia.secretsmanager.vault.K8sTokenReader;
 import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
 import co.com.bancolombia.secretsmanager.vault.auth.K8sAuth;
 import co.com.bancolombia.secretsmanager.vault.auth.RoleAuth;

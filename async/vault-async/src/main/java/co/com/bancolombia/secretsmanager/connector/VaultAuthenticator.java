@@ -2,6 +2,7 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
+import co.com.bancolombia.secretsmanager.vault.K8sTokenReader;
 import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
 import co.com.bancolombia.secretsmanager.vault.auth.K8sAuth;
 import co.com.bancolombia.secretsmanager.vault.auth.RoleAuth;
@@ -12,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -102,24 +104,25 @@ public class VaultAuthenticator {
     }
 
     private Mono<AuthResponse> performLoginWithK8s() {
-        return k8sTokenReader.getKubernetesServiceAccountToken()
-                .flatMap(token -> Mono.fromSupplier(() ->
-                                HttpRequest.newBuilder()
-                                        .uri(URI.create(this.properties.buildUrl() + properties.getK8sAuthPath()))
-                                        .timeout(Duration.ofSeconds(5))
-                                        .header(CONTENT_TYPE_HEADER, "application/json")
-                                        .POST(HttpRequest.BodyPublishers.ofString(
-                                                gson.toJson(K8sAuth.builder()
-                                                        .jwt(token)
-                                                        .role(properties.getVaultRoleForK8sAuth())
-                                                        .build())
-                                        ))
-                                        .build()
-                        ))
-                .flatMap(this::doCallAuthApi)
-                .doOnSuccess(authResponse ->
-                        logger.info("Successfully authenticated via k8s with vault")
-                );
+        return Mono.fromCallable(k8sTokenReader::getKubernetesServiceAccountToken)
+            .flatMap(token -> Mono.fromSupplier(() ->
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(this.properties.buildUrl() + properties.getK8sAuthPath()))
+                            .timeout(Duration.ofSeconds(5))
+                            .header(CONTENT_TYPE_HEADER, "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(
+                                    gson.toJson(K8sAuth.builder()
+                                            .jwt(token)
+                                            .role(properties.getVaultRoleForK8sAuth())
+                                            .build())
+                            ))
+                            .build()
+            ))
+            .flatMap(this::doCallAuthApi)
+            .doOnSuccess(authResponse ->
+                    logger.info("Successfully authenticated via k8s with vault")
+            )
+            .subscribeOn(Schedulers.boundedElastic());
     }
 
     private Mono<AuthResponse> doCallAuthApi(HttpRequest request) {

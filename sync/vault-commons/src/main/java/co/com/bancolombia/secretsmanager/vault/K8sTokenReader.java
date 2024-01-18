@@ -1,6 +1,7 @@
-package co.com.bancolombia.secretsmanager.vaultsync.connector;
+package co.com.bancolombia.secretsmanager.vault;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
