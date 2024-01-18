@@ -117,7 +117,7 @@ Create the connector:
 AWSSecretManagerConnectorAsync connector = new AWSSecretManagerConnectorAsync(config);
 ```
 
-Get the secret in String:
+Get the secret as String:
 ```java
 connector.getSecret("secretName")
     .doOnNext(System.out::println);
@@ -184,7 +184,7 @@ Create the connector:
 GenericManagerAsync connector = configurator.getVaultClient();
 ```
 
-Get the secret in String:
+Get the secret as String:
 ```java
 connector.getSecret("my/secret/path")
     .doOnNext(System.out::println);
@@ -198,6 +198,49 @@ connector.getSecret("my/database/credentials", DBCredentials.class)
     })
 ```
 
+## Vault Sync
+
+```java
+dependencies {
+    // vault-sync dependency     
+    implementation 'com.github.bancolombia:vault-sync:<version-here>'
+}
+```
+
+Define your configuration:
+```java
+// Example Config
+VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
+        .withProperties(VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .ssl(false)
+                .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")  // for authentication with vault
+                .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx") // for authentication with vault
+                .build())
+        .build();
+```
+
+##### Configurations
+
+_Same as defined for Vault Async._
+
+Create the connector:
+```java
+GenericManagerAsync connector = configurator.getVaultClient();
+```
+
+Get the secret as String:
+```java
+String secret = connector.getSecret("my/secret/path");
+// ... continue your sync flow
+```
+Get the secret deserialized:
+```java
+DBCredentials creds = connector.getSecret("my/database/credentials",
+        DBCredentials.class);
+// ... continue your sync flow
+```
 
 ## Parameter Store Sync
 ```java
@@ -263,7 +306,7 @@ Create the connector:
 AWSParameterStoreConnectorAsync connector = new AWSParameterStoreConnectorAsync(config);
 ```
 
-Get the secret in String:
+Get the secret as String:
 ```java
 connector.getSecret("parameterName")
     .doOnNext(System.out::println);

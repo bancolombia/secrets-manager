@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.vault.config.VaultKeyStoreProperties;
@@ -42,7 +42,7 @@ public class VaultSecretManagerConfiguratorTest {
                 .secretId("y")
                 .build();
 
-        VaultSecretsManagerConnectorAsync client = VaultSecretManagerConfigurator.builder()
+        VaultSecretsManagerConnectorSync client = VaultSecretManagerConfigurator.builder()
                 .withProperties(properties)
                 .build()
                 .getVaultClient();

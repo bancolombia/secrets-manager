@@ -1,7 +1,7 @@
 package co.com.bancolombia.secretsmanager.connector;
 
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.connector.auth.AuthResponse;
+import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
+import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
