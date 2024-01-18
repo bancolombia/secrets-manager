@@ -202,9 +202,7 @@ connector.getSecret("my/database/credentials", DBCredentials.class)
 
 ```java
 dependencies {
-    // Reactor Core is required! 
-    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
-    // vault-async dependency     
+    // vault-sync dependency     
     implementation 'com.github.bancolombia:vault-sync:<version-here>'
 }
 ```
