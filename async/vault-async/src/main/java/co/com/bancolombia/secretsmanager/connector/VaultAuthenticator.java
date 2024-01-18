@@ -2,11 +2,10 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
-import co.com.bancolombia.secretsmanager.config.VaultSecretsManagerProperties;
-import co.com.bancolombia.secretsmanager.connector.auth.AuthResponse;
-import co.com.bancolombia.secretsmanager.connector.auth.K8sAuth;
-import co.com.bancolombia.secretsmanager.connector.auth.K8sTokenReader;
-import co.com.bancolombia.secretsmanager.connector.auth.RoleAuth;
+import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
+import co.com.bancolombia.secretsmanager.vault.auth.K8sAuth;
+import co.com.bancolombia.secretsmanager.vault.auth.RoleAuth;
+import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;

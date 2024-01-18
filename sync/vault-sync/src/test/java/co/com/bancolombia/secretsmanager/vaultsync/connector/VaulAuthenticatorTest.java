@@ -1,5 +1,7 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
+import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
@@ -9,10 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,13 +43,9 @@ public class VaulAuthenticatorTest {
 
         VaultAuthenticator vaultAuthenticator = configurator.getVaultAuthenticator();
 
-        StepVerifier.create(vaultAuthenticator.login())
-                .expectSubscription()
-                .expectNextMatches(authResponse -> {
-                    assertEquals("hvs.dummytoken", authResponse.getClientToken());
-                    return true;
-                })
-                .verifyComplete();
+        AuthResponse authResponse = vaultAuthenticator.login();
+        assertNotNull(authResponse);
+        assertEquals("hvs.dummytoken", authResponse.getClientToken());
 
         assertEquals("/v1/auth/approle/login", server.takeRequest().getPath());
 
@@ -75,7 +72,7 @@ public class VaulAuthenticatorTest {
                 .build();
 
         K8sTokenReader k8sTokenReaderMock = Mockito.mock(K8sTokenReader.class);
-        when(k8sTokenReaderMock.getKubernetesServiceAccountToken()).thenReturn(Mono.just("ey..."));
+        when(k8sTokenReaderMock.getKubernetesServiceAccountToken()).thenReturn("ey...");
 
         VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
                 .withProperties(properties)
@@ -84,13 +81,9 @@ public class VaulAuthenticatorTest {
 
         VaultAuthenticator vaultAuthenticator = configurator.getVaultAuthenticator();
 
-        StepVerifier.create(vaultAuthenticator.login())
-                .expectSubscription()
-                .expectNextMatches(authResponse -> {
-                    assertEquals("hvs.dummytoken", authResponse.getClientToken());
-                    return true;
-                })
-                .verifyComplete();
+        AuthResponse authResponse = vaultAuthenticator.login();
+        assertNotNull(authResponse);
+        assertEquals("hvs.dummytoken", authResponse.getClientToken());
 
         assertEquals("/v1/auth/kubernetes/login", server.takeRequest().getPath());
 
@@ -115,14 +108,10 @@ public class VaulAuthenticatorTest {
 
         VaultAuthenticator vaultAuthenticator = configurator.getVaultAuthenticator();
 
-        StepVerifier.create(vaultAuthenticator.login())
-                .expectSubscription()
-                .expectErrorMatches(throwable -> {
-                    assertEquals(throwable.getMessage(), "Could not perform login with vault. " +
-                            "Please check your configuration");
-                    return true;
-                })
-                .verify();
+        Assert.assertThrows("Could not perform login with vault. Please check your configuration",
+                SecretException.class,
+                vaultAuthenticator::login);
+
     }
 
     @SneakyThrows
@@ -156,13 +145,9 @@ public class VaulAuthenticatorTest {
 
         VaultAuthenticator vaultAuthenticator = configurator.getVaultAuthenticator();
 
-        StepVerifier.create(vaultAuthenticator.login())
-                .expectSubscription()
-                .expectErrorMatches(throwable -> {
-                    Assert.assertTrue(throwable.getMessage().contains("invalid role or secret ID"));
-                    return true;
-                })
-                .verify();
+        Assert.assertThrows("invalid role or secret ID",
+                SecretException.class,
+                vaultAuthenticator::login);
 
         assertEquals("/v1/auth/approle/login", server.takeRequest().getPath());
         server.shutdown();

@@ -1,0 +1,9 @@
+dependencies {
+    api project(":secrets-manager-api")
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+}
+
+ext {
+    artifactId = 'vault-commons'
+    artifactDescription = 'Vault Secrets Manager base abstractions'
+}

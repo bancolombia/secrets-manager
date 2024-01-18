@@ -1,4 +1,4 @@
-package co.com.bancolombia.secretsmanager.connector;
+package co.com.bancolombia.secretsmanager.vaultsync.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.vault.config.VaultKeyStoreProperties;
@@ -51,9 +51,9 @@ public class VaultSecretManagerConfigurator {
      * @return the VaultSecretsManagerConnector configured.
      * @throws SecretException
      */
-    public VaultSecretsManagerConnectorAsync getVaultClient() throws SecretException {
+    public VaultSecretsManagerConnectorSync getVaultClient() throws SecretException {
         HttpClient httpClient = getHttpClient();
-        return new VaultSecretsManagerConnectorAsync(httpClient,
+        return new VaultSecretsManagerConnectorSync(httpClient,
                 getVaultAuthenticator(),
                 properties);
     }
