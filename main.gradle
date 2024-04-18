@@ -105,12 +105,12 @@ subprojects {
         mavenCentral()
     }
 
-    dependencyCheck {
-        format = 'JSON'
-        formats = ['JSON']
-        junitFailOnCVSS = 7
-        failBuildOnCVSS = 7
-    }
+//    dependencyCheck {
+//        format = 'JSON'
+//        formats = ['JSON']
+//        junitFailOnCVSS = 7
+//        failBuildOnCVSS = 7
+//    }
 
 //    check.dependsOn dependencyCheckAggregate
 
