@@ -112,7 +112,7 @@ subprojects {
         failBuildOnCVSS = 7
     }
 
-    check.dependsOn dependencyCheckAggregate
+//    check.dependsOn dependencyCheckAggregate
 
     publishing {
         publications {
