@@ -33,7 +33,7 @@ jobs:
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           push-branch: "master"
-          commit-message: 'docs(version): Update version to ${{ env.RELEASE_VERSION }}'
+          commit-message: 'Update version to ${{ env.RELEASE_VERSION }} [skip ci]'
           force-add: "true"
           force-push: "true"
           files: CHANGELOG.md gradle.properties
