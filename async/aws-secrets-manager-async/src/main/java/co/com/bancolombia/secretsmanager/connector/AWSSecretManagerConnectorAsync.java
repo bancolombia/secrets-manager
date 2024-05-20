@@ -50,7 +50,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
     public <T> Mono<T> getSecret(String secretName, Class<T> cls) {
         return this.getSecret(secretName)
                 .flatMap((data -> Mono.just(GsonUtils.getInstance().stringToModel(data, cls))))
-                .onErrorMap((e) -> new SecretException(e.getMessage()));
+                .onErrorMap(e -> new SecretException(e.getMessage()));
     }
 
 
@@ -67,9 +67,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
-                .doOnError((err) -> {
-                    logger.warning("Error retrieving the secret: " + err.getMessage());
-                });
+                .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 
     /**

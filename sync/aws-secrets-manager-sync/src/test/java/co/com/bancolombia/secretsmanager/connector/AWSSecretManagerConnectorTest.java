@@ -53,7 +53,7 @@ class AWSSecretManagerConnectorTest {
     }
 
     @Test
-    void shouldConversionFail() throws Exception {
+    void shouldConversionFail() {
         prepareClient("test", true);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
         assertThrows(SecretException.class, () -> connector.getSecret("SecretDBFailMock", AWSSecretDBModel.class));

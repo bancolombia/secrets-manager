@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class exceptionsTest {
+class ExceptionsTest {
 
     @Test
-    void generateExpetion() {
+    void generateException() {
         SecretException ex = new SecretException("My error");
         assertEquals("My error", ex.getMessage());
     }

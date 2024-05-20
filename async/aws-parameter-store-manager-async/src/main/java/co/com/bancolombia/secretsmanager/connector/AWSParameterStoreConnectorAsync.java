@@ -57,9 +57,7 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
-                .doOnError((err) -> {
-                    logger.warning("Error retrieving the secret: " + err.getMessage());
-                });
+                .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 
     private SsmAsyncClient buildClient(SsmAsyncClientBuilder builder) {
