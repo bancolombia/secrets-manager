@@ -7,13 +7,7 @@ import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
-import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -56,7 +50,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
     public <T> Mono<T> getSecret(String secretName, Class<T> cls) {
         return this.getSecret(secretName)
                 .flatMap((data -> Mono.just(GsonUtils.getInstance().stringToModel(data, cls))))
-                .onErrorMap((e) -> new SecretException(e.getMessage()));
+                .onErrorMap(e -> new SecretException(e.getMessage()));
     }
 
 
@@ -73,9 +67,7 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
-                .doOnError((err) -> {
-                    logger.warning("Error retrieving the secret: " + err.getMessage());
-                });
+                .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 
     /**

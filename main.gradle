@@ -2,6 +2,10 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: 'org.sonarqube'
+    apply plugin: 'org.owasp.dependencycheck'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_17
 
     repositories {
         mavenCentral()
@@ -9,18 +13,7 @@ allprojects {
 
     group 'com.github.bancolombia'
 
-    dependencies {
-        compileOnly "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        testImplementation 'org.mockito:mockito-core:3.12.4'
-        testImplementation 'org.mockito:mockito-inline:3.12.4'
-        testImplementation 'junit:junit:4.13.2'
-    }
-
-    sonarqube {
+    sonar {
         properties {
             property "sonar.sourceEncoding", "UTF-8"
             property "sonar.projectKey", "bancolombia_secrets-manager"
@@ -44,11 +37,10 @@ nexusPublishing {
 }
 
 subprojects {
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-//    apply plugin: 'org.owasp.dependencycheck'
 
     ext {
         pomConfig = {
@@ -84,10 +76,42 @@ subprojects {
         groupId = 'com.github.bancolombia'
     }
 
-    group groupId
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.32'
+        annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_17
+        testCompileOnly 'org.projectlombok:lombok:1.18.32'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+        testImplementation platform('org.junit:junit-bom:5.11.0-M1')
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+
+    test.finalizedBy(project.tasks.jacocoTestReport)
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.setRequired true
+            xml.setOutputLocation layout.buildDirectory.file("reports/jacoco.xml")
+            csv.setRequired false
+            html.setOutputLocation layout.buildDirectory.dir("reports/jacocoHtml")
+        }
+    }
+
+    //    check.dependsOn dependencyCheckAggregate
+
+    dependencyCheck {
+        format = 'JSON'
+        formats = ['JSON']
+    }
 
     java {
         withJavadocJar()
@@ -101,18 +125,9 @@ subprojects {
     }
     javadoc.failOnError = false
 
-    repositories {
-        mavenCentral()
+    tasks.withType(GenerateModuleMetadata).configureEach {
+        enabled = false
     }
-
-//    dependencyCheck {
-//        format = 'JSON'
-//        formats = ['JSON']
-//        junitFailOnCVSS = 7
-//        failBuildOnCVSS = 7
-//    }
-
-//    check.dependsOn dependencyCheckAggregate
 
     publishing {
         publications {
@@ -134,10 +149,6 @@ subprojects {
         }
     }
 
-    tasks.withType(GenerateModuleMetadata).configureEach {
-        enabled = false
-    }
-
     if (project.hasProperty('signing.keyId')) {
         signing {
             sign publishing.publications.mavenJava
@@ -149,6 +160,7 @@ tasks.register('generateMergedReport', JacocoReport) {
     dependsOn test
     dependsOn subprojects.test
     dependsOn subprojects.javadoc
+    dependsOn subprojects.jacocoTestReport
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)

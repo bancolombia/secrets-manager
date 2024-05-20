@@ -2,6 +2,7 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+import lombok.Getter;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,19 +13,16 @@ import java.nio.file.Paths;
  *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
  */
+@Getter
 public class FileConnector implements GenericManager {
 
-    public static final String PATH_DOCKER_LINUX = "/run/secrets/";
-    public static final String PATH_DOCKER_WINDOWS = "C:\\ProgramData\\Docker\\secrets";
+    public static final String PATH_DOCKER_LINUX = "/run/secrets/";  // NOSONAR
+    public static final String PATH_DOCKER_WINDOWS = "C:\\ProgramData\\Docker\\secrets";  // NOSONAR
 
     private String path;
 
     public FileConnector(String path) {
         setPath(path);
-    }
-
-    public String getPath() {
-        return path;
     }
 
     /**

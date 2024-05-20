@@ -9,28 +9,27 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class VaultSecretsManagerConnectorSyncTest {
+@ExtendWith(MockitoExtension.class)
+class VaultSecretsManagerConnectorSyncTest {
 
     @Mock
     VaultAuthenticator authenticator;
 
     @SneakyThrows
     @Test
-    public void testGetSecretContent() {
+    void testGetSecretContent() {
 
         MockWebServer server = new MockWebServer();
 
@@ -78,7 +77,7 @@ public class VaultSecretsManagerConnectorSyncTest {
 
     @SneakyThrows
     @Test
-    public void testUnsuccessfulGetSecretContent() {
+    void testUnsuccessfulGetSecretContent() {
 
         MockWebServer server = new MockWebServer();
 
@@ -108,7 +107,7 @@ public class VaultSecretsManagerConnectorSyncTest {
         VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
                 new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
 
-        Assert.assertThrows(SecretException.class,
+        assertThrows(SecretException.class,
                 () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
 
         assertEquals("/v1/kv/data//path1/foo/bar", server.takeRequest().getPath());
@@ -118,7 +117,7 @@ public class VaultSecretsManagerConnectorSyncTest {
 
     @SneakyThrows
     @Test
-    public void testHandleIOException() {
+    void testHandleIOException() {
 
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
@@ -126,10 +125,6 @@ public class VaultSecretsManagerConnectorSyncTest {
                 .ssl(false)
                 .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")
                 .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
-                .build();
-
-        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
-                .withProperties(properties)
                 .build();
 
         HttpClient httpClient = Mockito.mock(HttpClient.class);
@@ -139,14 +134,14 @@ public class VaultSecretsManagerConnectorSyncTest {
         VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
                 new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
 
-        Assert.assertThrows(SecretException.class,
+        assertThrows(SecretException.class,
                 () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
 
     }
 
     @SneakyThrows
     @Test
-    public void testHandleInterruptedException() {
+    void testHandleInterruptedException() {
 
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
@@ -156,10 +151,6 @@ public class VaultSecretsManagerConnectorSyncTest {
                 .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
                 .build();
 
-        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
-                .withProperties(properties)
-                .build();
-
         HttpClient httpClient = Mockito.mock(HttpClient.class);
         when(httpClient.send(Mockito.any(), Mockito.any())).thenThrow(new InterruptedException("Dummy Interrupted Exception"));
         when(authenticator.login()).thenReturn(AuthResponse.builder().clientToken("hvs.dummy").build());
@@ -167,14 +158,14 @@ public class VaultSecretsManagerConnectorSyncTest {
         VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
                 new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
 
-        Assert.assertThrows(SecretException.class,
+        assertThrows(SecretException.class,
                 () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
 
     }
 
     @SneakyThrows
     @Test
-    public void testGetSecretContentNoAuthUseTokenProvided() {
+    void testGetSecretContentNoAuthUseTokenProvided() {
 
         MockWebServer server = new MockWebServer();
 
@@ -215,7 +206,7 @@ public class VaultSecretsManagerConnectorSyncTest {
 
     @SneakyThrows
     @Test
-    public void testGetSecretPojo() {
+    void testGetSecretPojo() {
 
         MockWebServer server = new MockWebServer();
 

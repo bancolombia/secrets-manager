@@ -1,9 +1,9 @@
 package co.com.bancolombia.secretsmanager.connector.models;
 
 import co.com.bancolombia.secretsmanager.model.AWSSecretDBModel;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Represents an AWS Secret DB Model. It lets you to test a AWS Secret DB Model.
@@ -11,10 +11,10 @@ import static org.junit.Assert.*;
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez
  * P.</a>
  */
-public final class AWSSecretDBModelTest {
+class AWSSecretDBModelTest {
 
     @Test
-    public void conversionOk() {
+    void conversionOk() {
         AWSSecretDBModel model = AWSSecretDBModel
                 .getModel("{\"username\":\"root\"," + "\"password\":\"123456789\",\"engine\":\"oracle\","
                         + "\"host\":\"jdbc:oracle:thin:@oauth-oracle.cufapur4ayuj"
@@ -28,9 +28,9 @@ public final class AWSSecretDBModelTest {
         assertEquals("ROOT", model.getDbname());
     }
 
-    @Test(expected = Exception.class)
-    public void conversionFail() {
-        AWSSecretDBModel.getModel("{\"username\"\"root\",\"passwords\":\"123456789\",\"engine\":\"oracle\"}");
+    @Test
+    void conversionFail() {
+        assertThrows(Exception.class, () -> AWSSecretDBModel.getModel("{\"username\"\"root\",\"passwords\":\"123456789\",\"engine\":\"oracle\"}"));
     }
 
 }

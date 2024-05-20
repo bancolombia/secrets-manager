@@ -6,13 +6,7 @@ import co.com.bancolombia.secretsmanager.config.AWSParameterStoreConfig;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
-import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
 import software.amazon.awssdk.services.ssm.SsmAsyncClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -63,9 +57,7 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
-                .doOnError((err) -> {
-                    logger.warning("Error retrieving the secret: " + err.getMessage());
-                });
+                .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 
     private SsmAsyncClient buildClient(SsmAsyncClientBuilder builder) {

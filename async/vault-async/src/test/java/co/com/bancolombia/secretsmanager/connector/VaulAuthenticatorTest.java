@@ -5,22 +5,22 @@ import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerPropert
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class VaulAuthenticatorTest {
+@ExtendWith(MockitoExtension.class)
+class VaulAuthenticatorTest {
 
     @SneakyThrows
     @Test
-    public void testAuthenticateWithRoleIdAndSecretId() {
+    void testAuthenticateWithRoleIdAndSecretId() {
         MockWebServer server = new MockWebServer();
 
         MockResponse response = new MockResponse()
@@ -57,7 +57,7 @@ public class VaulAuthenticatorTest {
 
     @SneakyThrows
     @Test
-    public void testAuthenticateWithK8s() {
+    void testAuthenticateWithK8s() {
 
         MockWebServer server = new MockWebServer();
 
@@ -99,7 +99,7 @@ public class VaulAuthenticatorTest {
 
     @SneakyThrows
     @Test
-    public void testHandleNoCredentials() {
+    void testHandleNoCredentials() {
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(2020)
@@ -127,7 +127,7 @@ public class VaulAuthenticatorTest {
 
     @SneakyThrows
     @Test
-    public void testHandleFailedAuth() {
+    void testHandleFailedAuth() {
         MockWebServer server = new MockWebServer();
 
         MockResponse response = new MockResponse()
@@ -159,7 +159,7 @@ public class VaulAuthenticatorTest {
         StepVerifier.create(vaultAuthenticator.login())
                 .expectSubscription()
                 .expectErrorMatches(throwable -> {
-                    Assert.assertTrue(throwable.getMessage().contains("invalid role or secret ID"));
+                    assertTrue(throwable.getMessage().contains("invalid role or secret ID"));
                     return true;
                 })
                 .verify();

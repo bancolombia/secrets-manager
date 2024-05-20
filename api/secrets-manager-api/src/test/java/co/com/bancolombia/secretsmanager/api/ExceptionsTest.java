@@ -1,13 +1,14 @@
 package co.com.bancolombia.secretsmanager.api;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class exceptionsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ExceptionsTest {
 
     @Test
-    public void generateExpetion() {
+    void generateException() {
         SecretException ex = new SecretException("My error");
         assertEquals("My error", ex.getMessage());
     }

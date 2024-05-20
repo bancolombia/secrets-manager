@@ -52,10 +52,10 @@ public class VaultSecretsManagerProperties {
     private CacheProperties secretsCacheProperties= CacheProperties.builder().expireAfter(600).maxSize(100).build();
 
     @Builder.Default
-    private String appRoleAuthPath = "/auth/approle/login";
+    private String appRoleAuthPath = "/auth/approle/login"; // NOSONAR
 
     @Builder.Default
-    private String k8sAuthPath = "/auth/kubernetes/login";
+    private String k8sAuthPath = "/auth/kubernetes/login"; // NOSONAR
 
     public String buildUrl() {
         return String.format("%s://%s:%d%s", ssl ? "https" : "http", host, port, baseApi);

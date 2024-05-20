@@ -8,27 +8,27 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.net.http.HttpClient;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class VaultSecretsManagerConnectorAsyncTest {
+@ExtendWith(MockitoExtension.class)
+class VaultSecretsManagerConnectorAsyncTest {
 
     @Mock
     VaultAuthenticator authenticator;
 
     @SneakyThrows
     @Test
-    public void testGetSecretContent() {
+    void testGetSecretContent() {
 
         MockWebServer server = new MockWebServer();
 
@@ -77,7 +77,7 @@ public class VaultSecretsManagerConnectorAsyncTest {
 
     @SneakyThrows
     @Test
-    public void testGetSecretContentNoAuthUseTokenProvided() {
+    void testGetSecretContentNoAuthUseTokenProvided() {
 
         MockWebServer server = new MockWebServer();
 
@@ -119,7 +119,7 @@ public class VaultSecretsManagerConnectorAsyncTest {
 
     @SneakyThrows
     @Test
-    public void testGetSecretPojo() {
+    void testGetSecretPojo() {
 
         MockWebServer server = new MockWebServer();
 

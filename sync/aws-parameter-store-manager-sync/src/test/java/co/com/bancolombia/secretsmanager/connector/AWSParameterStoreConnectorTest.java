@@ -1,10 +1,10 @@
 package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -12,12 +12,13 @@ import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.Parameter;
 import software.amazon.awssdk.services.ssm.model.ParameterNotFoundException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AWSParameterStoreConnectorTest {
+@ExtendWith(MockitoExtension.class)
+class AWSParameterStoreConnectorTest {
     @Mock
     private SsmClient client;
     @Mock
@@ -26,7 +27,7 @@ public class AWSParameterStoreConnectorTest {
     private AWSParameterStoreConnector connector;
 
     @Test
-    public void shouldGetStringSecretWithEndpoint() throws SecretException {
+    void shouldGetStringSecret() throws SecretException {
         prepareClient("secretValue", true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
         String secretValue = connector.getSecret("secretName");
@@ -34,45 +35,42 @@ public class AWSParameterStoreConnectorTest {
     }
 
     @Test
-    public void shouldGetStringSecret() throws SecretException {
-        prepareClient("secretValue", true);
-        connector = new AWSParameterStoreConnector("us-east-1", builder);
-        String secretValue = connector.getSecret("secretName");
-        assertEquals(secretValue, "secretValue");
-    }
-
-    @Test(expected = SecretException.class)
-    public void shouldThrowExceptionWhenSecretValueNull() throws SecretException {
+    void shouldThrowExceptionWhenSecretValueNull() {
         prepareClient("secretValue", false);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
-        connector.getSecret("secretName");
+        assertThrows(SecretException.class, () -> {
+            connector.getSecret("secretName");
+        });
     }
 
-    @Test(expected = SecretException.class)
-    public void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
+    @Test
+    void shouldThrowExceptionWhenSecretIsNotAString() {
         prepareClient(null, true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
-        connector.getSecret("secretName");
+        assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void shouldThrowExceptionWhenNoApplySerialization() throws UnsupportedOperationException {
-        prepareClient("secretValue", true);
+    @Test
+    void shouldThrowExceptionWhenNoApplySerialization() throws UnsupportedOperationException {
         connector = new AWSParameterStoreConnector("us-east-1", builder);
-        connector.getSecret("secretName", Class.class);
+        assertThrows(UnsupportedOperationException.class, () -> connector.getSecret("secretName", Class.class));
     }
 
-    @Test(expected = SecretException.class)
-    public void shouldThrowExceptionWhenParameterNotFound() throws SecretException {
-        prepareClient(null, false);
+    @Test
+    void shouldThrowExceptionWhenParameterNotFound() {
+        prepareClient(null, false, false);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
 
         when(client.getParameter(any(GetParameterRequest.class))).thenThrow(ParameterNotFoundException.class);
 
-        connector.getSecret("secretName");
+        assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
     private void prepareClient(String data, boolean secretValue) {
+        prepareClient(data, secretValue, true);
+    }
+
+    private void prepareClient(String data, boolean secretValue, boolean willCallGetParameter) {
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
@@ -80,8 +78,9 @@ public class AWSParameterStoreConnectorTest {
         when(builder.credentialsProvider(any())).thenReturn(builder);
         when(builder.region(any())).thenReturn(builder);
         when(builder.build()).thenReturn(client);
-
-        when(client.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
+        if (willCallGetParameter) {
+            when(client.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
+        }
     }
 
 }
