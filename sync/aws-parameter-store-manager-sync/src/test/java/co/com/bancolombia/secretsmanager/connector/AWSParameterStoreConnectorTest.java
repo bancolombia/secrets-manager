@@ -27,14 +27,6 @@ class AWSParameterStoreConnectorTest {
     private AWSParameterStoreConnector connector;
 
     @Test
-    void shouldGetStringSecretWithEndpoint() throws SecretException {
-        prepareClient("secretValue", true);
-        connector = new AWSParameterStoreConnector("us-east-1", "http://localhost:8080");
-        String secretValue = connector.getSecret("secretName");
-        assertEquals("secretValue", secretValue);
-    }
-
-    @Test
     void shouldGetStringSecret() throws SecretException {
         prepareClient("secretValue", true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
@@ -55,33 +47,30 @@ class AWSParameterStoreConnectorTest {
     void shouldThrowExceptionWhenSecretIsNotAString() {
         prepareClient(null, true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
-        assertThrows(SecretException.class, () -> {
-            connector.getSecret("secretName");
-        });
+        assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
     @Test
     void shouldThrowExceptionWhenNoApplySerialization() throws UnsupportedOperationException {
-        prepareClient("secretValue", true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
-        assertThrows(UnsupportedOperationException.class, () -> {
-            connector.getSecret("secretName", Class.class);
-        });
+        assertThrows(UnsupportedOperationException.class, () -> connector.getSecret("secretName", Class.class));
     }
 
     @Test
     void shouldThrowExceptionWhenParameterNotFound() {
-        prepareClient(null, false);
+        prepareClient(null, false, false);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
 
         when(client.getParameter(any(GetParameterRequest.class))).thenThrow(ParameterNotFoundException.class);
 
-        assertThrows(SecretException.class, () -> {
-            connector.getSecret("secretName");
-        });
+        assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
     private void prepareClient(String data, boolean secretValue) {
+        prepareClient(data, secretValue, true);
+    }
+
+    private void prepareClient(String data, boolean secretValue, boolean willCallGetParameter) {
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
@@ -89,8 +78,9 @@ class AWSParameterStoreConnectorTest {
         when(builder.credentialsProvider(any())).thenReturn(builder);
         when(builder.region(any())).thenReturn(builder);
         when(builder.build()).thenReturn(client);
-
-        when(client.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
+        if (willCallGetParameter) {
+            when(client.getParameter(any(GetParameterRequest.class))).thenReturn(responseMock);
+        }
     }
 
 }

@@ -84,7 +84,7 @@ class AWSSecretManagerConnectorTest {
 
     @Test
     void shouldThrowExceptionWhenSecretIsNonExistent() {
-        prepareClient(null, false);
+        prepareClient(null, false, false);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
 
         when(client.getSecretValue(any(GetSecretValueRequest.class))).thenThrow(ResourceNotFoundException.class);
@@ -94,7 +94,7 @@ class AWSSecretManagerConnectorTest {
 
     @Test
     void shouldThrowExceptionWhenSecretManagerFailsWithEndpoint() {
-        prepareClient(null, false);
+        prepareClient(null, false, false);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
 
         when(client.getSecretValue(any(GetSecretValueRequest.class))).thenThrow(SdkClientException.class);
@@ -103,13 +103,18 @@ class AWSSecretManagerConnectorTest {
     }
 
     private void prepareClient(String data, boolean secretValue) {
+        prepareClient(data, secretValue, true);
+    }
+
+    private void prepareClient(String data, boolean secretValue, boolean mockGetSecretValue) {
         GetSecretValueResponse responseMock = secretValue ? GetSecretValueResponse.builder()
                 .secretString(data)
                 .build() : null;
 
         when(builder.build()).thenReturn(client);
-
-        when(client.getSecretValue(any(GetSecretValueRequest.class))).thenReturn(responseMock);
+        if (mockGetSecretValue) {
+            when(client.getSecretValue(any(GetSecretValueRequest.class))).thenReturn(responseMock);
+        }
     }
 
 }

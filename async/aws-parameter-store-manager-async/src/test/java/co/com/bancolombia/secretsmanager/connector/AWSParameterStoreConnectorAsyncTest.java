@@ -64,13 +64,16 @@ class AWSParameterStoreConnectorAsyncTest {
 
     @Test
     void shouldThrowExceptionWhenNoApplySerialization() {
-        prepareClient("secretValue", true);
+        prepareClient("secretValue", true, false);
         StepVerifier.create(connector.getSecret("secretName", Class.class))
                 .expectSubscription()
                 .verifyError(UnsupportedOperationException.class);
     }
 
     private void prepareClient(String data, boolean secretValue) {
+        prepareClient(data, secretValue, true);
+    }
+    private void prepareClient(String data, boolean secretValue, boolean willCallGetParameter) {
         GetParameterResponse responseMock = secretValue ? GetParameterResponse.builder()
                 .parameter(Parameter.builder().value(data).build())
                 .build() : null;
@@ -81,7 +84,9 @@ class AWSParameterStoreConnectorAsyncTest {
         when(builder.region(any())).thenReturn(builder);
         when(builder.build()).thenReturn(client);
 
-        when(client.getParameter(any(GetParameterRequest.class))).thenReturn(completableFuture);
+        if (willCallGetParameter) {
+            when(client.getParameter(any(GetParameterRequest.class))).thenReturn(completableFuture);
+        }
         connector = new AWSParameterStoreConnectorAsync(config, builder);
     }
 
