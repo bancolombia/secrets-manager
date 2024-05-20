@@ -1,37 +1,40 @@
 package co.com.bancolombia.secretsmanager.connector;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Represents an Environment Connector Test. It lets you to test Environment Connector Object.
  *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
  */
-public class EnvConnectorTest {
+class EnvConnectorTest {
 
     private EnvConnector connector;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         connector = new EnvConnector();
     }
 
-    @Test(expected = Exception.class)
-    public void variableDoesntExist() throws Exception {
-        connector.getSecret("SecretDoesntExist");
+    @Test
+    void variableDoesNotExist() throws Exception {
+        assertThrows(Exception.class, () -> {
+            connector.getSecret("SecretDoesNotExist");
+        });
     }
 
     @Test
-    public void variableExists() throws Exception {
+    void variableExists() throws Exception {
         String secret = connector.getSecret("PATH");
         assertNotNull(secret);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void getSecretModel() {
-        connector.getSecret("mySecret", Class.class);
+    @Test
+    void getSecretModel() {
+        assertThrows(UnsupportedOperationException.class, () -> connector.getSecret("mySecret", Class.class));
     }
 }

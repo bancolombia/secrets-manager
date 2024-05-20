@@ -3,11 +3,11 @@ package co.com.bancolombia.secretsmanager.connector;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
 import lombok.Data;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
@@ -22,16 +22,16 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AWSSecretManagerConnectorAsyncTest {
+@ExtendWith(MockitoExtension.class)
+class AWSSecretManagerConnectorAsyncTest {
     @Mock
     private SecretsManagerAsyncClient client;
     @Mock
     private SecretsManagerAsyncClientBuilder clientBuilder;
     private AWSSecretManagerConnectorAsync connector;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         AWSSecretsManagerConfig config = AWSSecretsManagerConfig.builder()
                 .cacheSeconds(5)
                 .cacheSize(10)
@@ -44,7 +44,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldReturnSecretModel() {
+    void shouldReturnSecretModel() {
         when(client.getSecretValue(getSecretValueRequest("secretModelName")))
                 .thenReturn(getResponse("{\"username\":\"root\",\"password\":\"123456789\"}", true));
 
@@ -56,7 +56,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldReturnStringSecretValue() {
+    void shouldReturnStringSecretValue() {
         when(client.getSecretValue(getSecretValueRequest("stringSecretName")))
                 .thenReturn(getResponse("secretValue", true));
 
@@ -67,7 +67,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSecretIsNotAString() {
+    void shouldThrowExceptionWhenSecretIsNotAString() {
         when(client.getSecretValue(getSecretValueRequest("secretName")))
                 .thenReturn(getResponse(null, true));
 
@@ -77,7 +77,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSecretIsNull() {
+    void shouldThrowExceptionWhenSecretIsNull() {
         when(client.getSecretValue(getSecretValueRequest("secretName")))
                 .thenReturn(getResponse(null, false));
 
@@ -87,7 +87,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSecretIsNonExistent() {
+    void shouldThrowExceptionWhenSecretIsNonExistent() {
         when(client.getSecretValue(getSecretValueRequest("secretName")))
                 .thenReturn(CompletableFuture.failedFuture(ResourceNotFoundException.builder()
                         .message("Secrets Manager can't find the specified secret not found.")
@@ -101,7 +101,7 @@ public class AWSSecretManagerConnectorAsyncTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenRequestIsInvalid() {
+    void shouldThrowExceptionWhenRequestIsInvalid() {
         when(client.getSecretValue(getSecretValueRequest("secretNameF$1l")))
                 .thenReturn(CompletableFuture.failedFuture(InvalidParameterException.builder()
                         .message("The parameter name or value is invalid.")

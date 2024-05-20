@@ -1,22 +1,22 @@
 package co.com.bancolombia.secretsmanager.config;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.regions.Region;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AWSParameterStoreConfigTest {
+class AWSParameterStoreConfigTest {
 
     private static AWSParameterStoreConfig awsParameterStoreConfig;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         awsParameterStoreConfig = AWSParameterStoreConfig.builder().build();
     }
 
     @Test
-    public void validateAWSParameterStoreConfig() {
+    void validateAWSParameterStoreConfig() {
         assertEquals(Region.US_EAST_1, awsParameterStoreConfig.getRegion());
         assertEquals("", awsParameterStoreConfig.getEndpoint());
         assertEquals(0, awsParameterStoreConfig.getCacheSeconds());

@@ -1,22 +1,22 @@
 package co.com.bancolombia.secretsmanager.config;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.regions.Region;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AWSSecretsManagerConfigTest {
+class AWSSecretsManagerConfigTest {
 
     private static AWSSecretsManagerConfig awsSecretsManagerConfig;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         awsSecretsManagerConfig = AWSSecretsManagerConfig.builder().build();
     }
 
     @Test
-    public void validateAWSSecretsManagerConfig() {
+    void validateAWSSecretsManagerConfig() {
         assertEquals(Region.US_EAST_1, awsSecretsManagerConfig.getRegion());
         assertEquals("", awsSecretsManagerConfig.getEndpoint());
         assertEquals(0, awsSecretsManagerConfig.getCacheSeconds());

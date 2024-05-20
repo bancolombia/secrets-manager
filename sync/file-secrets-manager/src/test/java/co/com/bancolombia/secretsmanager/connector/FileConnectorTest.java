@@ -1,35 +1,36 @@
 package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Represents an File Connector Test. It lets you to test File Connector Object.
  *
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez P.</a>
  */
-public class FileConnectorTest {
+class FileConnectorTest {
     private FileConnector connector;
 
-    @Test(expected = SecretException.class)
-    public void pathDoesntExist() throws Exception {
-        connector = new FileConnector("/path/doesnt/exits");
-        connector.getSecret("SecretDoesntExist");
+    @Test
+    void pathDoesNotExist() throws Exception {
+        connector = new FileConnector("/path/doesNot/exits");
+        assertThrows(SecretException.class, () -> connector.getSecret("Secret.txt"));
     }
 
     @Test
-    public void pathExists() throws SecretException {
+    void pathExists() throws SecretException {
         connector = new FileConnector("src/test/resources/");
-        String secreto = connector.getSecret("Secret.txt");
-        assertEquals("secret", secreto);
+        String secret = connector.getSecret("Secret.txt");
+        assertEquals("secret", secret);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void getSecretModel() {
+    @Test
+    void getSecretModel() {
         connector = new FileConnector("src/test/resources/");
-        connector.getSecret("Secret.txt", Class.class);
+        assertThrows(UnsupportedOperationException.class, () -> connector.getSecret("Secret.txt", Class.class));
     }
 
 }

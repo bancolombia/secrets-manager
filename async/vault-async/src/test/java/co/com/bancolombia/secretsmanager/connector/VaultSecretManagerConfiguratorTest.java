@@ -5,18 +5,20 @@ import co.com.bancolombia.secretsmanager.vault.config.VaultKeyStoreProperties;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import co.com.bancolombia.secretsmanager.vault.config.VaultTrustStoreProperties;
 import lombok.SneakyThrows;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URI;
 import java.net.http.HttpClient;
 
-public class VaultSecretManagerConfiguratorTest {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class VaultSecretManagerConfiguratorTest {
 
     @SneakyThrows
     @Test
-    public void testHttpClientGeneration() {
+    void testHttpClientGeneration() {
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(8200)
@@ -29,12 +31,12 @@ public class VaultSecretManagerConfiguratorTest {
                 .build()
                 .getHttpClient();
 
-        Assert.assertNotNull(client);
+        assertNotNull(client);
     }
 
     @SneakyThrows
     @Test
-    public void testVaultClientGeneration() {
+    void testVaultClientGeneration() {
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(8200)
@@ -47,12 +49,12 @@ public class VaultSecretManagerConfiguratorTest {
                 .build()
                 .getVaultClient();
 
-        Assert.assertNotNull(client);
+        assertNotNull(client);
     }
 
     @SneakyThrows
     @Test
-    public void testClientGenerationWithKeyStore() {
+    void testClientGenerationWithKeyStore() {
         URI keyStoreUri = getClass().getClassLoader().getResource("keystore.jks").toURI();
         File keyStoreFile = new File(keyStoreUri);
 
@@ -73,12 +75,12 @@ public class VaultSecretManagerConfiguratorTest {
                 .build()
                 .getHttpClient();
 
-        Assert.assertNotNull(client);
+        assertNotNull(client);
     }
 
     @SneakyThrows
     @Test
-    public void testClientGenerationWithKeyStoreNoValues() {
+    void testClientGenerationWithKeyStoreNoValues() {
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(8200)
@@ -89,7 +91,7 @@ public class VaultSecretManagerConfiguratorTest {
                 )
                 .build();
 
-        Assert.assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
+        assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
                 .withProperties(properties)
                 .build()
                 .getHttpClient());
@@ -98,7 +100,7 @@ public class VaultSecretManagerConfiguratorTest {
 
     @SneakyThrows
     @Test
-    public void testClientGenerationWithTrustStore() {
+    void testClientGenerationWithTrustStore() {
         URI storeUri = getClass().getClassLoader().getResource("truststore.jks").toURI();
         File storeFile = new File(storeUri);
 
@@ -118,12 +120,12 @@ public class VaultSecretManagerConfiguratorTest {
                 .build()
                 .getHttpClient();
 
-        Assert.assertNotNull(client);
+        assertNotNull(client);
     }
 
     @SneakyThrows
     @Test
-    public void testClientGenerationWithTrustPem() {
+    void testClientGenerationWithTrustPem() {
         URI pemUri = getClass().getClassLoader().getResource("certificate.arm").toURI();
         File pemFile = new File(pemUri);
 
@@ -143,12 +145,12 @@ public class VaultSecretManagerConfiguratorTest {
                 .build()
                 .getHttpClient();
 
-        Assert.assertNotNull(client);
+        assertNotNull(client);
     }
 
     @SneakyThrows
     @Test
-    public void testClientGenerationWithTrustNoValues() {
+    void testClientGenerationWithTrustNoValues() {
         URI pemUri = getClass().getClassLoader().getResource("certificate.arm").toURI();
         File pemFile = new File(pemUri);
 
@@ -162,7 +164,7 @@ public class VaultSecretManagerConfiguratorTest {
                 )
                 .build();
 
-        Assert.assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
+        assertThrows(SecretException.class, () -> VaultSecretManagerConfigurator.builder()
                 .withProperties(properties)
                 .build()
                 .getHttpClient());

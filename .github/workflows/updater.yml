@@ -15,7 +15,7 @@ jobs:
           private_key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: master
           token: ${{ steps.generate_token.outputs.token }}
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -45,6 +45,6 @@ jobs:
           title: 'fix(deps): update dependencies'
           body: 'This PR updates dependencies to latest versions'
           branch: 'feature/autoupdate-deps'
-          base: 'main'
+          base: 'master'
           labels: 'dependencies'
           reviewers: 'juancgalvis'
