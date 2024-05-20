@@ -15,7 +15,7 @@ class FileConnectorTest {
     private FileConnector connector;
 
     @Test
-    void pathDoesNotExist() throws Exception {
+    void pathDoesNotExist() {
         connector = new FileConnector("/path/doesNot/exits");
         assertThrows(SecretException.class, () -> connector.getSecret("Secret.txt"));
     }

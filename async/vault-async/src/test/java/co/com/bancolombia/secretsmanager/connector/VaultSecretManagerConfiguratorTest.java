@@ -151,9 +151,6 @@ class VaultSecretManagerConfiguratorTest {
     @SneakyThrows
     @Test
     void testClientGenerationWithTrustNoValues() {
-        URI pemUri = getClass().getClassLoader().getResource("certificate.arm").toURI();
-        File pemFile = new File(pemUri);
-
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(8200)

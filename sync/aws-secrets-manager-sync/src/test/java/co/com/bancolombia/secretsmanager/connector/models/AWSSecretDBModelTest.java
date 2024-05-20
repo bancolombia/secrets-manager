@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author <a href="mailto:andmagom@bancolombia.com.co">Andrés Mauricio Gómez
  * P.</a>
  */
-public final class AWSSecretDBModelTest {
+class AWSSecretDBModelTest {
 
     @Test
     void conversionOk() {

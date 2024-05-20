@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -128,10 +127,6 @@ class VaultSecretsManagerConnectorSyncTest {
                 .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
                 .build();
 
-        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
-                .withProperties(properties)
-                .build();
-
         HttpClient httpClient = Mockito.mock(HttpClient.class);
         when(httpClient.send(Mockito.any(), Mockito.any())).thenThrow(new IOException("Dummy IO Exception"));
         when(authenticator.login()).thenReturn(AuthResponse.builder().clientToken("hvs.dummy").build());
@@ -154,10 +149,6 @@ class VaultSecretsManagerConnectorSyncTest {
                 .ssl(false)
                 .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")
                 .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
-                .build();
-
-        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
-                .withProperties(properties)
                 .build();
 
         HttpClient httpClient = Mockito.mock(HttpClient.class);

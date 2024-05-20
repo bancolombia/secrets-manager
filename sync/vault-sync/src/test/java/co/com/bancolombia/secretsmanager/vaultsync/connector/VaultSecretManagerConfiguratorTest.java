@@ -5,7 +5,6 @@ import co.com.bancolombia.secretsmanager.vault.config.VaultKeyStoreProperties;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import co.com.bancolombia.secretsmanager.vault.config.VaultTrustStoreProperties;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -152,9 +151,6 @@ class VaultSecretManagerConfiguratorTest {
     @SneakyThrows
     @Test
     void testClientGenerationWithTrustNoValues() {
-        URI pemUri = getClass().getClassLoader().getResource("certificate.arm").toURI();
-        File pemFile = new File(pemUri);
-
         VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
                 .host("localhost")
                 .port(8200)

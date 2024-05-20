@@ -1,9 +1,7 @@
 package co.com.bancolombia.secretsmanager.vault.ssl;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import co.com.bancolombia.secretsmanager.vault.ssl.SslConfig;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.DataOutputStream;

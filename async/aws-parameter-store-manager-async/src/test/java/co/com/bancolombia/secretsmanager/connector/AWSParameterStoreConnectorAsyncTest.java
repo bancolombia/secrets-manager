@@ -40,7 +40,7 @@ class AWSParameterStoreConnectorAsyncTest {
     }
 
     @Test
-    void shouldGetStringSecret() throws SecretException {
+    void shouldGetStringSecret() {
         prepareClient("secretValue", true);
         StepVerifier.create(connector.getSecret("secretName"))
                 .expectNext("secretValue").expectComplete().verify();

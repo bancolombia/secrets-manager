@@ -69,21 +69,21 @@ class AWSSecretManagerConnectorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
+    void shouldThrowExceptionWhenSecretIsNotAString() {
         prepareClient(null, true);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
         assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretResultIsNull() throws SecretException {
+    void shouldThrowExceptionWhenSecretResultIsNull() {
         prepareClient(null, false);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
         assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretIsNonExistent() throws SecretException {
+    void shouldThrowExceptionWhenSecretIsNonExistent() {
         prepareClient(null, false);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
 
@@ -93,7 +93,7 @@ class AWSSecretManagerConnectorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretManagerFailsWithEndpoint() throws SecretException {
+    void shouldThrowExceptionWhenSecretManagerFailsWithEndpoint() {
         prepareClient(null, false);
         connector = new AWSSecretManagerConnector("us-east-1", builder);
 

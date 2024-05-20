@@ -29,7 +29,7 @@ class AWSParameterStoreConnectorTest {
     @Test
     void shouldGetStringSecretWithEndpoint() throws SecretException {
         prepareClient("secretValue", true);
-        connector = new AWSParameterStoreConnector("us-east-1", builder);
+        connector = new AWSParameterStoreConnector("us-east-1", "http://localhost:8080");
         String secretValue = connector.getSecret("secretName");
         assertEquals(secretValue, "secretValue");
     }
@@ -43,7 +43,7 @@ class AWSParameterStoreConnectorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretValueNull() throws SecretException {
+    void shouldThrowExceptionWhenSecretValueNull() {
         prepareClient("secretValue", false);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
         assertThrows(SecretException.class, () -> {
@@ -52,7 +52,7 @@ class AWSParameterStoreConnectorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenSecretIsNotAString() throws SecretException {
+    void shouldThrowExceptionWhenSecretIsNotAString() {
         prepareClient(null, true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
         assertThrows(SecretException.class, () -> {
@@ -70,7 +70,7 @@ class AWSParameterStoreConnectorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenParameterNotFound() throws SecretException {
+    void shouldThrowExceptionWhenParameterNotFound() {
         prepareClient(null, false);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
 

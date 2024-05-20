@@ -21,7 +21,7 @@ class EnvConnectorTest {
     }
 
     @Test
-    void variableDoesNotExist() throws Exception {
+    void variableDoesNotExist() {
         assertThrows(Exception.class, () -> {
             connector.getSecret("SecretDoesNotExist");
         });
