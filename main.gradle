@@ -10,11 +10,11 @@ allprojects {
     group 'com.github.bancolombia'
 
     dependencies {
-        compileOnly "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        compileOnly "org.projectlombok:lombok:1.18.32"
+        annotationProcessor "org.projectlombok:lombok:1.18.32"
 
-        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:1.18.32"
+        testAnnotationProcessor "org.projectlombok:lombok:1.18.32"
         testImplementation 'org.mockito:mockito-core:5.12.0'
         testImplementation 'org.mockito:mockito-inline:5.2.0'
         testImplementation 'junit:junit:4.13.2'
