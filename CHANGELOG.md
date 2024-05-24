@@ -1,5 +1,18 @@
 # Changelog
 
+## [v4.4.4](https://github.com/bancolombia/secrets-manager/tree/v4.4.4) (2024-05-24)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.3...v4.4.4)
+
+**Closed issues:**
+
+- Add sonar measures when pull requests [\#35](https://github.com/bancolombia/secrets-manager/issues/35)
+- Implementation of GenericManager doesn't handle several exceptions [\#30](https://github.com/bancolombia/secrets-manager/issues/30)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#55](https://github.com/bancolombia/secrets-manager/pull/55) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+
 ## [v4.4.3](https://github.com/bancolombia/secrets-manager/tree/v4.4.3) (2024-05-20)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.2...v4.4.3)
@@ -158,19 +171,19 @@
 
 ## [V1.1.1-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.1-preview) (2020-09-16)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.1-preview)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.1-preview)
 
 **Merged pull requests:**
 
 - Dependencies updated [\#14](https://github.com/bancolombia/secrets-manager/pull/14) ([brianou7](https://github.com/brianou7))
 
-## [V1.1.0-alpha](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-alpha) (2020-09-15)
-
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.0-alpha)
-
 ## [V1.1.0-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-preview) (2020-09-15)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-preview)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.0-preview)
+
+## [V1.1.0-alpha](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-alpha) (2020-09-15)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-alpha)
 
 **Merged pull requests:**
 
