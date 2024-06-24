@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.4.9](https://github.com/bancolombia/secrets-manager/tree/v4.4.9) (2024-06-21)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.8...v4.4.9)
+
 ## [v4.4.8](https://github.com/bancolombia/secrets-manager/tree/v4.4.8) (2024-06-21)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.7...v4.4.8)
