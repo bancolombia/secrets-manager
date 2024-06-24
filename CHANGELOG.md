@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.4.10](https://github.com/bancolombia/secrets-manager/tree/v4.4.10) (2024-06-24)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.9...v4.4.10)
+
 ## [v4.4.9](https://github.com/bancolombia/secrets-manager/tree/v4.4.9) (2024-06-21)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.8...v4.4.9)
@@ -73,19 +77,19 @@
 
 ## [v4.4.1](https://github.com/bancolombia/secrets-manager/tree/v4.4.1) (2024-04-18)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.3.1...v4.4.1)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.0...v4.4.1)
 
 **Merged pull requests:**
 
 - fix\(deps\): Update dependencies [\#49](https://github.com/bancolombia/secrets-manager/pull/49) ([juancgalvis](https://github.com/juancgalvis))
 
-## [v4.3.1](https://github.com/bancolombia/secrets-manager/tree/v4.3.1) (2024-01-18)
-
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.0...v4.3.1)
-
 ## [v4.4.0](https://github.com/bancolombia/secrets-manager/tree/v4.4.0) (2024-01-18)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/4.3.1...v4.4.0)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.3.1...v4.4.0)
+
+## [v4.3.1](https://github.com/bancolombia/secrets-manager/tree/v4.3.1) (2024-01-18)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/4.3.1...v4.3.1)
 
 **Merged pull requests:**
 
