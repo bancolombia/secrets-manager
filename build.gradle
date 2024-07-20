@@ -10,9 +10,9 @@ plugins {
     id 'org.sonarqube' version '5.1.0.4882'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
-    id 'org.springframework.boot' version '3.3.1' apply false
-    id 'org.owasp.dependencycheck' version '10.0.2' apply false
-    id 'co.com.bancolombia.cleanArchitecture' version '3.17.13'
+    id 'org.springframework.boot' version '3.3.2' apply false
+    id 'org.owasp.dependencycheck' version '10.0.3' apply false
+    id 'co.com.bancolombia.cleanArchitecture' version '3.17.14'
 }
 
 apply from: './main.gradle'
