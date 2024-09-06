@@ -11,8 +11,8 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.51.0'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.springframework.boot' version '3.3.3' apply false
-    id 'org.owasp.dependencycheck' version '10.0.3' apply false
-    id 'co.com.bancolombia.cleanArchitecture' version '3.17.18'
+    id 'org.owasp.dependencycheck' version '10.0.4' apply false
+    id 'co.com.bancolombia.cleanArchitecture' version '3.17.21'
 }
 
 apply from: './main.gradle'
