@@ -1,5 +1,14 @@
 # Changelog
 
+## [v4.4.23](https://github.com/bancolombia/secrets-manager/tree/v4.4.23) (2024-11-08)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.22...v4.4.23)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#74](https://github.com/bancolombia/secrets-manager/pull/74) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+- fix: Update scorecard dependencies [\#73](https://github.com/bancolombia/secrets-manager/pull/73) ([dhfherna](https://github.com/dhfherna))
+
 ## [v4.4.22](https://github.com/bancolombia/secrets-manager/tree/v4.4.22) (2024-10-11)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.21...v4.4.22)
