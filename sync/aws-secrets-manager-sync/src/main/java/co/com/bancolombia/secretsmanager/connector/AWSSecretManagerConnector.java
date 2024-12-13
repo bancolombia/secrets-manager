@@ -95,8 +95,7 @@ public class AWSSecretManagerConnector implements GenericManager {
     }
 
     private SecretsManagerClient buildClient(SecretsManagerClientBuilder builder, String region, Optional<URI> endpoint) {
-        SecretsManagerClient.builder()
-                .credentialsProvider(getProviderChain())
+        builder.credentialsProvider(getProviderChain())
                 .region(Region.of(region));
         endpoint.ifPresent(builder::endpointOverride);
         return builder.build();
