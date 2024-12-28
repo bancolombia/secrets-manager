@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.4.26](https://github.com/bancolombia/secrets-manager/tree/v4.4.26) (2024-12-28)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.25...v4.4.26)
+
+**Merged pull requests:**
+
+- The builder used to set the region is changed to the input and output… [\#77](https://github.com/bancolombia/secrets-manager/pull/77) ([santiap03](https://github.com/santiap03))
+
 ## [v4.4.25](https://github.com/bancolombia/secrets-manager/tree/v4.4.25) (2024-12-28)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.24...v4.4.25)
