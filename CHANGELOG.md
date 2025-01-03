@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.4.27](https://github.com/bancolombia/secrets-manager/tree/v4.4.27) (2025-01-03)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.26...v4.4.27)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#78](https://github.com/bancolombia/secrets-manager/pull/78) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+
 ## [v4.4.26](https://github.com/bancolombia/secrets-manager/tree/v4.4.26) (2024-12-28)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.25...v4.4.26)
