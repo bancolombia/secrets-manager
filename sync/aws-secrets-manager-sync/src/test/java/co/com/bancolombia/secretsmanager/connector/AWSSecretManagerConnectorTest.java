@@ -111,6 +111,8 @@ class AWSSecretManagerConnectorTest {
                 .secretString(data)
                 .build() : null;
 
+        when(builder.credentialsProvider(any())).thenReturn(builder);
+        when(builder.region(any())).thenReturn(builder);
         when(builder.build()).thenReturn(client);
         if (mockGetSecretValue) {
             when(client.getSecretValue(any(GetSecretValueRequest.class))).thenReturn(responseMock);
