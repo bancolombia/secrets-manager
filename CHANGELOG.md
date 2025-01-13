@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.4.28](https://github.com/bancolombia/secrets-manager/tree/v4.4.28) (2025-01-13)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.27...v4.4.28)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#79](https://github.com/bancolombia/secrets-manager/pull/79) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+
 ## [v4.4.27](https://github.com/bancolombia/secrets-manager/tree/v4.4.27) (2025-01-03)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.26...v4.4.27)
@@ -349,19 +357,19 @@
 
 ## [V1.1.1-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.1-preview) (2020-09-16)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.1-preview)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.1-preview)
 
 **Merged pull requests:**
 
 - Dependencies updated [\#14](https://github.com/bancolombia/secrets-manager/pull/14) ([brianou7](https://github.com/brianou7))
 
-## [V1.1.0-alpha](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-alpha) (2020-09-15)
-
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.0-alpha)
-
 ## [V1.1.0-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-preview) (2020-09-15)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-preview)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.0-preview)
+
+## [V1.1.0-alpha](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-alpha) (2020-09-15)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-alpha)
 
 **Merged pull requests:**
 
