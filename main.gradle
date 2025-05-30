@@ -82,9 +82,9 @@ subprojects {
 
         testCompileOnly 'org.projectlombok:lombok:1.18.38'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
-        testImplementation platform('org.junit:junit-bom:5.11.4')
+        testImplementation platform('org.junit:junit-bom:5.13.0-M3')
         testImplementation 'org.junit.jupiter:junit-jupiter-engine'
-        testImplementation 'org.mockito:mockito-junit-jupiter:5.17.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.18.0'
     }
 
     test {
