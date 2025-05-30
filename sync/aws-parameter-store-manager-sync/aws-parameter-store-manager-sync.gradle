@@ -6,7 +6,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom 'software.amazon.awssdk:bom:2.31.16'
+        mavenBom 'software.amazon.awssdk:bom:2.31.52'
     }
 }
 
