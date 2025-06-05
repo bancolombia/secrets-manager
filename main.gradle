@@ -82,8 +82,9 @@ subprojects {
 
         testCompileOnly 'org.projectlombok:lombok:1.18.38'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
-        testImplementation platform('org.junit:junit-bom:5.13.0-M3')
+        testImplementation platform('org.junit:junit-bom:5.13.0')
         testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+        testImplementation 'org.junit.platform:junit-platform-launcher'
         testImplementation 'org.mockito:mockito-junit-jupiter:5.18.0'
     }
 
@@ -173,5 +174,5 @@ tasks.register('generateMergedReport', JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '8.13'
+    gradleVersion = '8.14.1'
 }
