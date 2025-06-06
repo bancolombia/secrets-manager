@@ -12,7 +12,7 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.springframework.boot' version '3.5.0' apply false
     id 'org.owasp.dependencycheck' version '12.1.1' apply false
-    id 'co.com.bancolombia.cleanArchitecture' version '3.23.0'
+    id 'co.com.bancolombia.cleanArchitecture' version '3.23.1'
 }
 
 apply from: './main.gradle'
