@@ -2,14 +2,14 @@ dependencies {
     api project(":secrets-manager-api")
     implementation 'software.amazon.awssdk:ssm'
     implementation 'software.amazon.awssdk:sts'
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.0'
-    implementation 'io.projectreactor:reactor-core:3.8.0-M3'
-    testImplementation 'io.projectreactor:reactor-test:3.8.0-M3'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+    implementation 'io.projectreactor:reactor-core:3.8.0'
+    testImplementation 'io.projectreactor:reactor-test:3.8.0'
 }
 
 dependencyManagement {
     imports {
-        mavenBom 'software.amazon.awssdk:bom:2.34.0'
+        mavenBom 'software.amazon.awssdk:bom:2.39.6'
     }
 }
 

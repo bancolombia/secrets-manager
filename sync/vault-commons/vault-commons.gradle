@@ -1,6 +1,6 @@
 dependencies {
     api project(":secrets-manager-api")
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.google.code.gson:gson:2.13.2'
 }
 
 ext {

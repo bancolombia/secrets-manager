@@ -4,9 +4,6 @@ allprojects {
     apply plugin: 'org.sonarqube'
     apply plugin: 'org.owasp.dependencycheck'
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_17
-
     repositories {
         mavenCentral()
     }
@@ -49,26 +46,26 @@ subprojects {
         pomConfig = {
             licenses {
                 license {
-                    name "MIT License"
-                    url "https://opensource.org/licenses/mit-license.php"
-                    distribution "repo"
+                    name = "MIT License"
+                    url = "https://opensource.org/licenses/mit-license.php"
+                    distribution = "repo"
                 }
             }
             developers {
                 developer {
-                    id "dericop"
-                    name "Daniel Rico Posada"
-                    email "danielrico.posada@gmail.com"
+                    id = "dericop"
+                    name = "Daniel Rico Posada"
+                    email = "danielrico.posada@gmail.com"
                 }
                 developer {
-                    id "alejobtc"
-                    name "Alejandro Betancur Barrientos"
-                    email "alejobtc@gmail.com"
+                    id = "alejobtc"
+                    name = "Alejandro Betancur Barrientos"
+                    email = "alejobtc@gmail.com"
                 }
                 developer {
-                    id "andmagom"
-                    name "Andres Mauricio Gomez P"
-                    email "andmagom@outlook.com"
+                    id = "andmagom"
+                    name = "Andres Mauricio Gomez P"
+                    email = "andmagom@outlook.com"
                 }
             }
 
@@ -120,6 +117,11 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     javadoc {
@@ -177,5 +179,5 @@ tasks.register('generateMergedReport', JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '8.14.3'
+    gradleVersion = '9.2.1'
 }
