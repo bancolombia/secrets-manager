@@ -17,11 +17,11 @@ jobs:
         with:
           ref: master
           token: ${{ steps.generate_token.outputs.token }}
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 25
       - name: Check for updates
         run: ./gradlew internalTask --action UPDATE_DEPENDENCIES
       - name: Check for changes

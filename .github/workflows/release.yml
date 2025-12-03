@@ -39,11 +39,11 @@ jobs:
           files: CHANGELOG.md gradle.properties
           name: Release Bot
           email: release-bot@bancolombia.com.co
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 25
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Prepare gpg key
