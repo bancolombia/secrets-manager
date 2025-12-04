@@ -4,9 +4,6 @@ allprojects {
     apply plugin: 'org.sonarqube'
     apply plugin: 'org.owasp.dependencycheck'
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_17
-
     repositories {
         mavenCentral()
     }
@@ -41,7 +38,6 @@ nexusPublishing {
 
 subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
@@ -49,26 +45,26 @@ subprojects {
         pomConfig = {
             licenses {
                 license {
-                    name "MIT License"
-                    url "https://opensource.org/licenses/mit-license.php"
-                    distribution "repo"
+                    name = "MIT License"
+                    url = "https://opensource.org/licenses/mit-license.php"
+                    distribution = "repo"
                 }
             }
             developers {
                 developer {
-                    id "dericop"
-                    name "Daniel Rico Posada"
-                    email "danielrico.posada@gmail.com"
+                    id = "dericop"
+                    name = "Daniel Rico Posada"
+                    email = "danielrico.posada@gmail.com"
                 }
                 developer {
-                    id "alejobtc"
-                    name "Alejandro Betancur Barrientos"
-                    email "alejobtc@gmail.com"
+                    id = "alejobtc"
+                    name = "Alejandro Betancur Barrientos"
+                    email = "alejobtc@gmail.com"
                 }
                 developer {
-                    id "andmagom"
-                    name "Andres Mauricio Gomez P"
-                    email "andmagom@outlook.com"
+                    id = "andmagom"
+                    name = "Andres Mauricio Gomez P"
+                    email = "andmagom@outlook.com"
                 }
             }
 
@@ -80,15 +76,15 @@ subprojects {
     }
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.38'
-        annotationProcessor 'org.projectlombok:lombok:1.18.38'
+        compileOnly 'org.projectlombok:lombok:1.18.42'
+        annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.38'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
-        testImplementation platform('org.junit:junit-bom:5.13.0')
+        testCompileOnly 'org.projectlombok:lombok:1.18.42'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
+        testImplementation platform('org.junit:junit-bom:6.0.1')
         testImplementation 'org.junit.jupiter:junit-jupiter-engine'
         testImplementation 'org.junit.platform:junit-platform-launcher'
-        testImplementation 'org.mockito:mockito-junit-jupiter:5.18.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
     }
 
     test {
@@ -120,6 +116,9 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
 
     javadoc {
@@ -177,5 +176,5 @@ tasks.register('generateMergedReport', JacocoReport) {
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '8.14.3'
+    gradleVersion = '9.2.1'
 }

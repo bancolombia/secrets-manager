@@ -2,12 +2,7 @@ dependencies {
     api project(":secrets-manager-api")
     implementation 'software.amazon.awssdk:ssm'
     implementation 'software.amazon.awssdk:sts'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom 'software.amazon.awssdk:bom:2.34.0'
-    }
+    implementation platform('software.amazon.awssdk:bom:2.40.1')
 }
 
 ext {
