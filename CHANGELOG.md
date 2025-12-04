@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.5.0](https://github.com/bancolombia/secrets-manager/tree/v4.5.0) (2025-12-04)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.36...v4.5.0)
+
+**Merged pull requests:**
+
+- feat: update versions and compatibility [\#89](https://github.com/bancolombia/secrets-manager/pull/89) ([juancgalvis](https://github.com/juancgalvis))
+
 ## [v4.4.36](https://github.com/bancolombia/secrets-manager/tree/v4.4.36) (2025-11-13)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.4.35...v4.4.36)
