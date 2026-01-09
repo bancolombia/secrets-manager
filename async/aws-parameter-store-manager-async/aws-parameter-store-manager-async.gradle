@@ -5,7 +5,7 @@ dependencies {
     implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
     implementation 'io.projectreactor:reactor-core:3.8.1'
     testImplementation 'io.projectreactor:reactor-test:3.8.1'
-    implementation platform('software.amazon.awssdk:bom:2.40.12')
+    implementation platform('software.amazon.awssdk:bom:2.41.4')
 }
 
 ext {
