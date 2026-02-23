@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in **SSecrets Manager**, please report it responsibly.
+If you discover a security vulnerability in **Secrets Manager**, please report it responsibly.
 
 Security issues can be reported by contacting the project maintainers using the following channel:
 
