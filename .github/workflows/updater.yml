@@ -9,10 +9,10 @@ jobs:
     steps:
       - name: Generate a token
         id: generate_token
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
+          app-id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
       - uses: actions/checkout@v4
         with:
           ref: master

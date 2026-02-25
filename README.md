@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/bancolombia/secrets-manager/blob/master/LICENSE)
 [![Scorecards supply-chain security](https://github.com/bancolombia/secrets-manager/actions/workflows/scorecards-analysis.yml/badge.svg)](https://github.com/bancolombia/secrets-manager/actions/workflows/scorecards-analysis.yml)
 
-# SecretsManager - Bancolombia
+# Secrets Manager - Bancolombia
 
 This library will help you to decouple your application of your secrets provider. It supports the following conectors to get secrets:
 
@@ -80,10 +80,10 @@ public class DefineYourModel {
 ## Secrets Manager Async (Compatible with Reactor)
 ```java
 dependencies {
-    // Reactor Core is required! 
-    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.4.17'
-    // secrets-manager-async     
-    implementation 'com.github.bancolombia:aws-secrets-manager-async:<version-here>'
+  // Reactor Core is required! 
+  implementation group:'io.projectreactor', name:'reactor-core', version:'3.4.17'
+  // secrets-manager-async     
+  implementation 'com.github.bancolombia:aws-secrets-manager-async:<version-here>'
 }
 ```
 
