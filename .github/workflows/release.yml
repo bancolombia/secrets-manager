@@ -29,7 +29,7 @@ jobs:
           issuesWoLabels: true
           stripGeneratorNotice: true
       - name: Save version
-        uses: github-actions-x/commit@v2
+        uses: github-actions-x/commit@v2.9
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           push-branch: "master"
