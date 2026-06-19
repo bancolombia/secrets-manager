@@ -13,7 +13,7 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
           private-key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: master
           token: ${{ steps.generate_token.outputs.token }}
