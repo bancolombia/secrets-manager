@@ -29,11 +29,11 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
           private-key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: github.ref == 'refs/heads/master'
         with:
           token: ${{ steps.generate_token.outputs.token }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: github.ref != 'refs/heads/master'
 
       - name: Verify Conventional Commits
