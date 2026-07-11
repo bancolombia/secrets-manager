@@ -27,7 +27,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
+          client-id: ${{ secrets.APP_ID_ADMIN_GITHUB }}
           private-key: ${{ secrets.APP_PRIVATE_KEY_ADMIN_GITHUB }}
       - uses: actions/checkout@v7
         if: github.ref == 'refs/heads/master'
