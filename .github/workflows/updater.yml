@@ -24,7 +24,9 @@ jobs:
           java-version: 25
       - name: Check for updates
         run: ./gradlew internalTask --action UPDATE_DEPENDENCIES
-      - name: Gradle Wrapper
+      - name: Update gradle-wrapper.properties
+        run: ./gradlew wrapper
+      - name: Update Gradle
         run: ./gradlew wrapper
       - name: Check for changes
         id: git_changes
