@@ -7,10 +7,10 @@ buildscript {
 }
 
 plugins {
-    id 'org.sonarqube' version '7.3.1.8318'
-    id 'com.github.ben-manes.versions' version '0.54.0'
+    id 'org.sonarqube' version '7.4.0.8496'
+    id 'com.github.ben-manes.versions' version '0.59.0'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
-    id 'org.owasp.dependencycheck' version '12.2.2' apply false
+    id 'org.owasp.dependencycheck' version '13.0.0' apply false
     id 'co.com.bancolombia.cleanArchitecture' version '4.5.0'
 }
 
