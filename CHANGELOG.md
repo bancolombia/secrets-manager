@@ -1,5 +1,30 @@
 # Changelog
 
+## [v4.5.3](https://github.com/bancolombia/secrets-manager/tree/v4.5.3) (2026-08-21)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.2...v4.5.3)
+
+**Merged pull requests:**
+
+- build\(deps\): bump github/codeql-action from 4.37.6 to 4.37.7 [\#111](https://github.com/bancolombia/secrets-manager/pull/111) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.6 to 4.37.7 [\#110](https://github.com/bancolombia/secrets-manager/pull/110) ([dependabot[bot]](https://github.com/apps/dependabot))
+- fix\(deps\): update dependencies [\#109](https://github.com/bancolombia/secrets-manager/pull/109) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+- build\(deps\): bump github/codeql-action from 4.37.3 to 4.37.6 [\#108](https://github.com/bancolombia/secrets-manager/pull/108) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.3 to 4.37.6 [\#107](https://github.com/bancolombia/secrets-manager/pull/107) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action from 4 to 4.37.3 [\#106](https://github.com/bancolombia/secrets-manager/pull/106) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.1 to 4.37.3 [\#105](https://github.com/bancolombia/secrets-manager/pull/105) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump ossf/scorecard-action from 2.4.3 to 2.4.4 [\#104](https://github.com/bancolombia/secrets-manager/pull/104) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.0 to 4.37.1 [\#103](https://github.com/bancolombia/secrets-manager/pull/103) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump actions/setup-node from 6 to 7 [\#102](https://github.com/bancolombia/secrets-manager/pull/102) ([dependabot[bot]](https://github.com/apps/dependabot))
+- ci: update GitHub Actions to use client-id for token generation [\#101](https://github.com/bancolombia/secrets-manager/pull/101) ([luisgomez29](https://github.com/luisgomez29))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.36.3 to 4.37.0 [\#100](https://github.com/bancolombia/secrets-manager/pull/100) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.36.2 to 4.36.3 [\#99](https://github.com/bancolombia/secrets-manager/pull/99) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump actions/checkout from 6 to 7 [\#98](https://github.com/bancolombia/secrets-manager/pull/98) ([dependabot[bot]](https://github.com/apps/dependabot))
+- ci: update GitHub Actions configurations and tokens [\#97](https://github.com/bancolombia/secrets-manager/pull/97) ([luisgomez29](https://github.com/luisgomez29))
+- build\(deps\): bump heinrichreimer/github-changelog-generator-action from 2.3 to 2.4 [\#96](https://github.com/bancolombia/secrets-manager/pull/96) ([dependabot[bot]](https://github.com/apps/dependabot))
+- ci: Update GitHub Actions [\#95](https://github.com/bancolombia/secrets-manager/pull/95) ([luisgomez29](https://github.com/luisgomez29))
+- build\(deps\): update dependencies [\#94](https://github.com/bancolombia/secrets-manager/pull/94) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+
 ## [v4.5.2](https://github.com/bancolombia/secrets-manager/tree/v4.5.2) (2026-06-11)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.1...v4.5.2)
@@ -447,19 +472,19 @@
 
 ## [V1.1.1-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.1-preview) (2020-09-16)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.1-preview)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.1-preview)
 
 **Merged pull requests:**
 
 - Dependencies updated [\#14](https://github.com/bancolombia/secrets-manager/pull/14) ([brianou7](https://github.com/brianou7))
 
-## [V1.1.0-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-preview) (2020-09-15)
-
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-alpha...V1.1.0-preview)
-
 ## [V1.1.0-alpha](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-alpha) (2020-09-15)
 
-[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-alpha)
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/V1.1.0-preview...V1.1.0-alpha)
+
+## [V1.1.0-preview](https://github.com/bancolombia/secrets-manager/tree/V1.1.0-preview) (2020-09-15)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v1.0.2...V1.1.0-preview)
 
 **Merged pull requests:**
 
