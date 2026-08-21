@@ -3,9 +3,9 @@ dependencies {
     implementation 'software.amazon.awssdk:ssm'
     implementation 'software.amazon.awssdk:sts'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.2.4'
-    implementation 'io.projectreactor:reactor-core:3.8.6'
-    testImplementation 'io.projectreactor:reactor-test:3.8.6'
-    implementation platform('software.amazon.awssdk:bom:2.51.2')
+    implementation 'io.projectreactor:reactor-core:3.8.7'
+    testImplementation 'io.projectreactor:reactor-test:3.8.7'
+    implementation platform('software.amazon.awssdk:bom:2.54.1')
 }
 
 ext {
