@@ -15,6 +15,12 @@ include 'api'
 include 'services:webservice'
 */
 
+buildCache {
+    local {
+        directory = new File(rootDir, 'build-cache')
+    }
+}
+
 rootProject.name = 'SecretsManager'
 
 FileTree buildFiles = fileTree(rootDir) {

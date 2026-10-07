@@ -287,3 +287,4 @@ gradle-app.setting
 
 ### USER ###
 *.hprof
+/build-cache/
