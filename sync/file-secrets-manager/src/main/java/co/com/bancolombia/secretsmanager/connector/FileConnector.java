@@ -58,7 +58,7 @@ public class FileConnector implements GenericManager {
 
     @Override
     public <T> T getSecret(String secretName, Class<T> cls){
-        throw new UnsupportedOperationException("Serialization doesn't apply for env connector");
+        throw new UnsupportedOperationException("Serialization doesn't apply for file connector");
     }
 
 }
