@@ -1,5 +1,23 @@
 # Changelog
 
+## [v4.5.4](https://github.com/bancolombia/secrets-manager/tree/v4.5.4) (2026-10-23)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.3...v4.5.4)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#126](https://github.com/bancolombia/secrets-manager/pull/126) ([luisgomez29](https://github.com/luisgomez29))
+- docs: update README with enhanced structure and JSON mapping details [\#124](https://github.com/bancolombia/secrets-manager/pull/124) ([luisgomez29](https://github.com/luisgomez29))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.38.0 to 4.38.1 [\#121](https://github.com/bancolombia/secrets-manager/pull/121) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action from 4.38.0 to 4.38.1 [\#120](https://github.com/bancolombia/secrets-manager/pull/120) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action from 4.37.9 to 4.38.0 [\#119](https://github.com/bancolombia/secrets-manager/pull/119) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.9 to 4.38.0 [\#118](https://github.com/bancolombia/secrets-manager/pull/118) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.8 to 4.37.9 [\#117](https://github.com/bancolombia/secrets-manager/pull/117) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action from 4.37.8 to 4.37.9 [\#116](https://github.com/bancolombia/secrets-manager/pull/116) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action from 4.37.7 to 4.37.8 [\#114](https://github.com/bancolombia/secrets-manager/pull/114) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump actions/setup-java from 5 to 6 [\#113](https://github.com/bancolombia/secrets-manager/pull/113) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump github/codeql-action/upload-sarif from 4.37.7 to 4.37.8 [\#112](https://github.com/bancolombia/secrets-manager/pull/112) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v4.5.3](https://github.com/bancolombia/secrets-manager/tree/v4.5.3) (2026-08-21)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.2...v4.5.3)
