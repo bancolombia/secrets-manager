@@ -6,7 +6,7 @@ import co.com.bancolombia.secretsmanager.config.AWSParameterStoreConfig;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
 import software.amazon.awssdk.services.ssm.SsmAsyncClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
@@ -60,8 +60,12 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                 .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 
+    /**
+     * Builds the AWS client using the AWS SDK default credentials provider chain
+     * ({@link DefaultCredentialsProvider}).
+     */
     private SsmAsyncClient buildClient(SsmAsyncClientBuilder builder) {
-        builder.credentialsProvider(getProviderChain());
+        builder.credentialsProvider(DefaultCredentialsProvider.builder().build());
         builder.region(config.getRegion());
         if (!"".equals(config.getEndpoint())) {
             builder.endpointOverride(URI.create(config.getEndpoint()));
@@ -74,23 +78,6 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                 .maximumSize(config.getCacheSize())
                 .expireAfterWrite(config.getCacheSeconds(), TimeUnit.SECONDS)
                 .buildAsync();
-    }
-
-    /**
-     * Default provider chain extended with extra CredentialProvider and
-     * specif order defined.
-     *
-     * @see AwsCredentialsProviderChain
-     */
-    private AwsCredentialsProviderChain getProviderChain() {
-        return AwsCredentialsProviderChain.builder()
-                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
-                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
-                .addCredentialsProvider(ProfileCredentialsProvider.create())
-                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
-                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
-                .build();
     }
 
 }
