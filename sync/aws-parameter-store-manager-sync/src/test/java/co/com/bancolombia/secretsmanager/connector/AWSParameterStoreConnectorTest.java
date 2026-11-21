@@ -31,7 +31,7 @@ class AWSParameterStoreConnectorTest {
         prepareClient("secretValue", true);
         connector = new AWSParameterStoreConnector("us-east-1", builder);
         String secretValue = connector.getSecret("secretName");
-        assertEquals(secretValue, "secretValue");
+        assertEquals("secretValue", secretValue);
     }
 
     @Test

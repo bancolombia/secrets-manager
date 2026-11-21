@@ -11,7 +11,7 @@ class AWSSecretsManagerConfigTest {
     private static AWSSecretsManagerConfig awsSecretsManagerConfig;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         awsSecretsManagerConfig = AWSSecretsManagerConfig.builder().build();
     }
 
