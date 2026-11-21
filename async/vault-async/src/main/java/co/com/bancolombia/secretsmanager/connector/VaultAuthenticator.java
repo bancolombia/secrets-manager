@@ -127,9 +127,9 @@ public class VaultAuthenticator {
 
     private Mono<AuthResponse> doCallAuthApi(HttpRequest request) {
         return Mono.fromFuture(httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
-                        .flatMap(response -> response.statusCode() != 200 ?
-                                Mono.error(() -> new SecretException("Error performing operation with vault: " + response.body())) :
-                                Mono.just(response))
+                        .flatMap(response -> response.statusCode() == 200 ?
+                                Mono.just(response) :
+                                Mono.error(() -> new SecretException("Error performing operation with vault: " + response.body())))
                         .map(HttpResponse::body)
                         .map(body -> GsonUtils.getInstance().stringToModel(body, JsonObject.class))
                         .map(map -> map.getAsJsonObject("auth"))
