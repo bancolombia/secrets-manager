@@ -1,5 +1,14 @@
 # Changelog
 
+## [v4.5.6](https://github.com/bancolombia/secrets-manager/tree/v4.5.6) (2026-11-21)
+
+[Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.5...v4.5.6)
+
+**Merged pull requests:**
+
+- fix\(deps\): update dependencies [\#128](https://github.com/bancolombia/secrets-manager/pull/128) ([app-toolkit-opensource-innersource[bot]](https://github.com/apps/app-toolkit-opensource-innersource))
+- ci: Update scorecard-action version to v2.5.0 [\#127](https://github.com/bancolombia/secrets-manager/pull/127) ([luisgomez29](https://github.com/luisgomez29))
+
 ## [v4.5.5](https://github.com/bancolombia/secrets-manager/tree/v4.5.5) (2026-10-26)
 
 [Full Changelog](https://github.com/bancolombia/secrets-manager/compare/v4.5.4...v4.5.5)
