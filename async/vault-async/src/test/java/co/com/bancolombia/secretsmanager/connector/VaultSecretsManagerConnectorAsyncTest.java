@@ -163,30 +163,31 @@ class VaultSecretsManagerConnectorAsyncTest {
     }
 
     private String secretPayload() {
-        return "{\n" +
-                "  \"request_id\": \"0bdf4c9c-1d24-bbc8-e281-1a09197a87d2\",\n" +
-                "  \"lease_id\": \"\",\n" +
-                "  \"renewable\": false,\n" +
-                "  \"lease_duration\": 0,\n" +
-                "  \"data\": {\n" +
-                "    \"data\": {\n" +
-                "      \"host\": \"localhost\",\n" +
-                "      \"password\": \"secret\",\n" +
-                "      \"port\": \"1234\",\n" +
-                "      \"user\": \"jhon\"\n" +
-                "    },\n" +
-                "    \"metadata\": {\n" +
-                "      \"created_time\": \"2023-12-22T03:04:59.26619441Z\",\n" +
-                "      \"custom_metadata\": null,\n" +
-                "      \"deletion_time\": \"\",\n" +
-                "      \"destroyed\": false,\n" +
-                "      \"version\": 1\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"wrap_info\": null,\n" +
-                "  \"warnings\": null,\n" +
-                "  \"auth\": null\n" +
-                "}";
+        return """
+                {
+                  "request_id": "0bdf4c9c-1d24-bbc8-e281-1a09197a87d2",
+                  "lease_id": "",
+                  "renewable": false,
+                  "lease_duration": 0,
+                  "data": {
+                    "data": {
+                      "host": "localhost",
+                      "password": "secret",
+                      "port": "1234",
+                      "user": "jhon"
+                    },
+                    "metadata": {
+                      "created_time": "2023-12-22T03:04:59.26619441Z",
+                      "custom_metadata": null,
+                      "deletion_time": "",
+                      "destroyed": false,
+                      "version": 1
+                    }
+                  },
+                  "wrap_info": null,
+                  "warnings": null,
+                  "auth": null
+                }""";
     }
 
     @Getter

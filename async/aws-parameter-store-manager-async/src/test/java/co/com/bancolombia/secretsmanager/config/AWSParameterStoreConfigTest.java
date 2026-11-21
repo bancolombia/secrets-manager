@@ -11,7 +11,7 @@ class AWSParameterStoreConfigTest {
     private static AWSParameterStoreConfig awsParameterStoreConfig;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         awsParameterStoreConfig = AWSParameterStoreConfig.builder().build();
     }
 

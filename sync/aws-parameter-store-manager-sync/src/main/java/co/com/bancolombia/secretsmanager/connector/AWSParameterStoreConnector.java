@@ -2,7 +2,7 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.SsmClientBuilder;
@@ -31,10 +31,7 @@ public class AWSParameterStoreConnector implements GenericManager {
     }
 
     /**
-     * for testing
-     *
-     * @param region
-     * @param builder
+     * For testing
      */
     public AWSParameterStoreConnector(String region, SsmClientBuilder builder) {
         this.client = buildClient(builder, region, Optional.empty());
@@ -70,28 +67,15 @@ public class AWSParameterStoreConnector implements GenericManager {
         }
     }
 
+    /**
+     * Builds the AWS client using the AWS SDK default credentials provider chain
+     * ({@link DefaultCredentialsProvider}).
+     */
     private SsmClient buildClient(SsmClientBuilder builder, String region, Optional<URI> endpoint) {
-        builder.credentialsProvider(getProviderChain());
+        builder.credentialsProvider(DefaultCredentialsProvider.builder().build());
         builder.region(Region.of(region));
         endpoint.ifPresent(builder::endpointOverride);
         return builder.build();
-    }
-
-    /**
-     * Default provider chain extended with extra CredentialProvider and
-     * specif order defined.
-     *
-     * @see AwsCredentialsProviderChain
-     */
-    private AwsCredentialsProviderChain getProviderChain() {
-        return AwsCredentialsProviderChain.builder()
-                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
-                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
-                .addCredentialsProvider(ProfileCredentialsProvider.create())
-                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
-                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
-                .build();
     }
 
 }

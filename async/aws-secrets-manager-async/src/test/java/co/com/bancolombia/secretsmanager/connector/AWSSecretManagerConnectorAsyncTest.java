@@ -2,7 +2,6 @@ package co.com.bancolombia.secretsmanager.connector;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
-import lombok.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,8 +48,8 @@ class AWSSecretManagerConnectorAsyncTest {
                 .thenReturn(getResponse("{\"username\":\"root\",\"password\":\"123456789\"}", true));
 
         StepVerifier.create(connector.getSecret("secretModelName", SecretModelTest.class))
-                .expectNextMatches(secretModelTest -> secretModelTest.getUsername().equals("root")
-                        && secretModelTest.getPassword().equals("123456789"))
+                .expectNextMatches(secretModelTest -> secretModelTest.username().equals("root")
+                        && secretModelTest.password().equals("123456789"))
                 .expectComplete()
                 .verify();
     }
@@ -129,12 +128,7 @@ class AWSSecretManagerConnectorAsyncTest {
         return secretResponse;
     }
 
-    @Data
-    private static class SecretModelTest {
-
-        private final String username;
-        private final String password;
-
+    private record SecretModelTest(String username, String password) {
     }
 
 }

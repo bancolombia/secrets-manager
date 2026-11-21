@@ -24,7 +24,7 @@ public class VaultSecretManagerConfigurator extends VaultSecretManagerConfigurat
     /**
      * This method is in charge of configuring the VaultAuthenticator
      * @return the VaultAuthenticator configured.
-     * @throws SecretException
+     * @throws SecretException if the SSL/TLS configuration (trust store or key store) cannot be loaded
      */
     public VaultAuthenticator getVaultAuthenticator() throws SecretException {
         return new VaultAuthenticator(getHttpClient(), getProperties(),
@@ -34,7 +34,7 @@ public class VaultSecretManagerConfigurator extends VaultSecretManagerConfigurat
     /**
      * This method is in charge of configuring the VaultSecretsManagerConnector
      * @return the VaultSecretsManagerConnector configured.
-     * @throws SecretException
+     * @throws SecretException if the SSL/TLS configuration (trust store or key store) cannot be loaded
      */
     public VaultSecretsManagerConnectorSync getVaultClient() throws SecretException {
         HttpClient httpClient = getHttpClient();

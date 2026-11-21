@@ -7,7 +7,7 @@ import co.com.bancolombia.secretsmanager.config.AWSSecretsManagerConfig;
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -31,8 +31,6 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
 
     /**
      * For unit tests
-     * @param config
-     * @param builder
      */
     public AWSSecretManagerConnectorAsync(AWSSecretsManagerConfig config, SecretsManagerAsyncClientBuilder builder) {
         this.config = config;
@@ -71,24 +69,11 @@ public class AWSSecretManagerConnectorAsync implements GenericManagerAsync {
     }
 
     /**
-     * Default provider chain extended with extra CredentialProvider and
-     * specif order defined.
-     *
-     * @see AwsCredentialsProviderChain
+     * Builds the AWS client using the AWS SDK default credentials provider chain
+     * ({@link DefaultCredentialsProvider}).
      */
-    private AwsCredentialsProviderChain getProviderChain() {
-        return AwsCredentialsProviderChain.builder()
-                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
-                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
-                .addCredentialsProvider(ProfileCredentialsProvider.create())
-                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
-                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
-                .build();
-    }
-
     private SecretsManagerAsyncClient buildClient(SecretsManagerAsyncClientBuilder builder) {
-        builder.credentialsProvider(getProviderChain());
+        builder.credentialsProvider(DefaultCredentialsProvider.builder().build());
         builder.region(config.getRegion());
         if (!"".equals(config.getEndpoint())) {
             builder.endpointOverride(URI.create(config.getEndpoint()));

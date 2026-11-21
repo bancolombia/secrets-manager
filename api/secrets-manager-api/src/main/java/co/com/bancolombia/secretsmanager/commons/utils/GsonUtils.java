@@ -15,8 +15,7 @@ public class GsonUtils {
     private final Gson gson;
 
     private GsonUtils() {
-        gson = new GsonBuilder()
-                .create();
+        gson = new GsonBuilder().create();
     }
 
     public static GsonUtils getInstance() {

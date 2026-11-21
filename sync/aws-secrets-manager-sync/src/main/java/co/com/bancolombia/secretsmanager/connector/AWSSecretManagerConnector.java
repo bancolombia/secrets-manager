@@ -3,7 +3,7 @@ package co.com.bancolombia.secretsmanager.connector;
 import co.com.bancolombia.secretsmanager.api.GenericManager;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.commons.utils.GsonUtils;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClientBuilder;
@@ -33,10 +33,7 @@ public class AWSSecretManagerConnector implements GenericManager {
     }
 
     /**
-     * for testing
-     *
-     * @param region
-     * @param builder
+     * For testing
      */
     public AWSSecretManagerConnector(String region, SecretsManagerClientBuilder builder) {
         this.client = buildClient(builder, region, Optional.empty());
@@ -78,24 +75,11 @@ public class AWSSecretManagerConnector implements GenericManager {
     }
 
     /**
-     * Default provider chain extended with extra CredentialProvider and
-     * specif order defined.
-     *
-     * @see AwsCredentialsProviderChain
+     * Builds the AWS client using the AWS SDK default credentials provider chain
+     * ({@link DefaultCredentialsProvider}).
      */
-    private AwsCredentialsProviderChain getProviderChain() {
-        return AwsCredentialsProviderChain.builder()
-                .addCredentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .addCredentialsProvider(SystemPropertyCredentialsProvider.create())
-                .addCredentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
-                .addCredentialsProvider(ProfileCredentialsProvider.create())
-                .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
-                .addCredentialsProvider(InstanceProfileCredentialsProvider.create())
-                .build();
-    }
-
     private SecretsManagerClient buildClient(SecretsManagerClientBuilder builder, String region, Optional<URI> endpoint) {
-        builder.credentialsProvider(getProviderChain())
+        builder.credentialsProvider(DefaultCredentialsProvider.builder().build())
                 .region(Region.of(region));
         endpoint.ifPresent(builder::endpointOverride);
         return builder.build();

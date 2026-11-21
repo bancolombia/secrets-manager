@@ -53,6 +53,8 @@ public class VaultAuthenticator {
      * Performs the login process with vault. If a token is provided, it will be used. If not, it will try to log in
      * with the role_id and secret_id. If not, it will try to log in with k8s.
      * @return the authentication response with the client token.
+     * @throws SecretException if no authentication method is configured, the Kubernetes token cannot be read
+     *                         or Vault rejects the login request
      */
     public AuthResponse login() throws SecretException {
         AuthResponse response = useTokenIfProvided();

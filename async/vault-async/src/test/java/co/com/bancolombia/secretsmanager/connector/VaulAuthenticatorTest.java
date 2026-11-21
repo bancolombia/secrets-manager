@@ -118,8 +118,8 @@ class VaulAuthenticatorTest {
         StepVerifier.create(vaultAuthenticator.login())
                 .expectSubscription()
                 .expectErrorMatches(throwable -> {
-                    assertEquals(throwable.getMessage(), "Could not perform login with vault. " +
-                            "Please check your configuration");
+                    assertEquals("Could not perform login with vault. " +
+                            "Please check your configuration", throwable.getMessage());
                     return true;
                 })
                 .verify();
@@ -133,11 +133,12 @@ class VaulAuthenticatorTest {
         MockResponse response = new MockResponse()
                 .addHeader("Content-Type", "application/json")
                 .setResponseCode(400)
-                .setBody("{\n" +
-                        "  \"errors\": [\n" +
-                        "    \"invalid role or secret ID\"\n" +
-                        "  ]\n" +
-                        "}");
+                .setBody("""
+                        {
+                          "errors": [
+                            "invalid role or secret ID"
+                          ]
+                        }""");
         server.enqueue(response);
         server.start();
 
@@ -169,34 +170,35 @@ class VaulAuthenticatorTest {
     }
 
     private String buildSuccessAuthResponse() {
-        return "{\n" +
-                "    \"request_id\": \"260fa017-e8e1-e3b5-a194-5ebe86e53275\",\n" +
-                "    \"lease_id\": \"\",\n" +
-                "    \"renewable\": false,\n" +
-                "    \"lease_duration\": 0,\n" +
-                "    \"data\": null,\n" +
-                "    \"wrap_info\": null,\n" +
-                "    \"warnings\": null,\n" +
-                "    \"auth\": {\n" +
-                "        \"client_token\": \"hvs.dummytoken\",\n" +
-                "        \"accessor\": \"accessor.dummy\",\n" +
-                "        \"policies\": [\n" +
-                "            \"default\"\n" +
-                "        ],\n" +
-                "        \"token_policies\": [\n" +
-                "            \"default\"\n" +
-                "        ],\n" +
-                "        \"metadata\": {\n" +
-                "            \"role_name\": \"my-role\"\n" +
-                "        },\n" +
-                "        \"lease_duration\": 600,\n" +
-                "        \"renewable\": true,\n" +
-                "        \"entity_id\": \"656855e4-82b7-b874-6da7-ce2dff19711e\",\n" +
-                "        \"token_type\": \"service\",\n" +
-                "        \"orphan\": true,\n" +
-                "        \"mfa_requirement\": null,\n" +
-                "        \"num_uses\": 0\n" +
-                "    }\n" +
-                "}";
+        return """
+                {
+                    "request_id": "260fa017-e8e1-e3b5-a194-5ebe86e53275",
+                    "lease_id": "",
+                    "renewable": false,
+                    "lease_duration": 0,
+                    "data": null,
+                    "wrap_info": null,
+                    "warnings": null,
+                    "auth": {
+                        "client_token": "hvs.dummytoken",
+                        "accessor": "accessor.dummy",
+                        "policies": [
+                            "default"
+                        ],
+                        "token_policies": [
+                            "default"
+                        ],
+                        "metadata": {
+                            "role_name": "my-role"
+                        },
+                        "lease_duration": 600,
+                        "renewable": true,
+                        "entity_id": "656855e4-82b7-b874-6da7-ce2dff19711e",
+                        "token_type": "service",
+                        "orphan": true,
+                        "mfa_requirement": null,
+                        "num_uses": 0
+                    }
+                }""";
     }
 }
