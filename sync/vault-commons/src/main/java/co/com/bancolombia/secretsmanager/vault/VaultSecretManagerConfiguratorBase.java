@@ -23,7 +23,7 @@ public class VaultSecretManagerConfiguratorBase {
     /**
      * This method is in charge of configuring the HttpClient
      * @return HttpClient configured.
-     * @throws SecretException
+     * @throws SecretException if the SSL/TLS configuration (trust store or key store) cannot be loaded
      */
     public HttpClient getHttpClient() throws SecretException {
         HttpClient.Builder clientBuilder = HttpClient.newBuilder()
@@ -35,6 +35,11 @@ public class VaultSecretManagerConfiguratorBase {
         return clientBuilder.build();
     }
 
+    /**
+     * Builds the SSL configuration from the configured trust store and key store properties.
+     * @return the SslConfig built.
+     * @throws SecretException if the SSL/TLS configuration (trust store or key store) cannot be loaded
+     */
     protected SslConfig buildSslConfig() throws SecretException {
         SslConfig sslConfig = new SslConfig();
         if (properties.getTrustStoreProperties() != null) {
@@ -46,6 +51,11 @@ public class VaultSecretManagerConfiguratorBase {
         return sslConfig.build();
     }
 
+    /**
+     * Applies the trust store (JKS or PEM) to the given SslConfig.
+     * @return the SslConfig updated.
+     * @throws SecretException if no trust store file or PEM is provided, or it cannot be read
+     */
     protected SslConfig setTrustConfiguration(SslConfig sslConfig,
                                             VaultTrustStoreProperties trustStoreProperties) throws SecretException {
         if (trustStoreProperties.getTrustStoreJksFile() != null) {
@@ -58,6 +68,11 @@ public class VaultSecretManagerConfiguratorBase {
         return sslConfig;
     }
 
+    /**
+     * Applies the key store (JKS or client PEM certificate and key) to the given SslConfig.
+     * @return the SslConfig updated.
+     * @throws SecretException if no key store file or PEM resources are provided, or they cannot be read
+     */
     protected SslConfig setKeystoreConfiguration(SslConfig sslConfig,
                                                VaultKeyStoreProperties keyStoreProperties) throws SecretException {
         if (keyStoreProperties.getKeyStoreFile() != null) {

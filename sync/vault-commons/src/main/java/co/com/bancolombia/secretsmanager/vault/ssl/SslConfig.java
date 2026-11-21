@@ -1,6 +1,7 @@
 package co.com.bancolombia.secretsmanager.vault.ssl;
 
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
+import lombok.Getter;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -19,6 +20,7 @@ public class SslConfig implements Serializable {
     private static final long serialVersionUID = 1L;
     public static final String TLSV_1_2 = "TLSv1.2";
 
+    @Getter
     private transient SSLContext sslContext;
     private transient KeyStore trustStore;
     private transient KeyStore keyStore;
@@ -27,6 +29,11 @@ public class SslConfig implements Serializable {
     private String clientPemUTF8;
     private String clientKeyPemUTF8;
 
+    /**
+     * Loads a JKS trust store from the given file.
+     * @return this SslConfig.
+     * @throws SecretException if the file cannot be read or is not a valid key store
+     */
     public SslConfig trustStoreFile(File trustStoreFile) throws SecretException {
         try (InputStream inputStream = new FileInputStream(trustStoreFile)) {
             this.trustStore = this.inputStreamToKeyStore(inputStream, (String)null);
@@ -36,6 +43,11 @@ public class SslConfig implements Serializable {
         }
     }
 
+    /**
+     * Loads a PEM trust certificate from the given file.
+     * @return this SslConfig.
+     * @throws SecretException if the file cannot be read
+     */
     public SslConfig pemFile(File pemFile) throws SecretException {
         try (InputStream input = new FileInputStream(pemFile)) {
             this.pemUTF8 = inputStreamToUTF8(input);
@@ -45,6 +57,11 @@ public class SslConfig implements Serializable {
         }
     }
 
+    /**
+     * Loads a JKS key store from the given file.
+     * @return this SslConfig.
+     * @throws SecretException if the file cannot be read, is not a valid key store or the password is wrong
+     */
     public SslConfig keyStoreFile(File keyStoreFile, String password) throws SecretException {
         try (InputStream inputStream = new FileInputStream(keyStoreFile)) {
             this.keyStore = this.inputStreamToKeyStore(inputStream, password);
@@ -55,6 +72,11 @@ public class SslConfig implements Serializable {
         }
     }
 
+    /**
+     * Loads the client PEM certificate from the given file.
+     * @return this SslConfig.
+     * @throws SecretException if the file cannot be read
+     */
     public SslConfig clientPemFile(File clientPemFile) throws SecretException {
         try (InputStream input = new FileInputStream(clientPemFile)) {
             this.clientPemUTF8 = inputStreamToUTF8(input);
@@ -64,6 +86,11 @@ public class SslConfig implements Serializable {
         }
     }
 
+    /**
+     * Loads the client PEM private key from the given file.
+     * @return this SslConfig.
+     * @throws SecretException if the file cannot be read
+     */
     public SslConfig clientKeyPemFile(File clientKeyPemFile) throws SecretException {
         try (InputStream input = new FileInputStream(clientKeyPemFile)) {
             this.clientKeyPemUTF8 = inputStreamToUTF8(input);
@@ -73,6 +100,11 @@ public class SslConfig implements Serializable {
         }
     }
 
+    /**
+     * Builds the SSLContext from the loaded JKS or PEM resources.
+     * @return this SslConfig.
+     * @throws SecretException if the SSLContext cannot be created from the loaded resources
+     */
     public SslConfig build() throws SecretException {
         if (this.keyStore == null && this.trustStore == null) {
             if (this.pemUTF8 != null || this.clientPemUTF8 != null || this.clientKeyPemUTF8 != null) {
@@ -82,10 +114,6 @@ public class SslConfig implements Serializable {
             this.sslContext = this.buildSslContextFromJks();
         }
         return this;
-    }
-
-    public SSLContext getSslContext() {
-        return this.sslContext;
     }
 
     private SSLContext buildSslContextFromJks() throws SecretException {

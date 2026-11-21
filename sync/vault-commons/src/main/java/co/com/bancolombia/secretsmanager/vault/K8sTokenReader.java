@@ -19,8 +19,9 @@ public class K8sTokenReader {
     }
 
     /**
-     * Reads the kubernetes service account token from the file system
-     * @return the kubernetes service account token
+     * Reads the Kubernetes service account token from the file system
+     * @return the Kubernetes service account token
+     * @throws SecretException if the token file cannot be read or is empty
      */
     public String getKubernetesServiceAccountToken() throws SecretException {
         try {
