@@ -3,10 +3,29 @@ package co.com.bancolombia.secretsmanager.vault.ssl;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import lombok.Getter;
 
-import javax.net.ssl.*;
-import java.io.*;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serial;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -17,6 +36,7 @@ import java.util.Base64;
 
 public class SslConfig implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     public static final String TLSV_1_2 = "TLSv1.2";
 
@@ -31,20 +51,22 @@ public class SslConfig implements Serializable {
 
     /**
      * Loads a JKS trust store from the given file.
+     *
      * @return this SslConfig.
      * @throws SecretException if the file cannot be read or is not a valid key store
      */
     public SslConfig trustStoreFile(File trustStoreFile) throws SecretException {
         try (InputStream inputStream = new FileInputStream(trustStoreFile)) {
-            this.trustStore = this.inputStreamToKeyStore(inputStream, (String)null);
+            this.trustStore = this.inputStreamToKeyStore(inputStream, (String) null);
             return this;
         } catch (IOException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
     /**
      * Loads a PEM trust certificate from the given file.
+     *
      * @return this SslConfig.
      * @throws SecretException if the file cannot be read
      */
@@ -53,12 +75,13 @@ public class SslConfig implements Serializable {
             this.pemUTF8 = inputStreamToUTF8(input);
             return this;
         } catch (Exception ex) {
-            throw new SecretException(ex.getMessage());
+            throw new SecretException(ex.getMessage(), ex);
         }
     }
 
     /**
      * Loads a JKS key store from the given file.
+     *
      * @return this SslConfig.
      * @throws SecretException if the file cannot be read, is not a valid key store or the password is wrong
      */
@@ -68,12 +91,13 @@ public class SslConfig implements Serializable {
             this.keyStorePassword = password;
             return this;
         } catch (IOException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
     /**
      * Loads the client PEM certificate from the given file.
+     *
      * @return this SslConfig.
      * @throws SecretException if the file cannot be read
      */
@@ -82,12 +106,13 @@ public class SslConfig implements Serializable {
             this.clientPemUTF8 = inputStreamToUTF8(input);
             return this;
         } catch (IOException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
     /**
      * Loads the client PEM private key from the given file.
+     *
      * @return this SslConfig.
      * @throws SecretException if the file cannot be read
      */
@@ -96,12 +121,13 @@ public class SslConfig implements Serializable {
             this.clientKeyPemUTF8 = inputStreamToUTF8(input);
             return this;
         } catch (IOException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
     /**
      * Builds the SSLContext from the loaded JKS or PEM resources.
+     *
      * @return this SslConfig.
      * @throws SecretException if the SSLContext cannot be created from the loaded resources
      */
@@ -120,31 +146,33 @@ public class SslConfig implements Serializable {
         TrustManager[] trustManagers = null;
         if (this.trustStore != null) {
             try {
-                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 trustManagerFactory.init(this.trustStore);
                 trustManagers = trustManagerFactory.getTrustManagers();
-            } catch (KeyStoreException | NoSuchAlgorithmException var6) {
-                throw new SecretException(var6.getMessage());
+            } catch (KeyStoreException | NoSuchAlgorithmException e) {
+                throw new SecretException(e.getMessage(), e);
             }
         }
 
         KeyManager[] keyManagers = null;
         if (this.keyStore != null) {
             try {
-                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                keyManagerFactory.init(this.keyStore, this.keyStorePassword == null ? null : this.keyStorePassword.toCharArray());
+                var keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(
+                        this.keyStore, this.keyStorePassword == null ? null : this.keyStorePassword.toCharArray()
+                );
                 keyManagers = keyManagerFactory.getKeyManagers();
-            } catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException var5) {
-                throw new SecretException(var5.getMessage());
+            } catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+                throw new SecretException(e.getMessage(), e);
             }
         }
 
         try {
             SSLContext lSslContext = SSLContext.getInstance(TLSV_1_2);
-            lSslContext.init(keyManagers, trustManagers, (SecureRandom)null);
+            lSslContext.init(keyManagers, trustManagers, (SecureRandom) null);
             return lSslContext;
-        } catch (KeyManagementException | NoSuchAlgorithmException var4) {
-            throw new SecretException(var4.getMessage());
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
@@ -153,12 +181,14 @@ public class SslConfig implements Serializable {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             TrustManager[] trustManagers = null;
             if (this.pemUTF8 != null) {
-                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 
-                X509Certificate certificate = buildX509Certificate(certificateFactory, this.pemUTF8.getBytes(StandardCharsets.UTF_8));
+                X509Certificate certificate = buildX509Certificate(
+                        certificateFactory, this.pemUTF8.getBytes(StandardCharsets.UTF_8)
+                );
 
                 KeyStore iKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                iKeyStore.load((KeyStore.LoadStoreParameter)null);
+                iKeyStore.load((KeyStore.LoadStoreParameter) null);
                 iKeyStore.setCertificateEntry("caCert", certificate);
                 trustManagerFactory.init(iKeyStore);
                 trustManagers = trustManagerFactory.getTrustManagers();
@@ -166,18 +196,20 @@ public class SslConfig implements Serializable {
 
             KeyManager[] keyManagers = null;
             if (this.clientPemUTF8 != null && this.clientKeyPemUTF8 != null) {
-                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                X509Certificate clientCertificate = buildX509Certificate(certificateFactory, this.clientPemUTF8.getBytes(StandardCharsets.UTF_8));
+                var keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                X509Certificate clientCertificate = buildX509Certificate(
+                        certificateFactory, this.clientPemUTF8.getBytes(StandardCharsets.UTF_8)
+                );
 
                 String strippedKey = this.clientKeyPemUTF8.replace("-----BEGIN PRIVATE KEY-----", "")
                         .replace("-----END PRIVATE KEY-----", "");
                 byte[] keyBytes = Base64.getMimeDecoder().decode(strippedKey);
                 PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(keyBytes);
-                KeyFactory var9 = KeyFactory.getInstance("RSA");
-                PrivateKey privateKey = var9.generatePrivate(pkcs8EncodedKeySpec);
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
                 KeyStore ikeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 
-                ikeyStore.load((InputStream)null, null);
+                ikeyStore.load((InputStream) null, null);
                 ikeyStore.setCertificateEntry("clientCert", clientCertificate);
                 ikeyStore.setKeyEntry("key", privateKey, null,
                         new Certificate[]{clientCertificate});
@@ -186,19 +218,20 @@ public class SslConfig implements Serializable {
             }
 
             SSLContext lSslContext = SSLContext.getInstance(TLSV_1_2);
-            lSslContext.init(keyManagers, trustManagers, (SecureRandom)null);
+            lSslContext.init(keyManagers, trustManagers, (SecureRandom) null);
             return lSslContext;
         } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException |
                  UnrecoverableKeyException | InvalidKeySpecException | CertificateException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
-    private X509Certificate buildX509Certificate(CertificateFactory certificateFactory, byte[] pemBytes) throws SecretException {
+    private X509Certificate buildX509Certificate(CertificateFactory certificateFactory, byte[] pemBytes)
+            throws SecretException {
         try (ByteArrayInputStream pem = new ByteArrayInputStream(pemBytes)) {
-            return (X509Certificate)certificateFactory.generateCertificate(pem);
+            return (X509Certificate) certificateFactory.generateCertificate(pem);
         } catch (IOException | CertificateException e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
@@ -207,8 +240,8 @@ public class SslConfig implements Serializable {
             KeyStore lKeyStore = KeyStore.getInstance("JKS");
             lKeyStore.load(inputStream, password == null ? null : password.toCharArray());
             return lKeyStore;
-        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException var4) {
-            throw new SecretException(var4.getMessage());
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
@@ -217,7 +250,7 @@ public class SslConfig implements Serializable {
         StringBuilder utf8 = new StringBuilder();
 
         String str;
-        while((str = in.readLine()) != null) {
+        while ((str = in.readLine()) != null) {
             utf8.append(str).append(System.lineSeparator());
         }
 
