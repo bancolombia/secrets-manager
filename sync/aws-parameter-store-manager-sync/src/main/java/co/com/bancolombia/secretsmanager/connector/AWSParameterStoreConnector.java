@@ -54,7 +54,7 @@ public class AWSParameterStoreConnector implements GenericManager {
         try {
             getParameterResponse = client.getParameter(getParameterRequest);
         } catch (Exception e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
 
         if (getParameterResponse == null) {

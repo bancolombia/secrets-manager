@@ -3,8 +3,11 @@ package co.com.bancolombia.secretsmanager.connector;
 import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.NoSuchFileException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
  * Represents an File Connector Test. It lets you to test File Connector Object.
@@ -17,7 +20,8 @@ class FileConnectorTest {
     @Test
     void pathDoesNotExist() {
         connector = new FileConnector("/path/doesNot/exits");
-        assertThrows(SecretException.class, () -> connector.getSecret("Secret.txt"));
+        SecretException ex = assertThrows(SecretException.class, () -> connector.getSecret("Secret.txt"));
+        assertInstanceOf(NoSuchFileException.class, ex.getCause());
     }
 
     @Test

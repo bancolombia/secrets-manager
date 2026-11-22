@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -99,7 +100,8 @@ class AWSSecretManagerConnectorTest {
 
         when(client.getSecretValue(any(GetSecretValueRequest.class))).thenThrow(SdkClientException.class);
 
-        assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
+        SecretException ex = assertThrows(SecretException.class, () -> connector.getSecret("secretName"));
+        assertInstanceOf(SdkClientException.class, ex.getCause());
     }
 
     private void prepareClient(String data, boolean secretValue) {
