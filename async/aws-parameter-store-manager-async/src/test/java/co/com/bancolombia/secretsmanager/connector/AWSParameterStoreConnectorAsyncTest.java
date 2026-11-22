@@ -8,12 +8,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
 import software.amazon.awssdk.services.ssm.SsmAsyncClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.Parameter;
+import software.amazon.awssdk.services.ssm.model.ParameterNotFoundException;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -68,6 +70,34 @@ class AWSParameterStoreConnectorAsyncTest {
         StepVerifier.create(connector.getSecret("secretName", Class.class))
                 .expectSubscription()
                 .verifyError(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void shouldWrapSdkErrorInSecretException() {
+        prepareClient(null, false, false);
+        when(client.getParameter(any(GetParameterRequest.class)))
+                .thenReturn(CompletableFuture.failedFuture(ParameterNotFoundException.builder()
+                        .message("Parameter not found")
+                        .build()));
+
+        StepVerifier.create(connector.getSecret("secretName"))
+                .expectErrorMatches(err -> err instanceof SecretException
+                        && "Parameter not found".equals(err.getMessage())
+                        && err.getCause() instanceof ParameterNotFoundException)
+                .verify();
+    }
+
+    @Test
+    void shouldWrapSynchronousSdkErrorInSecretException() {
+        prepareClient(null, false, false);
+        when(client.getParameter(any(GetParameterRequest.class)))
+                .thenThrow(SdkClientException.create("Unable to build request"));
+
+        StepVerifier.create(connector.getSecret("secretName"))
+                .expectErrorMatches(err -> err instanceof SecretException
+                        && "Unable to build request".equals(err.getMessage())
+                        && err.getCause() instanceof SdkClientException)
+                .verify();
     }
 
     private void prepareClient(String data, boolean secretValue) {

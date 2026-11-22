@@ -70,6 +70,7 @@ public class VaultSecretsManagerConnectorAsync implements GenericManagerAsync {
                     }
                 })
                 .map(data -> GsonUtils.getInstance().modelToString(data.getData().getData()))
+                .onErrorMap(e -> !(e instanceof SecretException), e -> new SecretException(e.getMessage(), e))
                 .doOnError(err -> logger.severe("Error retrieving secret from vault: " + err.getMessage()));
     }
 
@@ -81,7 +82,8 @@ public class VaultSecretsManagerConnectorAsync implements GenericManagerAsync {
     @Override
     public <T> Mono<T> getSecret(String secretName, Class<T> cls) throws SecretException {
         return this.getSecret(secretName)
-                .map(secret -> GsonUtils.getInstance().stringToModel(secret, cls));
+                .map(secret -> GsonUtils.getInstance().stringToModel(secret, cls))
+                .onErrorMap(e -> !(e instanceof SecretException), e -> new SecretException(e.getMessage(), e));
     }
 
     private AsyncCache<String, String> initCache() {

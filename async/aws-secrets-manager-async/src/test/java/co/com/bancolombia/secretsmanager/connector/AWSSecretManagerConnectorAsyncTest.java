@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder;
@@ -95,7 +96,8 @@ class AWSSecretManagerConnectorAsyncTest {
         StepVerifier.create(connector.getSecret("secretName"))
                 .expectErrorMatches(err ->
                         err instanceof SecretException
-                                && err.getMessage().equals("Secrets Manager can't find the specified secret not found."))
+                                && err.getMessage().equals("Secrets Manager can't find the specified secret not found.")
+                                && err.getCause() instanceof ResourceNotFoundException)
                 .verify();
     }
 
@@ -109,7 +111,20 @@ class AWSSecretManagerConnectorAsyncTest {
         StepVerifier.create(connector.getSecret("secretNameF$1l"))
                 .expectErrorMatches(err ->
                         err instanceof SecretException
-                                && err.getMessage().equals("The parameter name or value is invalid."))
+                                && err.getMessage().equals("The parameter name or value is invalid.")
+                                && err.getCause() instanceof InvalidParameterException)
+                .verify();
+    }
+
+    @Test
+    void shouldWrapSynchronousSdkErrorInSecretException() {
+        when(client.getSecretValue(getSecretValueRequest("secretName")))
+                .thenThrow(SdkClientException.create("Unable to build request"));
+
+        StepVerifier.create(connector.getSecret("secretName"))
+                .expectErrorMatches(err -> err instanceof SecretException
+                        && "Unable to build request".equals(err.getMessage())
+                        && err.getCause() instanceof SdkClientException)
                 .verify();
     }
 

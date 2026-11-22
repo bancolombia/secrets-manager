@@ -1,5 +1,6 @@
 package co.com.bancolombia.secretsmanager.connector;
 
+import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.vault.K8sTokenReader;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import lombok.SneakyThrows;
@@ -10,6 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -95,6 +101,29 @@ class VaulAuthenticatorTest {
         assertEquals("/v1/auth/kubernetes/login", server.takeRequest().getPath());
 
         server.shutdown();
+    }
+
+    @Test
+    void testLoginWrapsHttpErrorInSecretException() {
+        VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")
+                .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
+                .build();
+
+        IOException ioException = new IOException("Connection refused");
+        HttpClient httpClient = Mockito.mock(HttpClient.class);
+        when(httpClient.sendAsync(Mockito.any(), Mockito.<HttpResponse.BodyHandler<String>>any()))
+                .thenReturn(CompletableFuture.failedFuture(ioException));
+
+        VaultAuthenticator vaultAuthenticator = new VaultAuthenticator(httpClient, properties, new K8sTokenReader());
+
+        StepVerifier.create(vaultAuthenticator.login())
+                .expectErrorMatches(err -> err instanceof SecretException
+                        && "Connection refused".equals(err.getMessage())
+                        && err.getCause() == ioException)
+                .verify();
     }
 
     @SneakyThrows
