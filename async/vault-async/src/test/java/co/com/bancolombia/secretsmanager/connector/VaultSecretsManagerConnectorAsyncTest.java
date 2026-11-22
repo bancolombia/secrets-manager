@@ -23,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +92,7 @@ class VaultSecretsManagerConnectorAsyncTest {
                 .build();
 
         IOException ioException = new IOException("Dummy IO Exception");
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
+        HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.sendAsync(Mockito.any(), Mockito.<HttpResponse.BodyHandler<String>>any()))
                 .thenReturn(CompletableFuture.failedFuture(ioException));
         when(authenticator.login()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));

@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,7 +81,7 @@ class VaulAuthenticatorTest {
                 .vaultRoleForK8sAuth("xxxxxxxxxx")
                 .build();
 
-        K8sTokenReader k8sTokenReaderMock = Mockito.mock(K8sTokenReader.class);
+        K8sTokenReader k8sTokenReaderMock = mock(K8sTokenReader.class);
         when(k8sTokenReaderMock.getKubernetesServiceAccountToken()).thenReturn("ey...");
 
         VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
@@ -113,7 +114,7 @@ class VaulAuthenticatorTest {
                 .build();
 
         IOException ioException = new IOException("Connection refused");
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
+        HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.sendAsync(Mockito.any(), Mockito.<HttpResponse.BodyHandler<String>>any()))
                 .thenReturn(CompletableFuture.failedFuture(ioException));
 
