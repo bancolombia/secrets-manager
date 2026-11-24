@@ -32,6 +32,7 @@ This library helps you to decouple your application of your secrets provider. It
   - [AWS Secrets Manager](#aws-secrets-manager-async)
   - [AWS Parameter Store](#aws-parameter-store-async)
   - [Vault](#vault-async)
+- [Error handling](#error-handling)
 - [How can I contribute?](#how-can-i-contribute)
 
 ## Compatibility
@@ -425,6 +426,37 @@ connector.getSecret("my/database/credentials", DBCredentials.class)
         // ... develop your async flow
     });
 ```
+
+## Error handling
+
+All connectors report failures as `SecretException`: sync connectors throw it and async connectors emit it as the
+`Mono` error. When the failure comes from another exception (AWS SDK, I/O, TLS, JSON...), that exception is kept as
+the cause, so you can inspect its type and stack trace:
+
+```java
+connector.getSecret("secretName")
+    .onErrorResume(SecretException.class, e -> {
+        if (e.getCause() instanceof ResourceNotFoundException) {
+            return Mono.just("default");
+        }
+        return Mono.error(e);
+    });
+```
+
+> **Since 4.6.0:** the async AWS Parameter Store and Vault connectors emit `SecretException` instead of the raw
+> SDK/IO exception (for example `ParameterNotFoundException` or `IOException`). If you match on those types
+> (`onErrorResume(IOException.class, ...)`, `retryWhen` filters...), check `getCause()` instead.
+
+The async connectors log each failure as a single line with the error message, using `java.util.logging`. The full
+stack trace is not logged, because the exception (with its cause) is delivered to your code: log it there if you need
+it. Logger names:
+
+| Connector | Logger |
+|-----------|--------|
+| AWS Secrets Manager (Async) | `connector.AWSSecretManagerConnector` |
+| AWS Parameter Store (Async) | `connector.AWSParameterStoreConnector` (before 4.6.0: `connector.AWSSecretManagerConnector`) |
+| Vault (Async) | `connector.VaultSecretsManagerConnectorAsync`, `connector.VaultAuthenticator` |
+| Vault (Sync) | `connector.VaultSecretsManagerConnectorSync`, `connector.VaultAuthenticator` |
 
 ## How can I contribute?
 
