@@ -51,7 +51,7 @@ public class FileConnector implements GenericManager {
             byte[] encoded = Files.readAllBytes(Paths.get(getPath() + secretName));
             return new String(encoded, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 

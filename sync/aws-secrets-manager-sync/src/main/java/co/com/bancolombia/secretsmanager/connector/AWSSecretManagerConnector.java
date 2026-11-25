@@ -50,7 +50,7 @@ public class AWSSecretManagerConnector implements GenericManager {
         try {
             return GsonUtils.getInstance().stringToModel(data, cls);
         } catch (Exception e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
     }
 
@@ -61,7 +61,7 @@ public class AWSSecretManagerConnector implements GenericManager {
         try {
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
         } catch (Exception e) {
-            throw new SecretException(e.getMessage());
+            throw new SecretException(e.getMessage(), e);
         }
 
         if (getSecretValueResult == null) {

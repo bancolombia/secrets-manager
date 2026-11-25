@@ -1,5 +1,6 @@
 package co.com.bancolombia.secretsmanager.connector;
 
+import co.com.bancolombia.secretsmanager.api.exceptions.SecretException;
 import co.com.bancolombia.secretsmanager.vault.auth.AuthResponse;
 import co.com.bancolombia.secretsmanager.vault.config.VaultSecretsManagerProperties;
 import lombok.AllArgsConstructor;
@@ -11,13 +12,18 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,6 +79,30 @@ class VaultSecretsManagerConnectorAsyncTest {
         assertEquals("/v1/kv/data//path1/foo/bar", server.takeRequest().getPath());
 
         server.shutdown();
+    }
+
+    @SneakyThrows
+    @Test
+    void testWrapHttpErrorInSecretException() {
+        VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                .host("localhost")
+                .port(8200)
+                .ssl(false)
+                .token("hvs.dummy")
+                .build();
+
+        IOException ioException = new IOException("Dummy IO Exception");
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.sendAsync(Mockito.any(), Mockito.<HttpResponse.BodyHandler<String>>any()))
+                .thenReturn(CompletableFuture.failedFuture(ioException));
+        when(authenticator.login()).thenReturn(Mono.just(AuthResponse.builder().clientToken("hvs.dummy").build()));
+
+        VaultSecretsManagerConnectorAsync connector =
+                new VaultSecretsManagerConnectorAsync(httpClient, authenticator, properties);
+
+        StepVerifier.create(connector.getSecret("/path1/foo/bar"))
+                .expectErrorMatches(err -> err instanceof SecretException && err.getCause() == ioException)
+                .verify();
     }
 
     @SneakyThrows

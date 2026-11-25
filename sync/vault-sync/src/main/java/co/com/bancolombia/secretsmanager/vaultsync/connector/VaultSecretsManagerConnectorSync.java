@@ -14,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -71,10 +72,10 @@ public class VaultSecretsManagerConnectorSync implements GenericManager {
                 return GsonUtils.getInstance().modelToString(secretResponse.getData().getData());
             }
         } catch (IOException e) {
-            throw new SecretException(String.format(ERROR_TEMPLATE, e.getMessage()));
+            throw new SecretException(String.format(ERROR_TEMPLATE, Objects.toString(e.getMessage(), e.toString())), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SecretException(String.format(ERROR_TEMPLATE, e.getMessage()));
+            throw new SecretException(String.format(ERROR_TEMPLATE, Objects.toString(e.getMessage(), e.toString())), e);
         }
     }
 

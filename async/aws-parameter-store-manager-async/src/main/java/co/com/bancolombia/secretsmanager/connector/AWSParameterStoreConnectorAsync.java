@@ -21,7 +21,7 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
     private final AWSParameterStoreConfig config;
     private final SsmAsyncClient client;
     private final AsyncCache<String, String> cache;
-    private final Logger logger = Logger.getLogger("connector.AWSSecretManagerConnector");
+    private final Logger logger = Logger.getLogger("connector.AWSParameterStoreConnector");
 
     public AWSParameterStoreConnectorAsync(AWSParameterStoreConfig config) {
         this.config = config;
@@ -48,7 +48,7 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
 
     private Mono<String> getSecretValue(String secretName) {
         GetParameterRequest getParameterRequest = GetParameterRequest.builder().name(secretName).build();
-        return Mono.fromFuture(client.getParameter(getParameterRequest))
+        return Mono.fromFuture(() -> client.getParameter(getParameterRequest))
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new SecretException("Secret value is null"))))
                 .flatMap(secretResult -> {
                     if (secretResult.parameter().value() != null) {
@@ -57,6 +57,7 @@ public class AWSParameterStoreConnectorAsync implements GenericManagerAsync {
                     }
                     return Mono.error(new SecretException("Secret value is not a String"));
                 })
+                .onErrorMap(e -> !(e instanceof SecretException), e -> new SecretException(e.getMessage(), e))
                 .doOnError(err -> logger.warning("Error retrieving the secret: " + err.getMessage()));
     }
 

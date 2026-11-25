@@ -36,7 +36,8 @@ public class VaultAuthenticator {
     private final AsyncCache<String, AuthResponse> cache;
     private final K8sTokenReader k8sTokenReader;
     private final Gson gson = new Gson();
-    private final Type mapType = new TypeToken<Map<String, String>>() {}.getType();
+    private final Type mapType = new TypeToken<Map<String, String>>() {
+    }.getType();
 
     public VaultAuthenticator(HttpClient httpClient,
                               VaultSecretsManagerProperties properties,
@@ -50,14 +51,17 @@ public class VaultAuthenticator {
     /**
      * Performs the login process with vault. If a token is provided, it will be used. If not, it will try to log in
      * with the role_id and secret_id. If not, it will try to log in with k8s.
+     *
      * @return the authentication response with the client token.
      */
     public Mono<AuthResponse> login() {
         return useTokenIfProvided()
                 .switchIfEmpty(loginWithRoleId())
                 .switchIfEmpty(loginK8s())
-                .switchIfEmpty(Mono.defer(() ->
-                    Mono.error(new SecretException("Could not perform login with vault. Please check your configuration"))))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(
+                        new SecretException("Could not perform login with vault. Please check your configuration")
+                )))
+                .onErrorMap(e -> !(e instanceof SecretException), e -> new SecretException(e.getMessage(), e))
                 .doOnSuccess(this::checkLeaseDurationAgainstCacheExpTime);
     }
 
@@ -105,42 +109,42 @@ public class VaultAuthenticator {
 
     private Mono<AuthResponse> performLoginWithK8s() {
         return Mono.fromCallable(k8sTokenReader::getKubernetesServiceAccountToken)
-            .flatMap(token -> Mono.fromSupplier(() ->
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(this.properties.buildUrl() + properties.getK8sAuthPath()))
-                            .timeout(Duration.ofSeconds(5))
-                            .header(CONTENT_TYPE_HEADER, "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(
-                                    gson.toJson(K8sAuth.builder()
-                                            .jwt(token)
-                                            .role(properties.getVaultRoleForK8sAuth())
-                                            .build())
-                            ))
-                            .build()
-            ))
-            .flatMap(this::doCallAuthApi)
-            .doOnSuccess(authResponse ->
-                    logger.info("Successfully authenticated via k8s with vault")
-            )
-            .subscribeOn(Schedulers.boundedElastic());
+                .flatMap(token -> Mono.fromSupplier(() ->
+                        HttpRequest.newBuilder()
+                                .uri(URI.create(this.properties.buildUrl() + properties.getK8sAuthPath()))
+                                .timeout(Duration.ofSeconds(5))
+                                .header(CONTENT_TYPE_HEADER, "application/json")
+                                .POST(HttpRequest.BodyPublishers.ofString(
+                                        gson.toJson(K8sAuth.builder()
+                                                .jwt(token)
+                                                .role(properties.getVaultRoleForK8sAuth())
+                                                .build())
+                                ))
+                                .build()
+                ))
+                .flatMap(this::doCallAuthApi)
+                .doOnSuccess(authResponse ->
+                        logger.info("Successfully authenticated via k8s with vault")
+                )
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     private Mono<AuthResponse> doCallAuthApi(HttpRequest request) {
         return Mono.fromFuture(httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
-                        .flatMap(response -> response.statusCode() == 200 ?
-                                Mono.just(response) :
-                                Mono.error(() -> new SecretException("Error performing operation with vault: " + response.body())))
-                        .map(HttpResponse::body)
-                        .map(body -> GsonUtils.getInstance().stringToModel(body, JsonObject.class))
-                        .map(map -> map.getAsJsonObject("auth"))
-                        .map(auth -> AuthResponse.builder()
-                                .clientToken(auth.get("client_token").getAsString())
-                                .accessor(auth.get("accessor").getAsString())
-                                .leaseDuration(auth.get("lease_duration").getAsLong())
-                                .renewable(auth.get("renewable").getAsBoolean())
-                                .metadata(gson.fromJson(auth.get("metadata").toString(), mapType))
-                                .build())
-                        .doOnError(err -> logger.severe("Error performing operation with vault: " + err.getMessage()));
+                .flatMap(response -> response.statusCode() == 200 ?
+                        Mono.just(response) :
+                        Mono.error(() -> new SecretException("Error performing operation with vault: " + response.body())))
+                .map(HttpResponse::body)
+                .map(body -> GsonUtils.getInstance().stringToModel(body, JsonObject.class))
+                .map(map -> map.getAsJsonObject("auth"))
+                .map(auth -> AuthResponse.builder()
+                        .clientToken(auth.get("client_token").getAsString())
+                        .accessor(auth.get("accessor").getAsString())
+                        .leaseDuration(auth.get("lease_duration").getAsLong())
+                        .renewable(auth.get("renewable").getAsBoolean())
+                        .metadata(gson.fromJson(auth.get("metadata").toString(), mapType))
+                        .build())
+                .doOnError(err -> logger.severe("Error performing operation with vault: " + err.getMessage()));
     }
 
     private void checkLeaseDurationAgainstCacheExpTime(AuthResponse authResponse) {

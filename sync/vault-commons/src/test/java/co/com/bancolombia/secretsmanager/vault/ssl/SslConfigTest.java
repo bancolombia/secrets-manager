@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.security.KeyPair;
@@ -14,6 +15,7 @@ import java.security.PrivateKey;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SslConfigTest {
@@ -31,7 +33,8 @@ class SslConfigTest {
     @Test
     void testHandleFailureToLoadTrustStore() {
         File f = new File("nofile.jks");
-        assertThrows(SecretException.class, () -> new SslConfig().trustStoreFile(f));
+        SecretException ex = assertThrows(SecretException.class, () -> new SslConfig().trustStoreFile(f));
+        assertInstanceOf(FileNotFoundException.class, ex.getCause());
     }
 
     @SneakyThrows

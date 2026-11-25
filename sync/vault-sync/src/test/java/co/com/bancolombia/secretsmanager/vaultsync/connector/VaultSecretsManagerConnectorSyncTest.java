@@ -128,14 +128,16 @@ class VaultSecretsManagerConnectorSyncTest {
                 .build();
 
         HttpClient httpClient = Mockito.mock(HttpClient.class);
-        when(httpClient.send(Mockito.any(), Mockito.any())).thenThrow(new IOException("Dummy IO Exception"));
+        IOException ioException = new IOException("Dummy IO Exception");
+        when(httpClient.send(Mockito.any(), Mockito.any())).thenThrow(ioException);
         when(authenticator.login()).thenReturn(AuthResponse.builder().clientToken("hvs.dummy").build());
 
         VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
                 new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
 
-        assertThrows(SecretException.class,
+        SecretException ex = assertThrows(SecretException.class,
                 () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
+        assertSame(ioException, ex.getCause());
 
     }
 
