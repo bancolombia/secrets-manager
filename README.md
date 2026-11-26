@@ -185,6 +185,12 @@ DBCredentials creds = connector.getSecret("my/database/credentials", DBCredentia
 // ... continue your sync flow
 ```
 
+If the login with Vault fails (AppRole or Kubernetes auth, unreadable Kubernetes token...), `getSecret` throws the
+login `SecretException` and no request is sent to read the secret.
+
+> **Note:** up to version 4.5.6, the login error was only logged and the secret was requested with an empty token, so
+> the caller received the `403 permission denied` returned by Vault instead of the real login error.
+
 ### Environment System Secrets
 
 ```groovy
