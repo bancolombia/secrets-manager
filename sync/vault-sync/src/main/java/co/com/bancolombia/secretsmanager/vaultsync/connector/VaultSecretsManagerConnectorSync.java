@@ -15,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -78,12 +79,12 @@ public class VaultSecretsManagerConnectorSync implements GenericManager {
         }
     }
 
-    private String getToken() {
+    private String getToken() throws SecretException {
         try {
             return vaultAuthenticator.login().getClientToken();
         } catch (SecretException e) {
-            logger.severe("Error retrieving token from vault: " + e.getMessage());
-            return "";
+            logger.log(Level.SEVERE, "Error retrieving token from vault: {0}", e.getMessage());
+            throw e;
         }
     }
 
