@@ -77,42 +77,76 @@ class VaultSecretsManagerConnectorSyncTest {
 
     @SneakyThrows
     @Test
-    void testUnsuccessfulGetSecretContent() {
+    void testLoginErrorIsPropagatedWithoutRequestingSecret() {
 
         MockWebServer server = new MockWebServer();
-
-        MockResponse response = new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setResponseCode(400)
-                .setBody("Bad Request");
-        server.enqueue(response);
         server.start();
+        try {
+            VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                    .host("localhost")
+                    .port(server.getPort())
+                    .ssl(false)
+                    .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")
+                    .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
+                    .build();
 
-        VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
-                .host("localhost")
-                .port(server.getPort())
-                .ssl(false)
-                .roleId("65903d42-6dd4-2aa3-6a61-xxxxxxxxxx")
-                .secretId("0cce6d0b-e756-c12e-9729-xxxxxxxxx")
-                .build();
+            VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
+                    .withProperties(properties)
+                    .build();
 
-        VaultSecretManagerConfigurator configurator = VaultSecretManagerConfigurator.builder()
-                .withProperties(properties)
-                .build();
+            HttpClient httpClient = configurator.getHttpClient();
 
-        HttpClient httpClient = configurator.getHttpClient();
+            SecretException loginError = new SecretException("Error performing operation with vault: approle down");
+            when(authenticator.login()).thenThrow(loginError);
 
-        when(authenticator.login()).thenThrow(new SecretException("Dummy Exception"));
+            VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
+                    new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
 
-        VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
-                new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
+            SecretException ex = assertThrows(SecretException.class,
+                    () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
 
-        assertThrows(SecretException.class,
-                () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
+            // the real login error reaches the caller and no request is sent to Vault with an empty token
+            assertSame(loginError, ex);
+            assertEquals(0, server.getRequestCount());
+        } finally {
+            server.shutdown();
+        }
+    }
 
-        assertEquals("/v1/kv/data//path1/foo/bar", server.takeRequest().getPath());
+    @SneakyThrows
+    @Test
+    void testHandleNonSuccessfulSecretResponse() {
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(403)
+                .setBody("{\"errors\":[\"permission denied\"]}"));
+        server.start();
+        try {
+            VaultSecretsManagerProperties properties = VaultSecretsManagerProperties.builder()
+                    .host("localhost")
+                    .port(server.getPort())
+                    .ssl(false)
+                    .build();
 
-        server.shutdown();
+            HttpClient httpClient = VaultSecretManagerConfigurator.builder()
+                    .withProperties(properties)
+                    .build()
+                    .getHttpClient();
+
+            when(authenticator.login()).thenReturn(AuthResponse.builder().clientToken("hvs.dummy").build());
+
+            VaultSecretsManagerConnectorSync vaultSecretsManagerConnectorSync =
+                    new VaultSecretsManagerConnectorSync(httpClient, authenticator, properties);
+
+            SecretException ex = assertThrows(SecretException.class,
+                    () -> vaultSecretsManagerConnectorSync.getSecret("/path1/foo/bar"));
+
+            assertEquals("{\"errors\":[\"permission denied\"]}", ex.getMessage());
+            assertEquals("hvs.dummy", server.takeRequest().getHeader("X-Vault-Token"));
+        } finally {
+            server.shutdown();
+        }
     }
 
     @SneakyThrows

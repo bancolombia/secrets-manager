@@ -15,14 +15,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * Connector to Vault Secrets Manager for reading secrets.
  */
 public class VaultSecretsManagerConnectorSync implements GenericManager {
 
-    private static final Logger logger = Logger.getLogger("connector.VaultSecretsManagerConnectorSync");
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String AUTH_HEADER = "X-Vault-Token";
     private static final String ERROR_TEMPLATE = "Error performing operation with vault: %s";
@@ -78,13 +76,8 @@ public class VaultSecretsManagerConnectorSync implements GenericManager {
         }
     }
 
-    private String getToken() {
-        try {
-            return vaultAuthenticator.login().getClientToken();
-        } catch (SecretException e) {
-            logger.severe("Error retrieving token from vault: " + e.getMessage());
-            return "";
-        }
+    private String getToken() throws SecretException {
+        return vaultAuthenticator.login().getClientToken();
     }
 
     @Override
